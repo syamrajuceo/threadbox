@@ -8,7 +8,7 @@ export const getJwtConfig = (
   return {
     secret: configService.get<string>('JWT_SECRET', 'your-secret-key'),
     signOptions: {
-      expiresIn: expiresIn, // JWT accepts string for expiresIn
+      expiresIn: expiresIn as string, // JWT accepts string for expiresIn
     },
   };
 };
