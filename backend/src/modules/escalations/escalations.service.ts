@@ -40,7 +40,7 @@ export class EscalationsService {
         await this.notificationsService.notifyEscalation(
           superUser.id,
           createEscalationDto.emailId,
-          (email as any)?.projectId || '',
+          String((email as { projectId?: string })?.projectId || ''),
           requesterName,
         );
       }

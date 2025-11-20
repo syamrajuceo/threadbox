@@ -3,8 +3,6 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { Email, EmailStatus } from '../emails/entities/email.entity';
 import { EmailAssignment } from './entities/email-assignment.entity';
-import { AssignEmailDto } from './dto/assign-email.dto';
-import { AssignEmailMultipleDto } from './dto/assign-email-multiple.dto';
 import { UpdateEmailStatusDto } from './dto/update-email-status.dto';
 import { NotificationsService } from '../notifications/notifications.service';
 

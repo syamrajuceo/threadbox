@@ -188,7 +188,7 @@ let GmailProvider = GmailProvider_1 = class GmailProvider {
                 toAddresses: to.split(',').map((e) => e.trim()),
                 ccAddresses: cc ? cc.split(',').map((e) => e.trim()) : [],
                 bccAddresses: [],
-                receivedAt: new Date(date || message.internalDate),
+                receivedAt: new Date(date || String(message.internalDate || Date.now())),
                 messageId,
                 inReplyTo,
                 references,

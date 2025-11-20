@@ -62,6 +62,7 @@ let GrokProvider = GrokProvider_1 = class GrokProvider {
         }
         catch (error) {
             this.logger.error('Error classifying spam with Grok:', error);
+            const errorMessage = error instanceof Error ? error.message : 'Unknown error';
             return {
                 isSpam: false,
                 confidence: 0,
@@ -294,16 +295,17 @@ Important: Use the EXACT Project ID from the list above. Do not invent IDs.`;
         }
         catch (error) {
             this.logger.error('Error in combined classification with Grok:', error);
+            const errorMessage = error instanceof Error ? error.message : 'Unknown error';
             return {
                 spamClassification: {
                     category: 'not_spam',
                     confidence: 0,
-                    reason: `AI service error: ${error.message || 'Unknown error'}`,
+                    reason: `AI service error: ${errorMessage}`,
                 },
                 projectClassification: {
                     projectId: null,
                     confidence: 0,
-                    reason: `AI service error: ${error.message || 'Unknown error'}`,
+                    reason: `AI service error: ${errorMessage}`,
                 },
             };
         }

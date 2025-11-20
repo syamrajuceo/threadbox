@@ -77,7 +77,7 @@ let OutlookProvider = OutlookProvider_1 = class OutlookProvider {
             toAddresses: message.toRecipients?.map((r) => r.emailAddress.address) || [],
             ccAddresses: message.ccRecipients?.map((r) => r.emailAddress.address) || [],
             bccAddresses: message.bccRecipients?.map((r) => r.emailAddress.address) || [],
-            receivedAt: new Date(message.receivedDateTime),
+            receivedAt: new Date(String(message.receivedDateTime)),
             messageId: message.internetMessageId || '',
             inReplyTo: message.internetMessageHeaders?.find((h) => h.name === 'In-Reply-To')?.value,
             references: message.internetMessageHeaders?.find((h) => h.name === 'References')?.value,

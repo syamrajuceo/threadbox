@@ -74,7 +74,7 @@ export class OutlookProvider implements IEmailProvider {
     return allMessages;
   }
 
-  private parseOutlookMessage(message: any): EmailMessage {
+  private parseOutlookMessage(message: Record<string, unknown>): EmailMessage {
     return {
       id: message.id,
       subject: message.subject || '',

@@ -42,7 +42,7 @@ let EscalationsService = class EscalationsService {
             .findOne({ where: { id: createEscalationDto.emailId } });
         for (const superUser of superUsers) {
             if (superUser.globalRole === 'super_user') {
-                await this.notificationsService.notifyEscalation(superUser.id, createEscalationDto.emailId, email?.projectId || '', requesterName);
+                await this.notificationsService.notifyEscalation(superUser.id, createEscalationDto.emailId, String(email?.projectId || ''), requesterName);
             }
         }
         return savedEscalation;

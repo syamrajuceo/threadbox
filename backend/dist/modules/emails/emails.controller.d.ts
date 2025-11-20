@@ -23,7 +23,11 @@ export declare class EmailsController {
         success: boolean;
         updated: number;
     }>;
-    resetAllEmails(dto: ResetEmailsDto, req: any): Promise<{
+    resetAllEmails(dto: ResetEmailsDto, req: {
+        user: {
+            email: string;
+        };
+    }): Promise<{
         success: boolean;
         message: string;
         deletedCount: number;

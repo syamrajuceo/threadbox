@@ -20,7 +20,7 @@ export class AssignmentsController {
   constructor(private readonly assignmentsService: AssignmentsService) {}
 
   @Patch('email/:id/assign')
-  assignEmail(@Param('id') id: string, @Body() dto: AssignEmailDto, @Request() req) {
+  assignEmail(@Param('id') id: string, @Body() dto: AssignEmailDto, @Request() req: { user: { firstName: string; lastName: string } }) {
     const assignedBy = `${req.user.firstName} ${req.user.lastName}`;
     if (dto.userId) {
       return this.assignmentsService.assignToUser(id, dto.userId, assignedBy);

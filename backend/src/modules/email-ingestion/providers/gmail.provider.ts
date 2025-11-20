@@ -265,7 +265,7 @@ export class GmailProvider implements IEmailProvider {
         toAddresses: to.split(',').map((e: string) => e.trim()),
         ccAddresses: cc ? cc.split(',').map((e: string) => e.trim()) : [],
         bccAddresses: [],
-        receivedAt: new Date(date || message.internalDate),
+        receivedAt: new Date(date || String(message.internalDate || Date.now())),
         messageId,
         inReplyTo,
         references,

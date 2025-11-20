@@ -53,10 +53,11 @@ export class GrokProvider implements IAIProvider {
         max_tokens: 200,
       });
 
-      const result = this.parseSpamResponse(response.data);
+      const result = this.parseSpamResponse(response.data as { choices?: Array<{ message?: { content?: string } }> });
       return result;
-    } catch (error: any) {
+    } catch (error: unknown) {
       this.logger.error('Error classifying spam with Grok:', error);
+      const errorMessage = error instanceof Error ? error.message : 'Unknown error';
       // Fallback: mark as not spam if AI is unavailable
       return {
         isSpam: false,
@@ -121,7 +122,7 @@ export class GrokProvider implements IAIProvider {
       });
 
       const result = this.parseProjectResponse(
-        response.data,
+        response.data as { choices?: Array<{ message?: { content?: string } }> },
         projectDescriptions,
       );
 
@@ -377,18 +378,19 @@ Important: Use the EXACT Project ID from the list above. Do not invent IDs.`;
           reason: projectResult.reason,
         },
       };
-    } catch (error: any) {
+    } catch (error: unknown) {
       this.logger.error('Error in combined classification with Grok:', error);
+      const errorMessage = error instanceof Error ? error.message : 'Unknown error';
       return {
         spamClassification: {
           category: 'not_spam',
           confidence: 0,
-          reason: `AI service error: ${error.message || 'Unknown error'}`,
+          reason: `AI service error: ${errorMessage}`,
         },
         projectClassification: {
           projectId: null,
           confidence: 0,
-          reason: `AI service error: ${error.message || 'Unknown error'}`,
+          reason: `AI service error: ${errorMessage}`,
         },
       };
     }

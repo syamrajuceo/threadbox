@@ -144,7 +144,7 @@ export class UserEmailsService {
       .leftJoinAndSelect('email.attachments', 'attachments');
 
     const conditions: string[] = [];
-    const params: any = {};
+    const params: Record<string, unknown> = {};
 
     // Project Managers see all emails in their projects
     if (pmProjects.length > 0) {

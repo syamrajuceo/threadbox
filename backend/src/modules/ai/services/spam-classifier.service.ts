@@ -1,5 +1,5 @@
 import { Injectable, Logger } from '@nestjs/common';
-import { IAIProvider, SpamClassificationResult } from '../interfaces/ai-provider.interface';
+import { SpamClassificationResult } from '../interfaces/ai-provider.interface';
 import { ClaudeProvider } from '../providers/claude.provider';
 
 @Injectable()

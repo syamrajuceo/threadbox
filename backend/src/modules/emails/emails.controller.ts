@@ -70,7 +70,7 @@ export class EmailsController {
   @Roles(GlobalRole.SUPER_USER)
   async resetAllEmails(
     @Body() dto: ResetEmailsDto,
-    @Request() req: any,
+    @Request() req: { user: { email: string } },
   ) {
     try {
       // Verify admin password

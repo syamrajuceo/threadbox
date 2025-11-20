@@ -1,7 +1,7 @@
 import { Injectable, Logger } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
-import { IAIProvider, ProjectClassificationResult } from '../interfaces/ai-provider.interface';
+import { ProjectClassificationResult } from '../interfaces/ai-provider.interface';
 import { ClaudeProvider } from '../providers/claude.provider';
 import { Project } from '../../projects/entities/project.entity';
 

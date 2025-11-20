@@ -132,7 +132,7 @@ export class IncomingReviewService {
         projectId, 
         isUnassigned: false,
         spamStatus: EmailSpamStatus.NOT_SPAM, // Admin assigned = project-related = not spam
-      })
+      } as Partial<Email>)
       .where('id IN (:...ids)', { ids: emailIds })
       .execute();
   }
