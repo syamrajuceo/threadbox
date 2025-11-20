@@ -19,9 +19,10 @@ let OutlookProvider = OutlookProvider_1 = class OutlookProvider {
     config;
     constructor(config) {
         this.config = config;
+        const credentials = this.config.credentials;
         this.client = microsoft_graph_client_1.Client.init({
             authProvider: (done) => {
-                done(null, this.config.credentials.accessToken);
+                done(null, credentials.accessToken);
             },
         });
     }

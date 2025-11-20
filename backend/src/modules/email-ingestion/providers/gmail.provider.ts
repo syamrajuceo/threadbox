@@ -28,14 +28,20 @@ export class GmailProvider implements IEmailProvider {
 
   async connect(): Promise<void> {
     try {
+      const credentials = this.config.credentials as {
+        clientId: string;
+        clientSecret: string;
+        redirectUri: string;
+        refreshToken: string;
+      };
       const oauth2Client = new google.auth.OAuth2(
-        this.config.credentials.clientId,
-        this.config.credentials.clientSecret,
-        this.config.credentials.redirectUri,
+        credentials.clientId,
+        credentials.clientSecret,
+        credentials.redirectUri,
       );
 
       oauth2Client.setCredentials({
-        refresh_token: this.config.credentials.refreshToken,
+        refresh_token: credentials.refreshToken,
       });
 
       // Try to refresh the token to validate credentials
@@ -114,7 +120,7 @@ export class GmailProvider implements IEmailProvider {
 
     do {
       // Fetch message list with retry logic
-      const responseData = await this.retryWithBackoff(() => {
+      const responseData = (await this.retryWithBackoff(() => {
         const requestParams = {
           userId: 'me',
           q: query,
@@ -125,7 +131,7 @@ export class GmailProvider implements IEmailProvider {
           `Gmail API request: q="${query}", maxResults=${batchSize}, pageToken=${pageToken ? 'present' : 'none'}`,
         );
         return this.gmail.users.messages.list(requestParams);
-      }, 'list messages');
+      }, 'list messages')) as { data: { messages?: Array<{ id: string; threadId: string }>; nextPageToken?: string } };
 
       const messages = responseData.data.messages || [];
       pageToken = responseData.data.nextPageToken;
@@ -161,7 +167,7 @@ export class GmailProvider implements IEmailProvider {
                 id: message.id,
                 format: 'full',
               })) as { data: unknown };
-              return this.parseGmailMessage(fullMessage.data);
+              return this.parseGmailMessage(fullMessage.data as Record<string, unknown>);
             }, `fetch message ${message.id}`);
           },
         );

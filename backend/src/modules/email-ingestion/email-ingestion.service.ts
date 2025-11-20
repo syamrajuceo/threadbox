@@ -160,7 +160,7 @@ export class EmailIngestionService {
     return ingestedCount;
   }
 
-  private saveAttachment(
+  private async saveAttachment(
     emailId: string,
     filename: string,
     content: Buffer,
@@ -171,7 +171,7 @@ export class EmailIngestionService {
     }
 
     const filePath = path.join(emailDir, filename);
-    fs.writeFileSync(filePath, content);
+    await fs.promises.writeFile(filePath, content);
 
     return filePath;
   }

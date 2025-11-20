@@ -14,9 +14,10 @@ export class OutlookProvider implements IEmailProvider {
 
   constructor(config: EmailProviderConfig) {
     this.config = config;
+    const credentials = this.config.credentials as { accessToken: string };
     this.client = Client.init({
       authProvider: (done) => {
-        done(null, this.config.credentials.accessToken);
+        done(null, credentials.accessToken);
       },
     });
   }

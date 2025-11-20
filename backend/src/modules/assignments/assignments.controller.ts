@@ -13,6 +13,7 @@ import { AssignEmailDto } from './dto/assign-email.dto';
 import { AssignEmailMultipleDto } from './dto/assign-email-multiple.dto';
 import { UpdateEmailStatusDto } from './dto/update-email-status.dto';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
+import { EmailAssignment } from './entities/email-assignment.entity';
 
 @Controller('assignments')
 @UseGuards(JwtAuthGuard)

@@ -164,13 +164,13 @@ let EmailIngestionService = EmailIngestionService_1 = class EmailIngestionServic
         }
         return ingestedCount;
     }
-    saveAttachment(emailId, filename, content) {
+    async saveAttachment(emailId, filename, content) {
         const emailDir = path.join(this.attachmentsDir, emailId);
         if (!fs.existsSync(emailDir)) {
             fs.mkdirSync(emailDir, { recursive: true });
         }
         const filePath = path.join(emailDir, filename);
-        fs.writeFileSync(filePath, content);
+        await fs.promises.writeFile(filePath, content);
         return filePath;
     }
 };

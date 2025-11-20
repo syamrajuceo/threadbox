@@ -343,7 +343,7 @@ Important: Use the EXACT Project ID from the list above. Do not invent IDs.`;
                 projectClassification: {
                     projectId: null,
                     confidence: 0,
-                    reason: `AI service error: ${error.message || 'Unknown error'}`,
+                    reason: `AI service error: ${error?.message || 'Unknown error'}`,
                 },
             };
         }

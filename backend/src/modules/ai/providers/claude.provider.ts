@@ -472,7 +472,7 @@ Important: Use the EXACT Project ID from the list above. Do not invent IDs.`;
         projectClassification: {
           projectId: null,
           confidence: 0,
-          reason: `AI service error: ${error.message || 'Unknown error'}`,
+          reason: `AI service error: ${(error as { message?: string })?.message || 'Unknown error'}`,
         },
       };
     }
@@ -557,8 +557,10 @@ Rules:
       const parsed = JSON.parse(content) as {
         spamCategory?: string;
         spamConfidence?: number | string;
+        spamReason?: string;
         projectId?: string | null;
         projectConfidence?: number | string;
+        projectReason?: string;
       };
 
       const spamCategory = parsed.spamCategory || 'not_spam';

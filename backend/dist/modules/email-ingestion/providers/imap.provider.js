@@ -26,12 +26,13 @@ let ImapProvider = ImapProvider_1 = class ImapProvider {
         const port = this.config.credentials.port
             ? parseInt(String(this.config.credentials.port), 10)
             : 993;
+        const credentials = this.config.credentials;
         this.imap = new imap_1.default({
-            user: this.config.credentials.username,
-            password: this.config.credentials.password,
-            host: this.config.credentials.host,
+            user: credentials.username,
+            password: credentials.password,
+            host: credentials.host,
             port: isNaN(port) ? 993 : port,
-            tls: this.config.credentials.tls !== false,
+            tls: credentials.tls !== false,
         });
     }
     async connect() {
