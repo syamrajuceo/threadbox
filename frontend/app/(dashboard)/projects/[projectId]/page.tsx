@@ -240,12 +240,12 @@ export default function ProjectViewPage() {
     return assignments.map((a) => a.assignedTo);
   };
 
-  const getStatusTagType = (status: string) => {
+  const getStatusTagType = (status: string): 'blue' | 'cyan' | 'gray' | 'green' | 'magenta' | 'purple' | 'red' | 'teal' | 'cool-gray' | 'warm-gray' | 'high-contrast' | 'outline' | undefined => {
     switch (status) {
       case 'open':
         return 'blue';
       case 'in_progress':
-        return 'yellow';
+        return 'blue'; // Changed from 'yellow' as it's not a valid Carbon Tag type
       case 'closed':
         return 'gray';
       default:
@@ -439,7 +439,7 @@ export default function ProjectViewPage() {
                                 <Tag type="red" size="sm">Spam</Tag>
                               )}
                               {email.spamStatus === 'possible_spam' && (
-                                <Tag type="orange" size="sm">Possible Spam</Tag>
+                                <Tag type="blue" size="sm">Possible Spam</Tag>
                               )}
                             </Stack>
                           </div>
