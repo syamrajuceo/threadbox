@@ -67,25 +67,32 @@ let OutlookProvider = OutlookProvider_1 = class OutlookProvider {
         return allMessages;
     }
     parseOutlookMessage(message) {
+        const body = message.body;
+        const from = message.from;
+        const toRecipients = message.toRecipients;
+        const ccRecipients = message.ccRecipients;
+        const bccRecipients = message.bccRecipients;
+        const headers = message.internetMessageHeaders;
+        const attachments = message.attachments;
         return {
-            id: message.id,
-            subject: message.subject || '',
-            body: message.body?.content || '',
-            bodyHtml: message.body?.contentType === 'html' ? message.body.content : '',
-            fromAddress: message.from?.emailAddress?.address || '',
-            fromName: message.from?.emailAddress?.name || '',
-            toAddresses: message.toRecipients?.map((r) => r.emailAddress.address) || [],
-            ccAddresses: message.ccRecipients?.map((r) => r.emailAddress.address) || [],
-            bccAddresses: message.bccRecipients?.map((r) => r.emailAddress.address) || [],
-            receivedAt: new Date(String(message.receivedDateTime)),
-            messageId: message.internetMessageId || '',
-            inReplyTo: message.internetMessageHeaders?.find((h) => h.name === 'In-Reply-To')?.value,
-            references: message.internetMessageHeaders?.find((h) => h.name === 'References')?.value,
-            attachments: message.hasAttachments
-                ? message.attachments?.map((att) => ({
-                    filename: att.name,
-                    contentType: att.contentType,
-                    size: att.size,
+            id: String(message.id || ''),
+            subject: String(message.subject || ''),
+            body: body?.content || '',
+            bodyHtml: body?.contentType === 'html' ? (body.content || '') : '',
+            fromAddress: from?.emailAddress?.address || '',
+            fromName: from?.emailAddress?.name || '',
+            toAddresses: toRecipients?.map((r) => r.emailAddress?.address || '').filter((addr) => Boolean(addr)) || [],
+            ccAddresses: ccRecipients?.map((r) => r.emailAddress?.address || '').filter((addr) => Boolean(addr)) || [],
+            bccAddresses: bccRecipients?.map((r) => r.emailAddress?.address || '').filter((addr) => Boolean(addr)) || [],
+            receivedAt: new Date(String(message.receivedDateTime || Date.now())),
+            messageId: String(message.internetMessageId || ''),
+            inReplyTo: headers?.find((h) => h.name === 'In-Reply-To')?.value || '',
+            references: headers?.find((h) => h.name === 'References')?.value || '',
+            attachments: message.hasAttachments && attachments
+                ? attachments.map((att) => ({
+                    filename: att.name || 'attachment',
+                    contentType: att.contentType || 'application/octet-stream',
+                    size: att.size || 0,
                     content: Buffer.from(String(att.contentBytes || ''), 'base64'),
                 }))
                 : [],
@@ -95,7 +102,7 @@ let OutlookProvider = OutlookProvider_1 = class OutlookProvider {
         const attachment = await this.client
             .api(`/me/messages/${messageId}/attachments/${attachmentId}`)
             .get();
-        return Buffer.from(String(attachment.contentBytes), 'base64');
+        return Buffer.from(String(attachment.contentBytes || ''), 'base64');
     }
 };
 exports.OutlookProvider = OutlookProvider;

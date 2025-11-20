@@ -23,7 +23,7 @@ export class NotificationsService {
   }
 
   async findAll(userId: string, unreadOnly?: boolean): Promise<Notification[]> {
-    const where: any = { userId };
+    const where: { userId: string; isRead?: boolean } = { userId };
     if (unreadOnly) {
       where.isRead = false;
     }

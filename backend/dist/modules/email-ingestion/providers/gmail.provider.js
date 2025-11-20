@@ -104,14 +104,14 @@ let GmailProvider = GmailProvider_1 = class GmailProvider {
                     if (index > 0) {
                         await this.delay(this.DELAY_BETWEEN_REQUESTS_MS);
                     }
-                    return this.retryWithBackoff(async () => {
+                    return (await this.retryWithBackoff(async () => {
                         const fullMessage = (await this.gmail.users.messages.get({
                             userId: 'me',
                             id: message.id,
                             format: 'full',
                         }));
                         return this.parseGmailMessage(fullMessage.data);
-                    }, `fetch message ${message.id}`);
+                    }, `fetch message ${message.id}`));
                 });
                 const batchResults = await Promise.all(batchPromises);
                 const validEmails = batchResults.filter((email) => email !== null);

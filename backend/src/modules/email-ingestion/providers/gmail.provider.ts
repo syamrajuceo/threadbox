@@ -155,14 +155,14 @@ export class GmailProvider implements IEmailProvider {
               await this.delay(this.DELAY_BETWEEN_REQUESTS_MS);
             }
 
-            return this.retryWithBackoff(async () => {
+            return (await this.retryWithBackoff(async () => {
               const fullMessage = (await this.gmail.users.messages.get({
                 userId: 'me',
                 id: message.id,
                 format: 'full',
               })) as { data: unknown };
               return this.parseGmailMessage(fullMessage.data);
-            }, `fetch message ${message.id}`);
+            }, `fetch message ${message.id}`)) as EmailMessage | null;
           },
         );
 

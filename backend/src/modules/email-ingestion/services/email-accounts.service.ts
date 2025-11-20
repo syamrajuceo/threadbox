@@ -149,7 +149,7 @@ export class EmailAccountsService {
       const errorMessage =
         error instanceof Error ? error.message : 'Unknown error';
       this.logger.error(`Error details: ${errorMessage}`);
-      throw new Error(`Failed to decrypt credentials: ${error.message}`);
+      throw new Error(`Failed to decrypt credentials: ${errorMessage}`);
     }
   }
 
@@ -198,8 +198,9 @@ export class EmailAccountsService {
     } catch (error: unknown) {
       this.logger.error(`Error ingesting from account ${accountId}:`, error);
       // Re-throw with more context
-      if (error.message?.includes('decrypt')) {
-        throw new Error(`Invalid credentials: ${error.message}`);
+      const errorMessage = error instanceof Error ? error.message : 'Unknown error';
+      if (errorMessage.includes('decrypt')) {
+        throw new Error(`Invalid credentials: ${errorMessage}`);
       }
       throw error;
     }

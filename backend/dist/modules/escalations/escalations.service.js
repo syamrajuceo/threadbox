@@ -41,7 +41,7 @@ let EscalationsService = class EscalationsService {
             .getRepository('emails')
             .findOne({ where: { id: createEscalationDto.emailId } });
         for (const superUser of superUsers) {
-            if (superUser.globalRole === 'super_user') {
+            if (superUser.globalRole === GlobalRole.SUPER_USER) {
                 await this.notificationsService.notifyEscalation(superUser.id, createEscalationDto.emailId, String(email?.projectId || ''), requesterName);
             }
         }

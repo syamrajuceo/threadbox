@@ -47,7 +47,7 @@ let NotesService = class NotesService {
                     await this.notificationsService.notifyMention(mentionedUser.id, createNoteDto.emailId, String(email?.projectId || ''), authorName);
                 }
             }
-            catch (error) {
+            catch {
             }
         }
         return savedNote;
@@ -83,7 +83,9 @@ let NotesService = class NotesService {
         const mentions = [];
         let match;
         while ((match = mentionRegex.exec(content)) !== null) {
-            mentions.push(match[1]);
+            if (match[1]) {
+                mentions.push(match[1]);
+            }
         }
         return [...new Set(mentions)];
     }

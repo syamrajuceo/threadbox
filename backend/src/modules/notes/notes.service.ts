@@ -45,7 +45,7 @@ export class NotesService {
             authorName,
           );
         }
-      } catch (error) {
+      } catch {
         // User not found, skip
       }
     }
@@ -86,9 +86,11 @@ export class NotesService {
   extractMentions(content: string): string[] {
     const mentionRegex = /@(\w+)/g;
     const mentions: string[] = [];
-    let match;
+    let match: RegExpExecArray | null;
     while ((match = mentionRegex.exec(content)) !== null) {
-      mentions.push(match[1]);
+      if (match[1]) {
+        mentions.push(match[1]);
+      }
     }
     return [...new Set(mentions)]; // Remove duplicates
   }

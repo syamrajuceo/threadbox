@@ -122,7 +122,7 @@ let EmailAccountsService = EmailAccountsService_1 = class EmailAccountsService {
             this.logger.error(`Error decrypting credentials for account ${id}:`, error);
             const errorMessage = error instanceof Error ? error.message : 'Unknown error';
             this.logger.error(`Error details: ${errorMessage}`);
-            throw new Error(`Failed to decrypt credentials: ${error.message}`);
+            throw new Error(`Failed to decrypt credentials: ${errorMessage}`);
         }
     }
     async ingestFromAccount(accountId, userId, since) {
@@ -148,8 +148,9 @@ let EmailAccountsService = EmailAccountsService_1 = class EmailAccountsService {
         }
         catch (error) {
             this.logger.error(`Error ingesting from account ${accountId}:`, error);
-            if (error.message?.includes('decrypt')) {
-                throw new Error(`Invalid credentials: ${error.message}`);
+            const errorMessage = error instanceof Error ? error.message : 'Unknown error';
+            if (errorMessage.includes('decrypt')) {
+                throw new Error(`Invalid credentials: ${errorMessage}`);
             }
             throw error;
         }

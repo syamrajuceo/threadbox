@@ -36,7 +36,7 @@ export class EscalationsService {
       .findOne({ where: { id: createEscalationDto.emailId } });
 
     for (const superUser of superUsers) {
-      if (superUser.globalRole === 'super_user') {
+      if (superUser.globalRole === GlobalRole.SUPER_USER) {
         await this.notificationsService.notifyEscalation(
           superUser.id,
           createEscalationDto.emailId,
@@ -53,7 +53,7 @@ export class EscalationsService {
     status?: EscalationStatus;
     emailId?: string;
   }): Promise<Escalation[]> {
-    const where: any = {};
+    const where: { status?: EscalationStatus; emailId?: string } = {};
     if (filters?.status) where.status = filters.status;
     if (filters?.emailId) where.emailId = filters.emailId;
 

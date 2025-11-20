@@ -57,7 +57,7 @@ let ImapProvider = ImapProvider_1 = class ImapProvider {
     }
     async fetchEmails(since) {
         return new Promise((resolve, reject) => {
-            this.imap.openBox('INBOX', false, (err, box) => {
+            this.imap.openBox('INBOX', false, (err) => {
                 if (err) {
                     reject(err);
                     return;
@@ -98,20 +98,21 @@ let ImapProvider = ImapProvider_1 = class ImapProvider {
                                         return [];
                                     if (Array.isArray(addressObj)) {
                                         return addressObj.flatMap((addr) => Array.isArray(addr.value)
-                                            ? addr.value.map((a) => a.address)
+                                            ? addr.value.map((a) => a.address || '')
                                             : addr.value
-                                                ? [addr.value.address]
-                                                : []);
+                                                ? [addr.value.address || '']
+                                                : []).filter((addr) => Boolean(addr));
                                     }
-                                    if (addressObj.value) {
-                                        return Array.isArray(addressObj.value)
-                                            ? addressObj.value.map((a) => a.address)
-                                            : [addressObj.value.address];
+                                    const addrObj = addressObj;
+                                    if (addrObj.value) {
+                                        return Array.isArray(addrObj.value)
+                                            ? addrObj.value.map((a) => a.address || '').filter((addr) => Boolean(addr))
+                                            : [addrObj.value.address || ''].filter((addr) => Boolean(addr));
                                     }
                                     return [];
                                 };
                                 const email = {
-                                    id: seqno.toString(),
+                                    id: String(seqno),
                                     subject: parsed.subject || '',
                                     body: parsed.text || '',
                                     bodyHtml: parsed.html || '',
@@ -166,7 +167,7 @@ let ImapProvider = ImapProvider_1 = class ImapProvider {
             });
         });
     }
-    async downloadAttachment(messageId, attachmentId) {
+    async downloadAttachment(_messageId, _attachmentId) {
         throw new Error('Attachment download not yet implemented for IMAP');
     }
 };

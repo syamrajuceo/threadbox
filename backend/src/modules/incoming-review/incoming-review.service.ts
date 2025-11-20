@@ -103,7 +103,7 @@ export class IncomingReviewService {
     // Get current email to check if project is assigned
     const email = await this.emailsService.findOne(emailId);
 
-    const updateData: any = { spamStatus };
+    const updateData: Partial<Email> = { spamStatus };
 
     if (spamStatus === EmailSpamStatus.SPAM) {
       // Admin marked as spam - clear project assignment
@@ -112,7 +112,7 @@ export class IncomingReviewService {
     } else if (spamStatus === EmailSpamStatus.NOT_SPAM) {
       // Admin marked as not spam - only set as NOT_SPAM if project is assigned
       // If no project, keep as POSSIBLE_SPAM until project is assigned
-      if (email.projectId) {
+      if ((email as Email).projectId) {
         // Project is assigned - mark as NOT_SPAM
         updateData.isUnassigned = false;
       } else {
@@ -124,7 +124,7 @@ export class IncomingReviewService {
       // Admin marked as possible spam - mark as unassigned
       updateData.isUnassigned = true;
       // Clear project if assigned
-      if (email.projectId) {
+      if ((email as Email).projectId) {
         updateData.projectId = null;
       }
     }

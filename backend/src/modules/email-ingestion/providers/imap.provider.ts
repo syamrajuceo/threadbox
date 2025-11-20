@@ -4,7 +4,6 @@ import { simpleParser } from 'mailparser';
 import {
   IEmailProvider,
   EmailMessage,
-  EmailAttachment,
 } from '../interfaces/email-provider.interface';
 import type { EmailProviderConfig } from '../interfaces/email-provider.interface';
 
@@ -58,7 +57,7 @@ export class ImapProvider implements IEmailProvider {
 
   async fetchEmails(since?: Date): Promise<EmailMessage[]> {
     return new Promise((resolve, reject) => {
-      this.imap.openBox('INBOX', false, (err, box) => {
+      this.imap.openBox('INBOX', false, (err) => {
         if (err) {
           reject(err);
           return;
@@ -103,27 +102,28 @@ export class ImapProvider implements IEmailProvider {
               try {
                 const parsed = await simpleParser(emailData);
                 // Helper function to extract addresses
-                const extractAddresses = (addressObj: any): string[] => {
+                const extractAddresses = (addressObj: unknown): string[] => {
                   if (!addressObj) return [];
                   if (Array.isArray(addressObj)) {
-                    return addressObj.flatMap((addr: any) =>
+                    return addressObj.flatMap((addr: { value?: Array<{ address?: string }> | { address?: string } }) =>
                       Array.isArray(addr.value)
-                        ? addr.value.map((a: any) => a.address)
+                        ? addr.value.map((a: { address?: string }) => a.address || '')
                         : addr.value
-                          ? [addr.value.address]
+                          ? [(addr.value as { address?: string }).address || '']
                           : [],
-                    );
+                    ).filter((addr): addr is string => Boolean(addr));
                   }
-                  if (addressObj.value) {
-                    return Array.isArray(addressObj.value)
-                      ? addressObj.value.map((a: any) => a.address)
-                      : [addressObj.value.address];
+                  const addrObj = addressObj as { value?: Array<{ address?: string }> | { address?: string } };
+                  if (addrObj.value) {
+                    return Array.isArray(addrObj.value)
+                      ? addrObj.value.map((a: { address?: string }) => a.address || '').filter((addr): addr is string => Boolean(addr))
+                      : [(addrObj.value as { address?: string }).address || ''].filter((addr): addr is string => Boolean(addr));
                   }
                   return [];
                 };
 
                 const email: EmailMessage = {
-                  id: seqno.toString(),
+                  id: String(seqno),
                   subject: parsed.subject || '',
                   body: parsed.text || '',
                   bodyHtml: parsed.html || '',
@@ -189,8 +189,8 @@ export class ImapProvider implements IEmailProvider {
   }
 
   async downloadAttachment(
-    messageId: string,
-    attachmentId: string,
+    _messageId: string,
+    _attachmentId: string,
   ): Promise<Buffer> {
     // IMAP attachments are included in the message body
     // This would need to be implemented based on specific attachment handling
