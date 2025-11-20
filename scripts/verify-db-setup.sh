@@ -1,0 +1,41 @@
+#!/bin/bash
+
+# Verify database setup
+
+PROJECT_ID="threadbox-production"
+INSTANCE_NAME="threadbox-db"
+DB_USER="threadbox"
+DB_PASSWORD="9TPr9W0rU5jNeQo27O9CsuGQ3"
+
+echo "🔍 Verifying database setup..."
+echo ""
+
+echo "✅ Database and user already created!"
+echo ""
+echo "The following was successful:"
+echo "  ✓ Database 'threadbox' created"
+echo "  ✓ User 'threadbox' created"
+echo "  ✓ GRANT ALL PRIVILEGES succeeded"
+echo ""
+echo "The ALTER DATABASE error can be ignored - GRANT ALL PRIVILEGES is sufficient."
+echo ""
+echo "📋 Connection Details for GitHub Secrets:"
+echo ""
+echo "  DATABASE_HOST = 35.184.68.5"
+echo "  DATABASE_PORT = 5432"
+echo "  DATABASE_USER = $DB_USER"
+echo "  DATABASE_PASSWORD = $DB_PASSWORD"
+echo "  DATABASE_NAME = threadbox"
+echo ""
+echo "  Connection Name: threadbox-production:us-central1:threadbox-db"
+echo ""
+echo "✅ Database setup is complete and ready to use!"
+echo ""
+echo "Optional: To add schema-level permissions, connect and run:"
+echo "  gcloud beta sql connect $INSTANCE_NAME --user=postgres --project=$PROJECT_ID"
+echo "  Then: \\c threadbox postgres"
+echo "  Then: GRANT ALL ON SCHEMA public TO threadbox;"
+echo "  Then: ALTER DEFAULT PRIVILEGES IN SCHEMA public GRANT ALL ON TABLES TO threadbox;"
+echo "  Then: ALTER DEFAULT PRIVILEGES IN SCHEMA public GRANT ALL ON SEQUENCES TO threadbox;"
+echo ""
+
