@@ -111,10 +111,11 @@ let EmailAccountsController = EmailAccountsController_1 = class EmailAccountsCon
             };
         }
         catch (error) {
+            const errorMessage = error instanceof Error ? error.message : 'Failed to ingest emails. Please check your credentials and try again.';
             return {
                 success: false,
                 ingested: 0,
-                message: error.message || 'Failed to ingest emails. Please check your credentials and try again.',
+                message: errorMessage,
             };
         }
     }

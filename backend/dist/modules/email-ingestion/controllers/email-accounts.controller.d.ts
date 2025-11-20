@@ -24,12 +24,20 @@ export declare class EmailAccountsController {
             id: string;
         };
     }): Promise<import("../entities/email-account.entity").EmailAccount>;
-    update(id: string, updateDto: UpdateEmailAccountDto, req: any): Promise<import("../entities/email-account.entity").EmailAccount | {
+    update(id: string, updateDto: UpdateEmailAccountDto, req: {
+        user: {
+            id: string;
+        };
+    }): Promise<import("../entities/email-account.entity").EmailAccount | {
         error: boolean;
         message: string;
         details: string | undefined;
     }>;
-    remove(id: string, req: any): Promise<{
+    remove(id: string, req: {
+        user: {
+            id: string;
+        };
+    }): Promise<{
         success: boolean;
     }>;
     ingest(id: string, req: {
@@ -39,6 +47,6 @@ export declare class EmailAccountsController {
     }, since?: string): Promise<{
         success: boolean;
         ingested: number;
-        message: any;
+        message: string;
     }>;
 }
