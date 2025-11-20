@@ -1,5 +1,7 @@
 import { EmailsService } from './emails.service';
 import { UserEmailsService } from './services/user-emails.service';
+import { GlobalRole } from '../users/entities/user.entity';
+import { Email } from './entities/email.entity';
 import { EmailFilterDto } from './dto/email-filter.dto';
 import { BulkUpdateDto } from './dto/bulk-update.dto';
 import { ResetEmailsDto } from './dto/reset-emails.dto';
@@ -10,8 +12,13 @@ export declare class EmailsController {
     private readonly authService;
     private readonly logger;
     constructor(emailsService: EmailsService, userEmailsService: UserEmailsService, authService: AuthService);
-    findAll(filters: EmailFilterDto, req: any): Promise<import("./entities/email.entity").Email[]>;
-    findOne(id: string): Promise<import("./entities/email.entity").Email>;
+    findAll(filters: EmailFilterDto, req: {
+        user: {
+            id: string;
+            globalRole: GlobalRole;
+        };
+    }): Promise<Email[]>;
+    findOne(id: string): Promise<Email>;
     bulkUpdate(dto: BulkUpdateDto): Promise<{
         success: boolean;
         updated: number;

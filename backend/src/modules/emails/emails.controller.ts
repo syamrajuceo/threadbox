@@ -17,7 +17,7 @@ import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 import { RolesGuard } from '../auth/guards/roles.guard';
 import { Roles } from '../auth/decorators/roles.decorator';
 import { GlobalRole } from '../users/entities/user.entity';
-import { EmailStatus } from './entities/email.entity';
+import { Email, EmailStatus } from './entities/email.entity';
 import { EmailFilterDto } from './dto/email-filter.dto';
 import { BulkUpdateDto } from './dto/bulk-update.dto';
 import { ResetEmailsDto } from './dto/reset-emails.dto';
@@ -35,7 +35,7 @@ export class EmailsController {
   ) {}
 
   @Get()
-  findAll(@Query() filters: EmailFilterDto, @Request() req: any) {
+  findAll(@Query() filters: EmailFilterDto, @Request() req: { user: { id: string; globalRole: GlobalRole } }) {
     // Use UserEmailsService to respect visibility rules
     return this.userEmailsService.getVisibleEmails(
       req.user.id,
@@ -55,7 +55,7 @@ export class EmailsController {
 
   @Patch('bulk')
   async bulkUpdate(@Body() dto: BulkUpdateDto) {
-    const updates: any = {};
+    const updates: Partial<Email> = {};
     if (dto.projectId) updates.projectId = dto.projectId;
     if (dto.assignedToId) updates.assignedToId = dto.assignedToId;
     if (dto.status) updates.status = dto.status;

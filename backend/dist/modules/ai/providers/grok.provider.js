@@ -187,7 +187,7 @@ Important: Use the EXACT Project ID from the list above. Do not invent IDs.`;
     parseSpamResponse(data) {
         try {
             let content = data.choices?.[0]?.message?.content || '{}';
-            content = content.trim();
+            content = String(content).trim();
             if (content.startsWith('```json')) {
                 content = content.replace(/```json\n?/g, '').replace(/```\n?/g, '');
             }
@@ -202,7 +202,7 @@ Important: Use the EXACT Project ID from the list above. Do not invent IDs.`;
             const isSpam = parsed.isSpam === true || parsed.isSpam === 'true';
             const confidence = Math.max(0, Math.min(1, parseFloat(String(parsed.confidence || 0)) || 0));
             const reason = parsed.reason || 'No reason provided';
-            this.logger.debug(`Spam classification: isSpam=${isSpam}, confidence=${confidence}, reason=${reason}`);
+            this.logger.debug(`Spam classification: isSpam=${isSpam}, confidence=${confidence}, reason=${String(reason)}`);
             return {
                 isSpam,
                 confidence,
@@ -222,7 +222,7 @@ Important: Use the EXACT Project ID from the list above. Do not invent IDs.`;
     parseProjectResponse(data, projects) {
         try {
             let content = data.choices?.[0]?.message?.content || '{}';
-            content = content.trim();
+            content = String(content).trim();
             if (content.startsWith('```json')) {
                 content = content.replace(/```json\n?/g, '').replace(/```\n?/g, '');
             }
@@ -236,9 +236,9 @@ Important: Use the EXACT Project ID from the list above. Do not invent IDs.`;
             const parsed = JSON.parse(content);
             const projectId = parsed.projectId || null;
             const confidence = Math.max(0, Math.min(1, parseFloat(String(parsed.confidence || 0)) || 0));
-            this.logger.debug(`Project classification: projectId=${projectId}, confidence=${confidence}, reason=${parsed.reason || 'No reason'}`);
+            this.logger.debug(`Project classification: projectId=${String(projectId)}, confidence=${confidence}, reason=${String(parsed.reason || 'No reason')}`);
             if (projectId && !projects.find((p) => p.id === projectId)) {
-                this.logger.warn(`Invalid project ID returned by AI: ${projectId}. Available projects: ${projects.map((p) => p.id).join(', ')}`);
+                this.logger.warn(`Invalid project ID returned by AI: ${String(projectId)}. Available projects: ${projects.map((p) => String(p.id)).join(', ')}`);
                 return {
                     projectId: null,
                     confidence: 0,

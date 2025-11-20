@@ -483,7 +483,6 @@ Rules:
             };
         }
         catch (error) {
-            const responseTime = Date.now() - startTime;
             this.logger.error('AI connection test failed:', error);
             const errorWithResponse = error;
             if (errorWithResponse.response?.status === 401) {

@@ -115,7 +115,7 @@ export class OutlookProvider implements IEmailProvider {
       .api(`/me/messages/${messageId}/attachments/${attachmentId}`)
       .get();
 
-    return Buffer.from(attachment.contentBytes, 'base64');
+    return Buffer.from(String(attachment.contentBytes), 'base64');
   }
 }
 

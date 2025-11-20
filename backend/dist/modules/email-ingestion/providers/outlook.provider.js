@@ -95,7 +95,7 @@ let OutlookProvider = OutlookProvider_1 = class OutlookProvider {
         const attachment = await this.client
             .api(`/me/messages/${messageId}/attachments/${attachmentId}`)
             .get();
-        return Buffer.from(attachment.contentBytes, 'base64');
+        return Buffer.from(String(attachment.contentBytes), 'base64');
     }
 };
 exports.OutlookProvider = OutlookProvider;

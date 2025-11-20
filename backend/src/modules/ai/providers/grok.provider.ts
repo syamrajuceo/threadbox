@@ -224,12 +224,12 @@ Respond ONLY with valid JSON in this exact format (no markdown, no code blocks, 
 Important: Use the EXACT Project ID from the list above. Do not invent IDs.`;
   }
 
-  private parseSpamResponse(data: any): SpamClassificationResult {
+  private parseSpamResponse(data: { choices?: Array<{ message?: { content?: string } }> }): SpamClassificationResult {
     try {
-      let content = data.choices?.[0]?.message?.content || '{}';
+      let content: string = data.choices?.[0]?.message?.content || '{}';
       
       // Clean up the response - remove markdown code blocks if present
-      content = content.trim();
+      content = String(content).trim();
       if (content.startsWith('```json')) {
         content = content.replace(/```json\n?/g, '').replace(/```\n?/g, '');
       } else if (content.startsWith('```')) {
@@ -252,7 +252,7 @@ Important: Use the EXACT Project ID from the list above. Do not invent IDs.`;
       const confidence = Math.max(0, Math.min(1, parseFloat(String(parsed.confidence || 0)) || 0));
       const reason = parsed.reason || 'No reason provided';
 
-      this.logger.debug(`Spam classification: isSpam=${isSpam}, confidence=${confidence}, reason=${reason}`);
+      this.logger.debug(`Spam classification: isSpam=${isSpam}, confidence=${confidence}, reason=${String(reason)}`);
 
       return {
         isSpam,
@@ -271,14 +271,14 @@ Important: Use the EXACT Project ID from the list above. Do not invent IDs.`;
   }
 
   private parseProjectResponse(
-    data: any,
+    data: { choices?: Array<{ message?: { content?: string } }> },
     projects: Array<{ id: string }>,
   ): ProjectClassificationResult {
     try {
-      let content = data.choices?.[0]?.message?.content || '{}';
+      let content: string = data.choices?.[0]?.message?.content || '{}';
 
       // Clean up the response - remove markdown code blocks if present
-      content = content.trim();
+      content = String(content).trim();
       if (content.startsWith('```json')) {
         content = content.replace(/```json\n?/g, '').replace(/```\n?/g, '');
       } else if (content.startsWith('```')) {
@@ -301,13 +301,13 @@ Important: Use the EXACT Project ID from the list above. Do not invent IDs.`;
       const confidence = Math.max(0, Math.min(1, parseFloat(String(parsed.confidence || 0)) || 0));
 
       this.logger.debug(
-        `Project classification: projectId=${projectId}, confidence=${confidence}, reason=${parsed.reason || 'No reason'}`,
+        `Project classification: projectId=${String(projectId)}, confidence=${confidence}, reason=${String(parsed.reason || 'No reason')}`,
       );
 
       // Validate project ID exists
       if (projectId && !projects.find((p) => p.id === projectId)) {
         this.logger.warn(
-          `Invalid project ID returned by AI: ${projectId}. Available projects: ${projects.map((p) => p.id).join(', ')}`,
+          `Invalid project ID returned by AI: ${String(projectId)}. Available projects: ${projects.map((p) => String(p.id)).join(', ')}`,
         );
         return {
           projectId: null,
