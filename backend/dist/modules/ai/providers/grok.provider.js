@@ -110,11 +110,13 @@ let GrokProvider = GrokProvider_1 = class GrokProvider {
         }
         catch (error) {
             this.logger.error('Error classifying project with Grok:', error);
-            this.logger.error('Error details:', error.response?.data || error.message);
+            const errorWithResponse = error;
+            const errorMessage = errorWithResponse.message || 'Unknown error';
+            this.logger.error('Error details:', errorWithResponse.response?.data || errorMessage);
             return {
                 projectId: null,
                 confidence: 0,
-                reason: `AI service error: ${error.message || 'Unknown error'}`,
+                reason: `AI service error: ${errorMessage}`,
             };
         }
     }
@@ -193,7 +195,7 @@ Important: Use the EXACT Project ID from the list above. Do not invent IDs.`;
                 content = content.replace(/```\n?/g, '');
             }
             const jsonMatch = content.match(/\{[\s\S]*\}/);
-            if (jsonMatch) {
+            if (jsonMatch && jsonMatch[0]) {
                 content = jsonMatch[0];
             }
             const parsed = JSON.parse(content);
@@ -228,7 +230,7 @@ Important: Use the EXACT Project ID from the list above. Do not invent IDs.`;
                 content = content.replace(/```\n?/g, '');
             }
             const jsonMatch = content.match(/\{[\s\S]*\}/);
-            if (jsonMatch) {
+            if (jsonMatch && jsonMatch[0]) {
                 content = jsonMatch[0];
             }
             const parsed = JSON.parse(content);

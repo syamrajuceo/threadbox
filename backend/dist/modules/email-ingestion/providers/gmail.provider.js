@@ -202,7 +202,7 @@ let GmailProvider = GmailProvider_1 = class GmailProvider {
     }
     extractBody(part, bodyData) {
         if (part.body?.data) {
-            const content = Buffer.from(part.body.data, 'base64').toString();
+            const content = Buffer.from(String(part.body.data), 'base64').toString();
             if (part.mimeType === 'text/html') {
                 bodyData.bodyHtml = content;
             }
@@ -237,7 +237,7 @@ let GmailProvider = GmailProvider_1 = class GmailProvider {
             messageId,
             id: attachmentId,
         });
-        return Buffer.from(response.data.data, 'base64');
+        return Buffer.from(String(response.data.data), 'base64');
     }
 };
 exports.GmailProvider = GmailProvider;

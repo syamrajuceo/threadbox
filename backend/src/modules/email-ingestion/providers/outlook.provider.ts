@@ -62,7 +62,7 @@ export class OutlookProvider implements IEmailProvider {
 
       const response = await request.get();
       const messages = response.value || [];
-      allMessages.push(...messages.map((msg: any) => this.parseOutlookMessage(msg)));
+      allMessages.push(...messages.map((msg: Record<string, unknown>) => this.parseOutlookMessage(msg)));
 
       nextLink = response['@odata.nextLink'];
       
@@ -101,7 +101,7 @@ export class OutlookProvider implements IEmailProvider {
             filename: att.name,
             contentType: att.contentType,
             size: att.size,
-            content: Buffer.from(att.contentBytes || '', 'base64'),
+            content: Buffer.from(String(att.contentBytes || ''), 'base64'),
           }))
         : [],
     };

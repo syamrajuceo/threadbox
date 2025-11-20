@@ -273,8 +273,8 @@ function GlobalResetSection() {
       setResult({
         success: false,
         message:
-          error.response?.data?.message ||
-          error.message ||
+          errorWithResponse.response?.data?.message ||
+          errorWithResponse.message ||
           'Failed to reset emails. Please check your password and try again.',
       });
     } finally {

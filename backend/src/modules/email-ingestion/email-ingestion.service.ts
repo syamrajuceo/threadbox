@@ -32,7 +32,7 @@ export class EmailIngestionService {
     }
   }
 
-  private createProvider(config: any): IEmailProvider {
+  private createProvider(config: EmailProviderConfig): IEmailProvider {
     switch (config.provider) {
       case 'gmail':
         return new GmailProvider(config);

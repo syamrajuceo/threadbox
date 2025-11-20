@@ -28,7 +28,7 @@ export interface UpdateEmailAccountDto {
   name?: string;
   provider?: EmailProvider;
   account?: string;
-  credentials?: any;
+  credentials?: Record<string, unknown>;
   redirectUri?: string;
   isActive?: boolean;
 }

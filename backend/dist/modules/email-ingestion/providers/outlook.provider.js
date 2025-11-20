@@ -86,7 +86,7 @@ let OutlookProvider = OutlookProvider_1 = class OutlookProvider {
                     filename: att.name,
                     contentType: att.contentType,
                     size: att.size,
-                    content: Buffer.from(att.contentBytes || '', 'base64'),
+                    content: Buffer.from(String(att.contentBytes || ''), 'base64'),
                 }))
                 : [],
         };

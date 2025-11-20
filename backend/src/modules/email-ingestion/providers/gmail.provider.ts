@@ -279,7 +279,7 @@ export class GmailProvider implements IEmailProvider {
 
   private extractBody(part: any, bodyData: { body: string; bodyHtml: string }): void {
     if (part.body?.data) {
-      const content = Buffer.from(part.body.data, 'base64').toString();
+      const content = Buffer.from(String(part.body.data), 'base64').toString();
       if (part.mimeType === 'text/html') {
         bodyData.bodyHtml = content;
       } else if (part.mimeType === 'text/plain') {
@@ -321,7 +321,7 @@ export class GmailProvider implements IEmailProvider {
       id: attachmentId,
     });
 
-    return Buffer.from(response.data.data, 'base64');
+    return Buffer.from(String(response.data.data), 'base64');
   }
 }
 

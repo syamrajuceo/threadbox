@@ -580,17 +580,18 @@ Rules:
       };
     } catch (error: unknown) {
       this.logger.error('Error parsing combined classification response:', error);
+      const errorMessage = error instanceof Error ? error.message : 'Unknown error';
       this.logger.error('Raw response:', JSON.stringify(data, null, 2));
       return {
         spamClassification: {
           category: 'not_spam',
           confidence: 0,
-          reason: 'Failed to parse AI response',
+          reason: `Failed to parse AI response: ${errorMessage}`,
         },
         projectClassification: {
           projectId: null,
           confidence: 0,
-          reason: 'Failed to parse AI response',
+          reason: `Failed to parse AI response: ${errorMessage}`,
         },
       };
     }
