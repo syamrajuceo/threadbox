@@ -112,7 +112,7 @@ export class IncomingReviewService {
     } else if (spamStatus === EmailSpamStatus.NOT_SPAM) {
       // Admin marked as not spam - only set as NOT_SPAM if project is assigned
       // If no project, keep as POSSIBLE_SPAM until project is assigned
-      if ((email as Email).projectId) {
+      if (email.projectId) {
         // Project is assigned - mark as NOT_SPAM
         updateData.isUnassigned = false;
       } else {
@@ -124,7 +124,7 @@ export class IncomingReviewService {
       // Admin marked as possible spam - mark as unassigned
       updateData.isUnassigned = true;
       // Clear project if assigned
-      if ((email as Email).projectId) {
+      if (email.projectId) {
         updateData.projectId = null;
       }
     }

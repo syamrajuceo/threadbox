@@ -97,17 +97,26 @@ let ImapProvider = ImapProvider_1 = class ImapProvider {
                                     if (!addressObj)
                                         return [];
                                     if (Array.isArray(addressObj)) {
-                                        return addressObj.flatMap((addr) => Array.isArray(addr.value)
+                                        return addressObj
+                                            .flatMap((addr) => Array.isArray(addr.value)
                                             ? addr.value.map((a) => a.address || '')
                                             : addr.value
-                                                ? [addr.value.address || '']
-                                                : []).filter((addr) => Boolean(addr));
+                                                ? [
+                                                    addr.value
+                                                        .address || '',
+                                                ]
+                                                : [])
+                                            .filter((addr) => Boolean(addr));
                                     }
                                     const addrObj = addressObj;
                                     if (addrObj.value) {
                                         return Array.isArray(addrObj.value)
-                                            ? addrObj.value.map((a) => a.address || '').filter((addr) => Boolean(addr))
-                                            : [addrObj.value.address || ''].filter((addr) => Boolean(addr));
+                                            ? addrObj.value
+                                                .map((a) => a.address || '')
+                                                .filter((addr) => Boolean(addr))
+                                            : [
+                                                addrObj.value.address || '',
+                                            ].filter((addr) => Boolean(addr));
                                     }
                                     return [];
                                 };

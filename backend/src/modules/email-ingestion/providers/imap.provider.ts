@@ -105,19 +105,37 @@ export class ImapProvider implements IEmailProvider {
                 const extractAddresses = (addressObj: unknown): string[] => {
                   if (!addressObj) return [];
                   if (Array.isArray(addressObj)) {
-                    return addressObj.flatMap((addr: { value?: Array<{ address?: string }> | { address?: string } }) =>
-                      Array.isArray(addr.value)
-                        ? addr.value.map((a: { address?: string }) => a.address || '')
-                        : addr.value
-                          ? [(addr.value as { address?: string }).address || '']
-                          : [],
-                    ).filter((addr): addr is string => Boolean(addr));
+                    return addressObj
+                      .flatMap(
+                        (addr: {
+                          value?:
+                            | Array<{ address?: string }>
+                            | { address?: string };
+                        }) =>
+                          Array.isArray(addr.value)
+                            ? addr.value.map(
+                                (a: { address?: string }) => a.address || '',
+                              )
+                            : addr.value
+                              ? [
+                                  (addr.value as { address?: string })
+                                    .address || '',
+                                ]
+                              : [],
+                      )
+                      .filter((addr): addr is string => Boolean(addr));
                   }
-                  const addrObj = addressObj as { value?: Array<{ address?: string }> | { address?: string } };
+                  const addrObj = addressObj as {
+                    value?: Array<{ address?: string }> | { address?: string };
+                  };
                   if (addrObj.value) {
                     return Array.isArray(addrObj.value)
-                      ? addrObj.value.map((a: { address?: string }) => a.address || '').filter((addr): addr is string => Boolean(addr))
-                      : [(addrObj.value as { address?: string }).address || ''].filter((addr): addr is string => Boolean(addr));
+                      ? addrObj.value
+                          .map((a: { address?: string }) => a.address || '')
+                          .filter((addr): addr is string => Boolean(addr))
+                      : [
+                          (addrObj.value as { address?: string }).address || '',
+                        ].filter((addr): addr is string => Boolean(addr));
                   }
                   return [];
                 };

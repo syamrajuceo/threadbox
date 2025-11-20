@@ -56,7 +56,7 @@ let OutlookProvider = OutlookProvider_1 = class OutlookProvider {
                     request = request.filter(filter);
                 }
             }
-            const response = await request.get();
+            const response = (await request.get());
             const messages = response.value || [];
             allMessages.push(...messages.map((msg) => this.parseOutlookMessage(msg)));
             nextLink = response['@odata.nextLink'];
@@ -78,12 +78,18 @@ let OutlookProvider = OutlookProvider_1 = class OutlookProvider {
             id: String(message.id || ''),
             subject: String(message.subject || ''),
             body: body?.content || '',
-            bodyHtml: body?.contentType === 'html' ? (body.content || '') : '',
+            bodyHtml: body?.contentType === 'html' ? body.content || '' : '',
             fromAddress: from?.emailAddress?.address || '',
             fromName: from?.emailAddress?.name || '',
-            toAddresses: toRecipients?.map((r) => r.emailAddress?.address || '').filter((addr) => Boolean(addr)) || [],
-            ccAddresses: ccRecipients?.map((r) => r.emailAddress?.address || '').filter((addr) => Boolean(addr)) || [],
-            bccAddresses: bccRecipients?.map((r) => r.emailAddress?.address || '').filter((addr) => Boolean(addr)) || [],
+            toAddresses: toRecipients
+                ?.map((r) => r.emailAddress?.address || '')
+                .filter((addr) => Boolean(addr)) || [],
+            ccAddresses: ccRecipients
+                ?.map((r) => r.emailAddress?.address || '')
+                .filter((addr) => Boolean(addr)) || [],
+            bccAddresses: bccRecipients
+                ?.map((r) => r.emailAddress?.address || '')
+                .filter((addr) => Boolean(addr)) || [],
             receivedAt: new Date(String(message.receivedDateTime || Date.now())),
             messageId: String(message.internetMessageId || ''),
             inReplyTo: headers?.find((h) => h.name === 'In-Reply-To')?.value || '',
@@ -99,9 +105,9 @@ let OutlookProvider = OutlookProvider_1 = class OutlookProvider {
         };
     }
     async downloadAttachment(messageId, attachmentId) {
-        const attachment = await this.client
+        const attachment = (await this.client
             .api(`/me/messages/${messageId}/attachments/${attachmentId}`)
-            .get();
+            .get());
         return Buffer.from(String(attachment.contentBytes || ''), 'base64');
     }
 };
