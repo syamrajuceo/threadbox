@@ -16,13 +16,14 @@ export const aiApi = {
     try {
       const response = await apiClient.get<AIConnectionTestResult>('/ai/test-connection');
       return response.data;
-    } catch (error: any) {
+    } catch (error: unknown) {
       // Handle network errors
+      const errorWithResponse = error as { response?: { data?: { message?: string; error?: string } }; message?: string };
       return {
         success: false,
         connected: false,
-        message: error.response?.data?.message || error.message || 'Failed to test AI connection',
-        error: error.response?.data?.error,
+        message: errorWithResponse.response?.data?.message || errorWithResponse.message || 'Failed to test AI connection',
+        error: errorWithResponse.response?.data?.error,
       };
     }
   },

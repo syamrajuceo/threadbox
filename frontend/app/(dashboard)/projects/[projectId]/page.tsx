@@ -1,9 +1,8 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { useParams, useRouter } from 'next/navigation';
+import { useParams } from 'next/navigation';
 import Link from 'next/link';
-import { useAuthStore } from '@/lib/store/authStore';
 import { apiClient } from '@/lib/api/client';
 import { emailsApi, Email } from '@/lib/api/emails';
 import {
@@ -21,8 +20,6 @@ import {
   SelectItem,
   Stack,
   Heading,
-  Button,
-  Close,
   InlineNotification,
 } from '@carbon/react';
 import { ArrowLeft } from '@carbon/icons-react';

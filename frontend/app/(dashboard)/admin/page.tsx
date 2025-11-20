@@ -268,7 +268,8 @@ function GlobalResetSection() {
       alert(
         `✅ Successfully deleted ${resetResult.deletedCount} email(s). The database has been reset.`,
       );
-    } catch (error: any) {
+    } catch (error: unknown) {
+      const errorWithResponse = error as { response?: { data?: { message?: string } }; message?: string };
       setResult({
         success: false,
         message:

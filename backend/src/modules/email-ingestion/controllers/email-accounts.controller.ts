@@ -32,7 +32,7 @@ export class EmailAccountsController {
   async create(
     @Body(new ValidationPipe({ whitelist: false, forbidNonWhitelisted: false }))
     createDto: CreateEmailAccountDto,
-    @Request() req: any,
+    @Request() req: { user: { id: string } },
   ) {
     try {
       this.logger.log(`Creating email account: ${createDto.name} (${createDto.provider})`);

@@ -30,7 +30,7 @@ export interface CreateMembershipDto {
 
 export const membershipsApi = {
   getAll: async (projectId?: string, userId?: string): Promise<Membership[]> => {
-    const params: any = {};
+    const params: Record<string, string> = {};
     if (projectId) params.projectId = projectId;
     if (userId) params.userId = userId;
     const response = await apiClient.get('/memberships', { params });

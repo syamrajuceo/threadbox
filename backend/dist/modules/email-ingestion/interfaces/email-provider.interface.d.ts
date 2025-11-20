@@ -23,7 +23,7 @@ export interface EmailAttachment {
 export interface EmailProviderConfig {
     provider: string;
     account: string;
-    credentials: any;
+    credentials: Record<string, unknown>;
 }
 export interface IEmailProvider {
     connect(): Promise<void>;

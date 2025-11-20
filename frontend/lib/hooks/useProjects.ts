@@ -13,8 +13,9 @@ export function useProjects() {
         const data = await projectsApi.getDashboard();
         setProjects(data);
         setError(null);
-      } catch (err: any) {
-        setError(err.response?.data?.message || 'Failed to load projects');
+      } catch (err: unknown) {
+        const errorWithResponse = err as { response?: { data?: { message?: string } } };
+        setError(errorWithResponse.response?.data?.message || 'Failed to load projects');
       } finally {
         setLoading(false);
       }
@@ -30,8 +31,9 @@ export function useProjects() {
         const data = await projectsApi.getDashboard();
         setProjects(data);
         setError(null);
-      } catch (err: any) {
-        setError(err.response?.data?.message || 'Failed to load projects');
+      } catch (err: unknown) {
+        const errorWithResponse = err as { response?: { data?: { message?: string } } };
+        setError(errorWithResponse.response?.data?.message || 'Failed to load projects');
       } finally {
         setLoading(false);
       }

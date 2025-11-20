@@ -22,7 +22,7 @@ import { useAuthStore } from '@/lib/store/authStore';
 interface NavItem {
   label: string;
   href: string;
-  icon: React.ComponentType<any>;
+  icon: React.ComponentType<{ size?: number; className?: string }>;
   children?: NavItem[];
 }
 

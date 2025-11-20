@@ -19,7 +19,7 @@ export interface CreateEmailAccountDto {
   name: string;
   provider: EmailProvider;
   account: string;
-  credentials: any;
+  credentials: Record<string, unknown>;
   redirectUri?: string;
   isActive?: boolean;
 }

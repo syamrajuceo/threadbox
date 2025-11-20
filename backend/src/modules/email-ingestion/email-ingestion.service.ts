@@ -7,7 +7,7 @@ import * as path from 'path';
 import { Email, EmailStatus, EmailSpamStatus } from '../emails/entities/email.entity';
 import { Attachment } from '../emails/entities/attachment.entity';
 import { EmailThread } from '../emails/entities/email-thread.entity';
-import { IEmailProvider, EmailMessage } from './interfaces/email-provider.interface';
+import { IEmailProvider, EmailMessage, EmailProviderConfig } from './interfaces/email-provider.interface';
 import { GmailProvider } from './providers/gmail.provider';
 import { OutlookProvider } from './providers/outlook.provider';
 import { ImapProvider } from './providers/imap.provider';
@@ -45,7 +45,7 @@ export class EmailIngestionService {
     }
   }
 
-  async ingestEmails(config: any, since?: Date): Promise<number> {
+  async ingestEmails(config: EmailProviderConfig, since?: Date): Promise<number> {
     this.logger.log(`Starting email ingestion for provider: ${config.provider}, account: ${config.account}`);
     if (since) {
       this.logger.log(`Date filter: Only fetching emails after ${since.toISOString()}`);

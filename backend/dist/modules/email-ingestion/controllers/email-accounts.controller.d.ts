@@ -5,7 +5,11 @@ export declare class EmailAccountsController {
     private readonly emailAccountsService;
     private readonly logger;
     constructor(emailAccountsService: EmailAccountsService);
-    create(createDto: CreateEmailAccountDto, req: any): Promise<import("../entities/email-account.entity").EmailAccount | {
+    create(createDto: CreateEmailAccountDto, req: {
+        user: {
+            id: string;
+        };
+    }): Promise<import("../entities/email-account.entity").EmailAccount | {
         error: boolean;
         message: string;
         details: string | undefined;

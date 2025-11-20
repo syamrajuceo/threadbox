@@ -70,7 +70,7 @@ export const projectManagerApi = {
   assignEmailToMultiple: async (
     emailId: string,
     userIds: string[],
-  ): Promise<any> => {
+  ): Promise<EmailAssignment[]> => {
     const response = await apiClient.post(
       `/assignments/email/${emailId}/assign-multiple`,
       { userIds },

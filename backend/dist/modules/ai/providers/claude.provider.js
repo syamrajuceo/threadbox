@@ -466,13 +466,14 @@ Rules:
             });
             const responseTime = Date.now() - startTime;
             let responseText = '';
-            if (response.data.content && Array.isArray(response.data.content)) {
-                responseText = response.data.content
+            const responseData = response.data;
+            if (responseData.content && Array.isArray(responseData.content)) {
+                responseText = responseData.content
                     .map((block) => block.text || '')
                     .join('');
             }
-            else if (response.data.content && typeof response.data.content === 'string') {
-                responseText = response.data.content;
+            else if (responseData.content && typeof responseData.content === 'string') {
+                responseText = responseData.content;
             }
             this.logger.log(`AI connection test successful. Response: ${responseText}, Time: ${responseTime}ms`);
             return {

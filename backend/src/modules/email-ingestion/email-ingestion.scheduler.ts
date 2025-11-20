@@ -2,6 +2,7 @@ import { Injectable, Logger } from '@nestjs/common';
 import { Cron, CronExpression } from '@nestjs/schedule';
 import { ConfigService } from '@nestjs/config';
 import { EmailIngestionService } from './email-ingestion.service';
+import { EmailProviderConfig } from './interfaces/email-provider.interface';
 
 @Injectable()
 export class EmailIngestionScheduler {
@@ -42,17 +43,17 @@ export class EmailIngestionScheduler {
     }
   }
 
-  private getEmailAccountsFromConfig(): any[] {
+  private getEmailAccountsFromConfig(): EmailProviderConfig[] {
     // This should be configured in your .env or a database table
     // For now, return empty array - you'll need to configure this
-    const accounts: any[] = [];
+    const accounts: EmailProviderConfig[] = [];
 
     // Example: Read from environment variables
     // You can store multiple accounts as JSON in env or use a database
     const gmailAccounts = this.configService.get<string>('GMAIL_ACCOUNTS');
     if (gmailAccounts) {
       try {
-        const parsed = JSON.parse(gmailAccounts);
+        const parsed = JSON.parse(gmailAccounts) as EmailProviderConfig[];
         accounts.push(...parsed);
       } catch (e) {
         this.logger.warn('Failed to parse GMAIL_ACCOUNTS from config');

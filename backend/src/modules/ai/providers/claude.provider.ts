@@ -626,12 +626,13 @@ Rules:
       
       // Extract response text
       let responseText = '';
-      if (response.data.content && Array.isArray(response.data.content)) {
-        responseText = response.data.content
+      const responseData = response.data as { content?: string | Array<{ text?: string }> };
+      if (responseData.content && Array.isArray(responseData.content)) {
+        responseText = responseData.content
           .map((block: { text?: string }) => block.text || '')
           .join('');
-      } else if (response.data.content && typeof response.data.content === 'string') {
-        responseText = response.data.content;
+      } else if (responseData.content && typeof responseData.content === 'string') {
+        responseText = responseData.content;
       }
 
       this.logger.log(`AI connection test successful. Response: ${responseText}, Time: ${responseTime}ms`);
