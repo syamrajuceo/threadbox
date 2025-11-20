@@ -72,7 +72,7 @@ export class EmailAccountsController {
     @Param('id') id: string,
     @Body(new ValidationPipe({ whitelist: false, forbidNonWhitelisted: false }))
     updateDto: UpdateEmailAccountDto,
-    @Request() req: any,
+    @Request() req: { user: { id: string } },
   ) {
     try {
       this.logger.log(`Updating email account: ${id}`);
