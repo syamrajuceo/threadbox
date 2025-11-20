@@ -7,6 +7,6 @@ export declare class AssignmentsController {
     constructor(assignmentsService: AssignmentsService);
     assignEmail(id: string, dto: AssignEmailDto, req: any): Promise<import("../emails/entities/email.entity").Email>;
     assignEmailToMultiple(id: string, dto: AssignEmailMultipleDto, req: any): Promise<import("./entities/email-assignment.entity").EmailAssignment[]>;
-    getEmailAssignments(id: string): Promise<import("./entities/email-assignment.entity").EmailAssignment[]>;
+    getEmailAssignments(id: string): Promise<EmailAssignment[]>;
     updateStatus(id: string, dto: UpdateEmailStatusDto): Promise<import("../emails/entities/email.entity").Email>;
 }

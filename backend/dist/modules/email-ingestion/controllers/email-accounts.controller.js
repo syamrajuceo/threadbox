@@ -37,12 +37,16 @@ let EmailAccountsController = EmailAccountsController_1 = class EmailAccountsCon
         }
         catch (error) {
             this.logger.error('Error creating email account:', error);
-            this.logger.error('Error message:', error.message);
-            this.logger.error('Error stack:', error.stack);
+            const errorMessage = error instanceof Error ? error.message : 'Failed to create email account';
+            const errorStack = error instanceof Error ? error.stack : undefined;
+            this.logger.error('Error message:', errorMessage);
+            if (errorStack) {
+                this.logger.error('Error stack:', errorStack);
+            }
             return {
                 error: true,
-                message: error.message || 'Failed to create email account',
-                details: process.env.NODE_ENV === 'development' ? error.stack : undefined,
+                message: errorMessage,
+                details: process.env.NODE_ENV === 'development' ? errorStack : undefined,
             };
         }
     }

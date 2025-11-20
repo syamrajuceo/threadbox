@@ -39,27 +39,31 @@ export class EmailAccountsController {
       const account = await this.emailAccountsService.create(createDto, req.user.id);
       this.logger.log(`Email account created successfully: ${account.id}`);
       return account;
-    } catch (error: any) {
+    } catch (error: unknown) {
       this.logger.error('Error creating email account:', error);
-      this.logger.error('Error message:', error.message);
-      this.logger.error('Error stack:', error.stack);
+      const errorMessage = error instanceof Error ? error.message : 'Failed to create email account';
+      const errorStack = error instanceof Error ? error.stack : undefined;
+      this.logger.error('Error message:', errorMessage);
+      if (errorStack) {
+        this.logger.error('Error stack:', errorStack);
+      }
       
       // Return error response instead of throwing
       return {
         error: true,
-        message: error.message || 'Failed to create email account',
-        details: process.env.NODE_ENV === 'development' ? error.stack : undefined,
+        message: errorMessage,
+        details: process.env.NODE_ENV === 'development' ? errorStack : undefined,
       };
     }
   }
 
   @Get()
-  async findAll(@Request() req: any) {
+  async findAll(@Request() req: { user: { id: string } }) {
     return this.emailAccountsService.findAll(req.user.id);
   }
 
   @Get(':id')
-  async findOne(@Param('id') id: string, @Request() req: any) {
+  async findOne(@Param('id') id: string, @Request() req: { user: { id: string } }) {
     return this.emailAccountsService.findOne(id, req.user.id);
   }
 
@@ -98,7 +102,7 @@ export class EmailAccountsController {
   @Post(':id/ingest')
   async ingest(
     @Param('id') id: string,
-    @Request() req: any,
+    @Request() req: { user: { id: string } },
     @Query('since') since?: string,
   ) {
     try {

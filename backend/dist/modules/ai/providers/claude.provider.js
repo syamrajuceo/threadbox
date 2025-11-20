@@ -114,11 +114,13 @@ let ClaudeProvider = ClaudeProvider_1 = class ClaudeProvider {
         }
         catch (error) {
             this.logger.error('Error classifying project with Claude:', error);
-            this.logger.error('Error details:', error.response?.data || error.message);
+            const errorWithResponse = error;
+            const errorMessage = errorWithResponse.message || 'Unknown error';
+            this.logger.error('Error details:', errorWithResponse.response?.data || errorMessage);
             return {
                 projectId: null,
                 confidence: 0,
-                reason: `AI service error: ${error.message || 'Unknown error'}`,
+                reason: `AI service error: ${errorMessage}`,
             };
         }
     }

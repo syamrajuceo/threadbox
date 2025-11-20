@@ -13,11 +13,6 @@ import {
 } from '@/lib/api/project-manager';
 import { rolesApi, Role } from '@/lib/api/roles';
 import {
-  Tabs,
-  TabList,
-  Tab,
-  TabPanels,
-  TabPanel,
   Tile,
   Tag,
   Loading,

@@ -169,7 +169,8 @@ function AIConnectionTest() {
         message: testResult.message || 'Connection test completed',
         responseTime: testResult.details?.responseTime,
       });
-    } catch (error: any) {
+    } catch (error: unknown) {
+      const errorMessage = error instanceof Error ? error.message : 'Failed to test AI connection';
       setResult({
         success: false,
         message: error.response?.data?.message || error.message || 'Failed to test AI connection',

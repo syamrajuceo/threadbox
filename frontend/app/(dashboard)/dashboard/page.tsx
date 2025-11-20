@@ -1,7 +1,5 @@
 'use client';
 
-import { useAuthStore } from '@/lib/store/authStore';
-import { useRouter } from 'next/navigation';
 import { useProjects } from '@/lib/hooks/useProjects';
 import Link from 'next/link';
 import {
@@ -16,7 +14,6 @@ import {
 } from '@carbon/react';
 
 export default function DashboardPage() {
-  const router = useRouter();
   const { projects, loading, error } = useProjects();
 
   const formatDate = (dateString: string) => {

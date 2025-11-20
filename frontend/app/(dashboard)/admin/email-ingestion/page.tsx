@@ -195,7 +195,7 @@ export default function EmailIngestionPage() {
       setShowNewAccountForm(false);
 
       await loadSavedAccounts();
-    } catch (error: any) {
+    } catch (error: unknown) {
       console.error('Error saving account or ingesting:', error);
       let errorMessage = 'Failed to save account or ingest emails';
       
@@ -225,10 +225,10 @@ export default function EmailIngestionPage() {
         message: 'Email account deleted successfully',
       });
     } catch (error: unknown) {
-      const errorMessage = error instanceof Error ? error.message : 'An error occurred';
+      const errorWithResponse = error as { response?: { data?: { message?: string } } };
       setResult({
         success: false,
-        message: error.response?.data?.message || 'Failed to delete account',
+        message: errorWithResponse.response?.data?.message || 'Failed to delete account',
       });
     }
   };
@@ -308,9 +308,9 @@ export default function EmailIngestionPage() {
 
       handleCancelEdit();
       await loadSavedAccounts();
-    } catch (error: any) {
+    } catch (error: unknown) {
       console.error('Error updating account:', error);
-      let errorMessage = 'Failed to update account';
+      const errorMessage = error instanceof Error ? error.message : 'Failed to update account';
       
       if (error.response) {
         errorMessage = error.response.data?.message || error.message || errorMessage;
@@ -369,7 +369,7 @@ export default function EmailIngestionPage() {
         <div>
           <Heading style={{ fontSize: '1.25rem', marginBottom: '0.5rem' }}>Saved Email Accounts</Heading>
           <p style={{ color: 'var(--cds-text-secondary)' }}>
-            Click "Ingest" to fetch emails from a saved account
+            Click &quot;Ingest&quot; to fetch emails from a saved account
           </p>
         </div>
 
@@ -576,8 +576,8 @@ export default function EmailIngestionPage() {
                           <ul style={{ marginLeft: '1.5rem', marginTop: '0.5rem' }}>
                             <li>If you used <strong>OAuth 2.0 Playground</strong> to get your refresh token, you MUST use: <code style={{ backgroundColor: 'var(--cds-layer-02)', padding: '0.125rem 0.25rem', borderRadius: '2px' }}>https://developers.google.com/oauthplayground</code></li>
                             <li>This redirect URI must match EXACTLY what you used in OAuth Playground</li>
-                            <li>It must also be added to your Google Cloud Console OAuth client's authorized redirect URIs</li>
-                            <li><strong>Common error:</strong> Using a different redirect URI will cause "unauthorized_client" error</li>
+                            <li>It must also be added to your Google Cloud Console OAuth client&apos;s authorized redirect URIs</li>
+                            <li><strong>Common error:</strong> Using a different redirect URI will cause &quot;unauthorized_client&quot; error</li>
                           </ul>
                         </div>
                       }
@@ -884,7 +884,6 @@ function GlobalResetSection() {
         `✅ Successfully deleted ${resetResult.deletedCount} email(s). The database has been reset.`,
       );
     } catch (error: unknown) {
-      const errorMessage = error instanceof Error ? error.message : 'An error occurred';
       setResult({
         success: false,
         message:

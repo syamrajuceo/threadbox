@@ -34,7 +34,7 @@ export default function MembershipsManagementPage() {
   const { user, isAuthenticated } = useAuthStore();
   const [memberships, setMemberships] = useState<Membership[]>([]);
   const [users, setUsers] = useState<User[]>([]);
-  const [projects, setProjects] = useState<any[]>([]);
+  const [projects, setProjects] = useState<{ id: string; name: string }[]>([]);
   const [selectedProject, setSelectedProject] = useState<string>('');
   const [loading, setLoading] = useState(true);
   const [showCreateModal, setShowCreateModal] = useState(false);

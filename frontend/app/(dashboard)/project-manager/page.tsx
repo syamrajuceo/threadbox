@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { useAuthStore } from '@/lib/store/authStore';
@@ -39,7 +39,7 @@ export default function ProjectManagerDashboard() {
       return;
     }
     loadProjects();
-  }, [isAuthenticated, router]);
+  }, [isAuthenticated, router, loadProjects]);
 
   useEffect(() => {
     if (selectedProject) {
@@ -48,7 +48,7 @@ export default function ProjectManagerDashboard() {
     }
   }, [selectedProject]);
 
-  const loadProjects = async () => {
+  const loadProjects = useCallback(async () => {
     try {
       setLoading(true);
       const data = await projectManagerApi.getManagedProjects();
@@ -61,7 +61,7 @@ export default function ProjectManagerDashboard() {
     } finally {
       setLoading(false);
     }
-  };
+  }, [selectedProject]);
 
   const loadEmails = async (projectId: string) => {
     try {

@@ -143,14 +143,16 @@ export class ClaudeProvider implements IAIProvider {
       );
 
       return result;
-    } catch (error: any) {
+    } catch (error: unknown) {
       this.logger.error('Error classifying project with Claude:', error);
-      this.logger.error('Error details:', error.response?.data || error.message);
+      const errorWithResponse = error as { response?: { data?: unknown }; message?: string };
+      const errorMessage = errorWithResponse.message || 'Unknown error';
+      this.logger.error('Error details:', errorWithResponse.response?.data || errorMessage);
       // Fallback: return null project if AI is unavailable
       return {
         projectId: null,
         confidence: 0,
-        reason: `AI service error: ${error.message || 'Unknown error'}`,
+        reason: `AI service error: ${errorMessage}`,
       };
     }
   }
@@ -230,7 +232,7 @@ Respond ONLY with valid JSON in this exact format (no markdown, no code blocks, 
 Important: Use the EXACT Project ID from the list above. Do not invent IDs.`;
   }
 
-  private parseSpamResponse(data: any): SpamClassificationResult {
+  private parseSpamResponse(data: { content?: string | Array<{ text?: string }> }): SpamClassificationResult {
     try {
       let content = '';
       
@@ -238,7 +240,7 @@ Important: Use the EXACT Project ID from the list above. Do not invent IDs.`;
       if (data.content && Array.isArray(data.content)) {
         // Claude returns content as an array of content blocks
         content = data.content
-          .map((block: any) => block.text || '')
+          .map((block: { text?: string }) => block.text || '')
           .join('');
       } else if (data.content && typeof data.content === 'string') {
         content = data.content;
@@ -294,7 +296,7 @@ Important: Use the EXACT Project ID from the list above. Do not invent IDs.`;
   }
 
   private parseProjectResponse(
-    data: any,
+    data: { content?: string | Array<{ text?: string }> },
     projects: Array<{ id: string }>,
   ): ProjectClassificationResult {
     try {
@@ -304,7 +306,7 @@ Important: Use the EXACT Project ID from the list above. Do not invent IDs.`;
       if (data.content && Array.isArray(data.content)) {
         // Claude returns content as an array of content blocks
         content = data.content
-          .map((block: any) => block.text || '')
+          .map((block: { text?: string }) => block.text || '')
           .join('');
       } else if (data.content && typeof data.content === 'string') {
         content = data.content;
@@ -504,7 +506,7 @@ Rules:
   }
 
   private parseCombinedResponse(
-    data: any,
+    data: { content?: string | Array<{ text?: string }> },
     projects: Array<{ id: string }>,
   ): CombinedClassificationResult {
     try {
@@ -512,7 +514,7 @@ Rules:
 
       if (data.content && Array.isArray(data.content)) {
         content = data.content
-          .map((block: any) => block.text || '')
+          .map((block: { text?: string }) => block.text || '')
           .join('');
       } else if (data.content && typeof data.content === 'string') {
         content = data.content;
@@ -624,7 +626,7 @@ Rules:
       let responseText = '';
       if (response.data.content && Array.isArray(response.data.content)) {
         responseText = response.data.content
-          .map((block: any) => block.text || '')
+          .map((block: { text?: string }) => block.text || '')
           .join('');
       } else if (response.data.content && typeof response.data.content === 'string') {
         responseText = response.data.content;

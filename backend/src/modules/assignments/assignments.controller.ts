@@ -44,7 +44,7 @@ export class AssignmentsController {
   }
 
   @Get('email/:id/assignments')
-  getEmailAssignments(@Param('id') id: string) {
+  getEmailAssignments(@Param('id') id: string): Promise<EmailAssignment[]> {
     return this.assignmentsService.getEmailAssignments(id);
   }
 

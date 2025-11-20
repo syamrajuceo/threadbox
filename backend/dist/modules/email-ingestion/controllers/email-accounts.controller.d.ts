@@ -7,11 +7,19 @@ export declare class EmailAccountsController {
     constructor(emailAccountsService: EmailAccountsService);
     create(createDto: CreateEmailAccountDto, req: any): Promise<import("../entities/email-account.entity").EmailAccount | {
         error: boolean;
-        message: any;
-        details: any;
+        message: string;
+        details: string | undefined;
     }>;
-    findAll(req: any): Promise<import("../entities/email-account.entity").EmailAccount[]>;
-    findOne(id: string, req: any): Promise<import("../entities/email-account.entity").EmailAccount>;
+    findAll(req: {
+        user: {
+            id: string;
+        };
+    }): Promise<import("../entities/email-account.entity").EmailAccount[]>;
+    findOne(id: string, req: {
+        user: {
+            id: string;
+        };
+    }): Promise<import("../entities/email-account.entity").EmailAccount>;
     update(id: string, updateDto: UpdateEmailAccountDto, req: any): Promise<import("../entities/email-account.entity").EmailAccount | {
         error: boolean;
         message: any;
@@ -20,7 +28,11 @@ export declare class EmailAccountsController {
     remove(id: string, req: any): Promise<{
         success: boolean;
     }>;
-    ingest(id: string, req: any, since?: string): Promise<{
+    ingest(id: string, req: {
+        user: {
+            id: string;
+        };
+    }, since?: string): Promise<{
         success: boolean;
         ingested: number;
         message: any;
