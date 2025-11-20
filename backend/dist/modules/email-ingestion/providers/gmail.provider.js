@@ -27,13 +27,13 @@ let GmailProvider = GmailProvider_1 = class GmailProvider {
     }
     async connect() {
         try {
-            const credentials = this.config.credentials;
-            const oauth2Client = new googleapis_1.google.auth.OAuth2(credentials.clientId, credentials.clientSecret, credentials.redirectUri);
+            const gmailCredentials = this.config.credentials;
+            const oauth2Client = new googleapis_1.google.auth.OAuth2(gmailCredentials.clientId, gmailCredentials.clientSecret, gmailCredentials.redirectUri);
             oauth2Client.setCredentials({
-                refresh_token: credentials.refreshToken,
+                refresh_token: gmailCredentials.refreshToken,
             });
-            const { credentials } = await oauth2Client.refreshAccessToken();
-            oauth2Client.setCredentials(credentials);
+            const { credentials: refreshedCredentials } = await oauth2Client.refreshAccessToken();
+            oauth2Client.setCredentials(refreshedCredentials);
             this.gmail = googleapis_1.google.gmail({ version: 'v1', auth: oauth2Client });
         }
         catch (error) {

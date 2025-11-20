@@ -28,25 +28,25 @@ export class GmailProvider implements IEmailProvider {
 
   async connect(): Promise<void> {
     try {
-      const credentials = this.config.credentials as {
+      const gmailCredentials = this.config.credentials as {
         clientId: string;
         clientSecret: string;
         redirectUri: string;
         refreshToken: string;
       };
       const oauth2Client = new google.auth.OAuth2(
-        credentials.clientId,
-        credentials.clientSecret,
-        credentials.redirectUri,
+        gmailCredentials.clientId,
+        gmailCredentials.clientSecret,
+        gmailCredentials.redirectUri,
       );
 
       oauth2Client.setCredentials({
-        refresh_token: credentials.refreshToken,
+        refresh_token: gmailCredentials.refreshToken,
       });
 
       // Try to refresh the token to validate credentials
-      const { credentials } = await oauth2Client.refreshAccessToken();
-      oauth2Client.setCredentials(credentials);
+      const { credentials: refreshedCredentials } = await oauth2Client.refreshAccessToken();
+      oauth2Client.setCredentials(refreshedCredentials);
 
       this.gmail = google.gmail({ version: 'v1', auth: oauth2Client });
     } catch (error: unknown) {
