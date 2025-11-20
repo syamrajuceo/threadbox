@@ -149,7 +149,7 @@ jobs:
             --region $REGION \
             --allow-unauthenticated \
             --add-cloudsql-instances=threadbox-production:us-central1:threadbox-db \
-            --set-env-vars="DATABASE_HOST=/cloudsql/threadbox-production:us-central1:threadbox-db,DATABASE_PORT=${{ secrets.DATABASE_PORT }},DATABASE_USER=${{ secrets.DATABASE_USER }},DATABASE_PASSWORD=${{ secrets.DATABASE_PASSWORD }},DATABASE_NAME=${{ secrets.DATABASE_NAME }},JWT_SECRET=${{ secrets.JWT_SECRET }},JWT_EXPIRES_IN=${{ secrets.JWT_EXPIRES_IN }},CLAUDE_API_KEY=${{ secrets.CLAUDE_API_KEY }},NODE_ENV=production" \
+            --set-env-vars="PORT=8080,DATABASE_HOST=/cloudsql/threadbox-production:us-central1:threadbox-db,DATABASE_PORT=${{ secrets.DATABASE_PORT }},DATABASE_USER=${{ secrets.DATABASE_USER }},DATABASE_PASSWORD=${{ secrets.DATABASE_PASSWORD }},DATABASE_NAME=${{ secrets.DATABASE_NAME }},JWT_SECRET=${{ secrets.JWT_SECRET }},JWT_EXPIRES_IN=${{ secrets.JWT_EXPIRES_IN }},CLAUDE_API_KEY=${{ secrets.CLAUDE_API_KEY }},NODE_ENV=production" \
             --memory 1Gi \
             --cpu 1 \
             --timeout 300 \
