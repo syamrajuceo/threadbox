@@ -55,6 +55,18 @@ export default function RolesManagementPage() {
     permissions: [],
   });
 
+  const loadProjects = useCallback(async () => {
+    try {
+      const data = await projectsApi.getAll();
+      setProjects(data);
+      if (data.length > 0 && !selectedProject) {
+        setSelectedProject(data[0].id);
+      }
+    } catch (error) {
+      console.error('Failed to load projects:', error);
+    }
+  }, [selectedProject]);
+
   useEffect(() => {
     if (!isAuthenticated) {
       router.push('/login');
@@ -72,18 +84,6 @@ export default function RolesManagementPage() {
       loadRoles(selectedProject);
     } else {
       loadRoles();
-    }
-  }, [selectedProject]);
-
-  const loadProjects = useCallback(async () => {
-    try {
-      const data = await projectsApi.getAll();
-      setProjects(data);
-      if (data.length > 0 && !selectedProject) {
-        setSelectedProject(data[0].id);
-      }
-    } catch (error) {
-      console.error('Failed to load projects:', error);
     }
   }, [selectedProject]);
 
