@@ -125,14 +125,15 @@ export class IncomingReviewService {
 
   async bulkAssignToProject(emailIds: string[], projectId: string) {
     // Admin bulk assigned to project - mark as NOT_SPAM since they're project-related
+    const updateData: Partial<Email> = { 
+      projectId, 
+      isUnassigned: false,
+      spamStatus: EmailSpamStatus.NOT_SPAM, // Admin assigned = project-related = not spam
+    };
     await this.emailsRepository
       .createQueryBuilder()
       .update(Email)
-      .set({ 
-        projectId, 
-        isUnassigned: false,
-        spamStatus: EmailSpamStatus.NOT_SPAM, // Admin assigned = project-related = not spam
-      } as Partial<Email>)
+      .set(updateData)
       .where('id IN (:...ids)', { ids: emailIds })
       .execute();
   }
