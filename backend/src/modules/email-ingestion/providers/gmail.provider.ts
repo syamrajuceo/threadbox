@@ -350,7 +350,7 @@ export class GmailProvider implements IEmailProvider {
   private extractAttachments(
     part: {
       filename?: string;
-      body?: { attachmentId?: string; size?: number };
+      body?: { attachmentId?: string; size?: number; data?: string };
       mimeType?: string;
       parts?: unknown[];
     },
@@ -370,7 +370,7 @@ export class GmailProvider implements IEmailProvider {
         this.extractAttachments(
           subPart as {
             filename?: string;
-            body?: { attachmentId?: string; size?: number };
+            body?: { attachmentId?: string; size?: number; data?: string };
             mimeType?: string;
             parts?: unknown[];
           },
