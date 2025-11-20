@@ -36,7 +36,8 @@ let GmailProvider = GmailProvider_1 = class GmailProvider {
             this.gmail = googleapis_1.google.gmail({ version: 'v1', auth: oauth2Client });
         }
         catch (error) {
-            if (error.message?.includes('unauthorized_client') || error.code === 401) {
+            const errorWithMessage = error;
+            if (errorWithMessage.message?.includes('unauthorized_client') || errorWithMessage.code === 401) {
                 throw new Error('OAuth unauthorized_client error. Please verify:\n' +
                     '1. The redirect URI matches exactly what is configured in Google Cloud Console\n' +
                     '2. The redirect URI used to obtain the refresh token matches the one you entered\n' +

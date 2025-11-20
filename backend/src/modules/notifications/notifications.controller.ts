@@ -16,7 +16,7 @@ export class NotificationsController {
   constructor(private readonly notificationsService: NotificationsService) {}
 
   @Get()
-  findAll(@Request() req, @Query('unreadOnly') unreadOnly?: string) {
+  findAll(@Request() req: { user: { id: string } }, @Query('unreadOnly') unreadOnly?: string) {
     return this.notificationsService.findAll(
       req.user.id,
       unreadOnly === 'true',
@@ -24,17 +24,17 @@ export class NotificationsController {
   }
 
   @Get('unread-count')
-  getUnreadCount(@Request() req) {
+  getUnreadCount(@Request() req: { user: { id: string } }) {
     return this.notificationsService.getUnreadCount(req.user.id);
   }
 
   @Patch(':id/read')
-  markAsRead(@Param('id') id: string, @Request() req) {
+  markAsRead(@Param('id') id: string, @Request() req: { user: { id: string } }) {
     return this.notificationsService.markAsRead(id, req.user.id);
   }
 
   @Patch('mark-all-read')
-  markAllAsRead(@Request() req) {
+  markAllAsRead(@Request() req: { user: { id: string } }) {
     return this.notificationsService.markAllAsRead(req.user.id);
   }
 }

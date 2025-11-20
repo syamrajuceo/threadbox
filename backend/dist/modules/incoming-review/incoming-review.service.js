@@ -107,14 +107,15 @@ let IncomingReviewService = IncomingReviewService_1 = class IncomingReviewServic
         return this.emailsService.update(emailId, updateData);
     }
     async bulkAssignToProject(emailIds, projectId) {
-        await this.emailsRepository
-            .createQueryBuilder()
-            .update(email_entity_1.Email)
-            .set({
+        const updateData = {
             projectId,
             isUnassigned: false,
             spamStatus: email_entity_1.EmailSpamStatus.NOT_SPAM,
-        })
+        };
+        await this.emailsRepository
+            .createQueryBuilder()
+            .update(email_entity_1.Email)
+            .set(updateData)
             .where('id IN (:...ids)', { ids: emailIds })
             .execute();
     }

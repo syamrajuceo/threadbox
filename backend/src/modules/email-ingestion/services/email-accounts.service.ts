@@ -62,10 +62,14 @@ export class EmailAccountsService {
       this.logger.log(`Email account created successfully with ID: ${savedAccount.id}`);
       
       return savedAccount;
-    } catch (error: any) {
+    } catch (error: unknown) {
       this.logger.error('Error in create method:', error);
-      this.logger.error('Error message:', error.message);
-      this.logger.error('Error stack:', error.stack);
+      const errorMessage = error instanceof Error ? error.message : 'Unknown error';
+      this.logger.error('Error message:', errorMessage);
+      const errorStack = error instanceof Error ? error.stack : undefined;
+      if (errorStack) {
+        this.logger.error('Error stack:', errorStack);
+      }
       throw error;
     }
   }
@@ -134,9 +138,10 @@ export class EmailAccountsService {
       const credentials = JSON.parse(decrypted);
       this.logger.debug(`Successfully decrypted credentials for account ${id}`);
       return credentials;
-    } catch (error: any) {
+    } catch (error: unknown) {
       this.logger.error(`Error decrypting credentials for account ${id}:`, error);
-      this.logger.error(`Error details: ${error.message}`);
+      const errorMessage = error instanceof Error ? error.message : 'Unknown error';
+      this.logger.error(`Error details: ${errorMessage}`);
       throw new Error(`Failed to decrypt credentials: ${error.message}`);
     }
   }
@@ -174,7 +179,7 @@ export class EmailAccountsService {
 
       this.logger.log(`Successfully ingested ${count} emails from account ${accountId}`);
       return count;
-    } catch (error: any) {
+    } catch (error: unknown) {
       this.logger.error(`Error ingesting from account ${accountId}:`, error);
       // Re-throw with more context
       if (error.message?.includes('decrypt')) {

@@ -4,7 +4,11 @@ import { UpdateNoteDto } from './dto/update-note.dto';
 export declare class NotesController {
     private readonly notesService;
     constructor(notesService: NotesService);
-    create(createNoteDto: CreateNoteDto, req: any): Promise<import("./entities/note.entity").Note>;
+    create(createNoteDto: CreateNoteDto, req: {
+        user: {
+            id: string;
+        };
+    }): Promise<import("./entities/note.entity").Note>;
     findAll(emailId: string): Promise<import("./entities/note.entity").Note[]>;
     findOne(id: string): Promise<import("./entities/note.entity").Note>;
     update(id: string, updateNoteDto: UpdateNoteDto): Promise<import("./entities/note.entity").Note>;

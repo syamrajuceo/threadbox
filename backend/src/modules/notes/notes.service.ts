@@ -41,7 +41,7 @@ export class NotesService {
           await this.notificationsService.notifyMention(
             mentionedUser.id,
             createNoteDto.emailId,
-            (email as any)?.projectId || '',
+            String((email as { projectId?: string })?.projectId || ''),
             authorName,
           );
         }

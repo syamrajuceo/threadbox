@@ -29,7 +29,7 @@ export default function IncomingReviewPage() {
   const { user } = useAuthStore();
   const [emails, setEmails] = useState<UnassignedEmail[]>([]);
   const [loading, setLoading] = useState(true);
-  const [projects, setProjects] = useState<any[]>([]);
+  const [projects, setProjects] = useState<{ id: string; name: string }[]>([]);
   const [processingAI, setProcessingAI] = useState(false);
   const [processingEmailId, setProcessingEmailId] = useState<string | null>(null);
   const [emailDetail, setEmailDetail] = useState<Email | null>(null);
@@ -110,7 +110,7 @@ export default function IncomingReviewPage() {
       await Promise.all(assignments);
       setPendingAssignments(new Map());
       await loadData();
-    } catch (error: any) {
+    } catch (error: unknown) {
       console.error('Failed to apply changes:', error);
       alert(
         `Failed to apply changes: ${
@@ -366,7 +366,7 @@ export default function IncomingReviewPage() {
                         </p>
                       )}
                     </div>
-                    <Tag type={getSpamTagType(email.spamStatus) as any} size="sm">
+                    <Tag type={getSpamTagType(email.spamStatus) as 'red' | 'yellow' | 'green' | 'gray'} size="sm">
                       {email.spamStatus.replace('_', ' ')}
                     </Tag>
                   </div>

@@ -102,7 +102,7 @@ export class EmailsController {
         message: `Successfully deleted ${result.deletedCount} email(s)`,
         deletedCount: result.deletedCount,
       };
-    } catch (error: any) {
+    } catch (error: unknown) {
       this.logger.error('Error resetting emails:', error);
       throw error;
     }

@@ -119,20 +119,20 @@ export class ImapProvider implements IEmailProvider {
                   body: parsed.text || '',
                   bodyHtml: parsed.html || '',
                   fromAddress: (() => {
-                    const from = parsed.from as any;
+                    const from = parsed.from as { value?: Array<{ address?: string }> | { address?: string } } | undefined;
                     if (!from) return '';
                     if (Array.isArray(from.value)) {
                       return from.value[0]?.address || '';
                     }
-                    return from.value?.address || '';
+                    return (from.value as { address?: string })?.address || '';
                   })(),
                   fromName: (() => {
-                    const from = parsed.from as any;
+                    const from = parsed.from as { value?: Array<{ name?: string }> | { name?: string } } | undefined;
                     if (!from) return '';
                     if (Array.isArray(from.value)) {
                       return from.value[0]?.name || '';
                     }
-                    return from.value?.name || '';
+                    return (from.value as { name?: string })?.name || '';
                   })(),
                   toAddresses: extractAddresses(parsed.to),
                   ccAddresses: extractAddresses(parsed.cc),

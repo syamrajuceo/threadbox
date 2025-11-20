@@ -52,7 +52,7 @@ export class EmailIngestionController {
         ingested: count,
         message: `Successfully ingested ${count} email(s)`,
       };
-    } catch (error: any) {
+    } catch (error: unknown) {
       this.logger.error('Email ingestion error:', error);
       
       // Return error response instead of throwing exception

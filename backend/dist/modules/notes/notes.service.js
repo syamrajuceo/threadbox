@@ -44,7 +44,7 @@ let NotesService = class NotesService {
             try {
                 const mentionedUser = await this.usersService.findByEmail(mention);
                 if (mentionedUser && mentionedUser.id !== authorId) {
-                    await this.notificationsService.notifyMention(mentionedUser.id, createNoteDto.emailId, email?.projectId || '', authorName);
+                    await this.notificationsService.notifyMention(mentionedUser.id, createNoteDto.emailId, String(email?.projectId || ''), authorName);
                 }
             }
             catch (error) {

@@ -39,8 +39,9 @@ export class GmailProvider implements IEmailProvider {
       oauth2Client.setCredentials(credentials);
 
       this.gmail = google.gmail({ version: 'v1', auth: oauth2Client });
-    } catch (error: any) {
-      if (error.message?.includes('unauthorized_client') || error.code === 401) {
+    } catch (error: unknown) {
+      const errorWithMessage = error as { message?: string; code?: number };
+      if (errorWithMessage.message?.includes('unauthorized_client') || errorWithMessage.code === 401) {
         throw new Error(
           'OAuth unauthorized_client error. Please verify:\n' +
           '1. The redirect URI matches exactly what is configured in Google Cloud Console\n' +
@@ -109,7 +110,7 @@ export class GmailProvider implements IEmailProvider {
           return this.gmail.users.messages.list(requestParams);
         },
         'list messages'
-      ) as any; // Type assertion needed for Gmail API response
+      ) as { data: { messages?: Array<{ id: string; threadId: string }> }; nextPageToken?: string };
 
       const messages = response.data.messages || [];
       pageToken = response.data.nextPageToken;
@@ -186,7 +187,7 @@ export class GmailProvider implements IEmailProvider {
     for (let attempt = 0; attempt <= retries; attempt++) {
       try {
         return await fn();
-      } catch (error: any) {
+      } catch (error: unknown) {
         lastError = error;
         
         // Check if it's a quota error

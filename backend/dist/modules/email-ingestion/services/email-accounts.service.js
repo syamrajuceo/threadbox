@@ -63,8 +63,12 @@ let EmailAccountsService = EmailAccountsService_1 = class EmailAccountsService {
         }
         catch (error) {
             this.logger.error('Error in create method:', error);
-            this.logger.error('Error message:', error.message);
-            this.logger.error('Error stack:', error.stack);
+            const errorMessage = error instanceof Error ? error.message : 'Unknown error';
+            this.logger.error('Error message:', errorMessage);
+            const errorStack = error instanceof Error ? error.stack : undefined;
+            if (errorStack) {
+                this.logger.error('Error stack:', errorStack);
+            }
             throw error;
         }
     }
@@ -116,7 +120,8 @@ let EmailAccountsService = EmailAccountsService_1 = class EmailAccountsService {
         }
         catch (error) {
             this.logger.error(`Error decrypting credentials for account ${id}:`, error);
-            this.logger.error(`Error details: ${error.message}`);
+            const errorMessage = error instanceof Error ? error.message : 'Unknown error';
+            this.logger.error(`Error details: ${errorMessage}`);
             throw new Error(`Failed to decrypt credentials: ${error.message}`);
         }
     }
