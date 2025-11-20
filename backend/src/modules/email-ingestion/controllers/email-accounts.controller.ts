@@ -98,7 +98,7 @@ export class EmailAccountsController {
   }
 
   @Delete(':id')
-  async remove(@Param('id') id: string, @Request() req: any) {
+  async remove(@Param('id') id: string, @Request() req: { user: { id: string } }) {
     await this.emailAccountsService.remove(id, req.user.id);
     return { success: true };
   }
