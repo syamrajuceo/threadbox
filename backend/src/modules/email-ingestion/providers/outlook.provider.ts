@@ -88,7 +88,7 @@ export class OutlookProvider implements IEmailProvider {
         message.ccRecipients?.map((r: any) => r.emailAddress.address) || [],
       bccAddresses:
         message.bccRecipients?.map((r: any) => r.emailAddress.address) || [],
-      receivedAt: new Date(message.receivedDateTime),
+      receivedAt: new Date(String(message.receivedDateTime)),
       messageId: message.internetMessageId || '',
       inReplyTo: message.internetMessageHeaders?.find(
         (h: any) => h.name === 'In-Reply-To',
