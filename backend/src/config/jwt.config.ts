@@ -8,7 +8,8 @@ export const getJwtConfig = (
   return {
     secret: configService.get<string>('JWT_SECRET', 'your-secret-key'),
     signOptions: {
-      expiresIn: expiresIn as unknown as string | number, // JWT accepts string or number for expiresIn
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      expiresIn: expiresIn as any, // JWT accepts string or number for expiresIn, but type system expects StringValue
     },
   };
 };
