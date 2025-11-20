@@ -45,33 +45,6 @@ export default function MembershipsManagementPage() {
   });
   const [availableRoles, setAvailableRoles] = useState<Role[]>([]);
 
-  useEffect(() => {
-    if (!isAuthenticated) {
-      router.push('/login');
-      return;
-    }
-    if (user?.globalRole !== 'super_user') {
-      router.push('/dashboard');
-      return;
-    }
-    loadData();
-  }, [isAuthenticated, user, router, loadData]);
-
-  useEffect(() => {
-    if (selectedProject) {
-      loadMemberships(selectedProject);
-      loadRoles(selectedProject);
-    } else {
-      loadMemberships();
-    }
-  }, [selectedProject]);
-
-  useEffect(() => {
-    if (formData.projectId) {
-      loadRoles(formData.projectId);
-    }
-  }, [formData.projectId]);
-
   const loadData = useCallback(async () => {
     try {
       setLoading(true);
