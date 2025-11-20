@@ -142,11 +142,12 @@ export class EmailAccountsController {
         ingested: count,
         message: `Successfully ingested ${count} email(s)`,
       };
-    } catch (error: any) {
+    } catch (error: unknown) {
+      const errorMessage = error instanceof Error ? error.message : 'Failed to ingest emails. Please check your credentials and try again.';
       return {
         success: false,
         ingested: 0,
-        message: error.message || 'Failed to ingest emails. Please check your credentials and try again.',
+        message: errorMessage,
       };
     }
   }
