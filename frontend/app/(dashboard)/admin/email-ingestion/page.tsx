@@ -5,12 +5,10 @@ import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { useAuthStore } from '@/lib/store/authStore';
 import {
-  emailIngestionApi,
   EmailProvider,
   GmailCredentials,
   OutlookCredentials,
   ImapCredentials,
-  IngestEmailsRequest,
 } from '@/lib/api/email-ingestion';
 import {
   emailAccountsApi,
@@ -34,7 +32,7 @@ import {
   FormGroup,
   Modal,
 } from '@carbon/react';
-import { Calendar, ArrowLeft, Add, Edit, TrashCan, Checkmark, Warning } from '@carbon/icons-react';
+import { Calendar, ArrowLeft, Add, Edit, TrashCan, Warning } from '@carbon/icons-react';
 
 export default function EmailIngestionPage() {
   const router = useRouter();
@@ -115,8 +113,9 @@ export default function EmailIngestionPage() {
         message: response.message,
       });
       await loadSavedAccounts();
-    } catch (error: any) {
+    } catch (error: unknown) {
       console.error('Email ingestion error:', error);
+      const errorMessage = error instanceof Error ? error.message : 'Failed to ingest emails';
       
       let errorMessage = 'Failed to ingest emails';
       if (error.code === 'ECONNABORTED') {
@@ -148,7 +147,7 @@ export default function EmailIngestionPage() {
     setResult(null);
 
     try {
-      let credentials: any;
+      let credentials: GmailCredentials | OutlookCredentials | ImapCredentials | undefined;
       
       switch (provider) {
         case 'gmail':
@@ -175,8 +174,8 @@ export default function EmailIngestionPage() {
 
       const savedAccount = await emailAccountsApi.create(createDto);
       
-      if ((savedAccount as any).error) {
-        throw new Error((savedAccount as any).message || 'Failed to create email account');
+      if ('error' in savedAccount && savedAccount.error) {
+        throw new Error(('message' in savedAccount && savedAccount.message) || 'Failed to create email account');
       }
       
       const response = await emailAccountsApi.ingest(savedAccount.id, sinceDate || undefined);
@@ -225,7 +224,8 @@ export default function EmailIngestionPage() {
         success: true,
         message: 'Email account deleted successfully',
       });
-    } catch (error: any) {
+    } catch (error: unknown) {
+      const errorMessage = error instanceof Error ? error.message : 'An error occurred';
       setResult({
         success: false,
         message: error.response?.data?.message || 'Failed to delete account',
@@ -286,7 +286,7 @@ export default function EmailIngestionPage() {
         }
       }
 
-      const updateDto: any = {
+      const updateDto: Partial<CreateEmailAccountDto> & { credentials?: GmailCredentials | OutlookCredentials | ImapCredentials } = {
         name: accountName || account,
         provider,
         account,
@@ -883,7 +883,8 @@ function GlobalResetSection() {
       alert(
         `✅ Successfully deleted ${resetResult.deletedCount} email(s). The database has been reset.`,
       );
-    } catch (error: any) {
+    } catch (error: unknown) {
+      const errorMessage = error instanceof Error ? error.message : 'An error occurred';
       setResult({
         success: false,
         message:

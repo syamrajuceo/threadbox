@@ -15,8 +15,8 @@ export declare class AIController {
     } | {
         success: boolean;
         connected: boolean;
-        message: any;
-        error: any;
+        message: string;
+        error: string | undefined;
         details?: undefined;
     }>;
 }

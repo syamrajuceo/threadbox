@@ -36,11 +36,13 @@ let AIController = AIController_1 = class AIController {
         }
         catch (error) {
             this.logger.error('AI connection test failed:', error);
+            const errorMessage = error instanceof Error ? error.message : 'Failed to connect to AI service';
+            const errorStack = error instanceof Error ? error.stack : undefined;
             return {
                 success: false,
                 connected: false,
-                message: error.message || 'Failed to connect to AI service',
-                error: process.env.NODE_ENV === 'development' ? error.stack : undefined,
+                message: errorMessage,
+                error: process.env.NODE_ENV === 'development' ? errorStack : undefined,
             };
         }
     }

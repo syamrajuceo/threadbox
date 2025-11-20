@@ -1,10 +1,7 @@
 import * as crypto from 'crypto';
-import { ConfigService } from '@nestjs/config';
 
 const ALGORITHM = 'aes-256-gcm';
 const IV_LENGTH = 16;
-const SALT_LENGTH = 64;
-const TAG_LENGTH = 16;
 const KEY_LENGTH = 32;
 
 export class EncryptionUtil {

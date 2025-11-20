@@ -240,10 +240,14 @@ Important: Use the EXACT Project ID from the list above. Do not invent IDs.`;
         content = jsonMatch[0];
       }
       
-      const parsed = JSON.parse(content);
+      const parsed = JSON.parse(content) as {
+        isSpam?: boolean | string;
+        confidence?: number | string;
+        reason?: string;
+      };
 
       const isSpam = parsed.isSpam === true || parsed.isSpam === 'true';
-      const confidence = Math.max(0, Math.min(1, parseFloat(parsed.confidence) || 0));
+      const confidence = Math.max(0, Math.min(1, parseFloat(String(parsed.confidence || 0)) || 0));
       const reason = parsed.reason || 'No reason provided';
 
       this.logger.debug(`Spam classification: isSpam=${isSpam}, confidence=${confidence}, reason=${reason}`);
@@ -285,10 +289,14 @@ Important: Use the EXACT Project ID from the list above. Do not invent IDs.`;
         content = jsonMatch[0];
       }
 
-      const parsed = JSON.parse(content);
+      const parsed = JSON.parse(content) as {
+        projectId?: string | null;
+        confidence?: number | string;
+        reason?: string;
+      };
 
-      const projectId = parsed.projectId || null;
-      const confidence = Math.max(0, Math.min(1, parseFloat(parsed.confidence) || 0));
+      const projectId: string | null = parsed.projectId || null;
+      const confidence = Math.max(0, Math.min(1, parseFloat(String(parsed.confidence || 0)) || 0));
 
       this.logger.debug(
         `Project classification: projectId=${projectId}, confidence=${confidence}, reason=${parsed.reason || 'No reason'}`,

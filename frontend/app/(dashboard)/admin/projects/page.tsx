@@ -23,7 +23,7 @@ import {
   Tag,
   FormGroup,
 } from '@carbon/react';
-import { ArrowLeft, Add, Edit, TrashCan, Close } from '@carbon/icons-react';
+import { ArrowLeft, Add, Edit, TrashCan } from '@carbon/icons-react';
 
 export default function ProjectsManagementPage() {
   const router = useRouter();

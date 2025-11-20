@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { useAuthStore } from '@/lib/store/authStore';
@@ -65,7 +65,7 @@ export default function RolesManagementPage() {
       return;
     }
     loadProjects();
-  }, [isAuthenticated, user, router]);
+  }, [isAuthenticated, user, router, loadProjects]);
 
   useEffect(() => {
     if (selectedProject) {
@@ -75,7 +75,7 @@ export default function RolesManagementPage() {
     }
   }, [selectedProject]);
 
-  const loadProjects = async () => {
+  const loadProjects = useCallback(async () => {
     try {
       const data = await projectsApi.getAll();
       setProjects(data);
@@ -85,7 +85,7 @@ export default function RolesManagementPage() {
     } catch (error) {
       console.error('Failed to load projects:', error);
     }
-  };
+  }, [selectedProject]);
 
   const loadRoles = async (projectId?: string) => {
     try {

@@ -67,7 +67,9 @@ let ClaudeProvider = ClaudeProvider_1 = class ClaudeProvider {
         }
         catch (error) {
             this.logger.error('Error classifying spam with Claude:', error);
-            this.logger.error('Error details:', error.response?.data || error.message);
+            const errorMessage = error instanceof Error ? error.message : 'Unknown error';
+            const errorResponse = error?.response?.data;
+            this.logger.error('Error details:', errorResponse || errorMessage);
             return {
                 isSpam: false,
                 confidence: 0,
@@ -206,7 +208,7 @@ Important: Use the EXACT Project ID from the list above. Do not invent IDs.`;
             }
             const parsed = JSON.parse(content);
             const isSpam = parsed.isSpam === true || parsed.isSpam === 'true';
-            const confidence = Math.max(0, Math.min(1, parseFloat(parsed.confidence) || 0));
+            const confidence = Math.max(0, Math.min(1, parseFloat(String(parsed.confidence || 0)) || 0));
             const reason = parsed.reason || 'No reason provided';
             this.logger.debug(`Spam classification: isSpam=${isSpam}, confidence=${confidence}, reason=${reason}`);
             return {
@@ -252,7 +254,7 @@ Important: Use the EXACT Project ID from the list above. Do not invent IDs.`;
             }
             const parsed = JSON.parse(content);
             const projectId = parsed.projectId || null;
-            const confidence = Math.max(0, Math.min(1, parseFloat(parsed.confidence) || 0));
+            const confidence = Math.max(0, Math.min(1, parseFloat(String(parsed.confidence || 0)) || 0));
             this.logger.debug(`Project classification: projectId=${projectId}, confidence=${confidence}, reason=${parsed.reason || 'No reason'}`);
             if (projectId && !projects.find((p) => p.id === projectId)) {
                 this.logger.warn(`Invalid project ID returned by AI: ${projectId}. Available projects: ${projects.map((p) => p.id).join(', ')}`);
@@ -401,9 +403,9 @@ Rules:
             }
             const parsed = JSON.parse(content);
             const spamCategory = parsed.spamCategory || 'not_spam';
-            const spamConfidence = Math.max(0, Math.min(1, parseFloat(parsed.spamConfidence) || 0));
+            const spamConfidence = Math.max(0, Math.min(1, parseFloat(String(parsed.spamConfidence || 0)) || 0));
             let projectId = parsed.projectId || null;
-            const projectConfidence = Math.max(0, Math.min(1, parseFloat(parsed.projectConfidence) || 0));
+            const projectConfidence = Math.max(0, Math.min(1, parseFloat(String(parsed.projectConfidence || 0)) || 0));
             if (projectId && !projects.find((p) => p.id === projectId)) {
                 this.logger.warn(`Invalid project ID returned by AI: ${projectId}. Available projects: ${projects.map((p) => p.id).join(', ')}`);
                 projectId = null;
@@ -477,18 +479,19 @@ Rules:
         catch (error) {
             const responseTime = Date.now() - startTime;
             this.logger.error('AI connection test failed:', error);
-            if (error.response?.status === 401) {
+            const errorWithResponse = error;
+            if (errorWithResponse.response?.status === 401) {
                 throw new Error('Invalid API key. Please check your CLAUDE_API_KEY.');
             }
-            else if (error.response?.status === 429) {
+            else if (errorWithResponse.response?.status === 429) {
                 throw new Error('Rate limit exceeded. Please try again later.');
             }
-            else if (error.code === 'ECONNREFUSED' || error.code === 'ENOTFOUND') {
+            else if (errorWithResponse.code === 'ECONNREFUSED' || errorWithResponse.code === 'ENOTFOUND') {
                 throw new Error('Cannot connect to Claude API. Please check your network connection.');
             }
             else {
-                throw new Error(error.response?.data?.error?.message ||
-                    error.message ||
+                throw new Error(errorWithResponse.response?.data?.error?.message ||
+                    errorWithResponse.message ||
                     'Failed to connect to Claude API');
             }
         }

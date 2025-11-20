@@ -16,7 +16,6 @@ import {
 } from '@carbon/react';
 
 export default function DashboardPage() {
-  const { user } = useAuthStore();
   const router = useRouter();
   const { projects, loading, error } = useProjects();
 

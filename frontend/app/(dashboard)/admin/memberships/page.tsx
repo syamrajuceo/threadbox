@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { useAuthStore } from '@/lib/store/authStore';
@@ -55,7 +55,7 @@ export default function MembershipsManagementPage() {
       return;
     }
     loadData();
-  }, [isAuthenticated, user, router]);
+  }, [isAuthenticated, user, router, loadData]);
 
   useEffect(() => {
     if (selectedProject) {
@@ -72,7 +72,7 @@ export default function MembershipsManagementPage() {
     }
   }, [formData.projectId]);
 
-  const loadData = async () => {
+  const loadData = useCallback(async () => {
     try {
       setLoading(true);
       const [usersData, projectsData] = await Promise.all([
@@ -89,7 +89,7 @@ export default function MembershipsManagementPage() {
     } finally {
       setLoading(false);
     }
-  };
+  }, [selectedProject]);
 
   const loadMemberships = async (projectId?: string) => {
     try {

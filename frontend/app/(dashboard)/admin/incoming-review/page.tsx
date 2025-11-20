@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { useAuthStore } from '@/lib/store/authStore';
@@ -21,9 +21,8 @@ import {
   Modal,
   Stack,
   Heading,
-  InlineNotification,
 } from '@carbon/react';
-import { ArrowLeft, Sparkles, Checkmark, Close, Watson } from '@carbon/icons-react';
+import { ArrowLeft, Sparkles, Checkmark, Watson } from '@carbon/icons-react';
 
 export default function IncomingReviewPage() {
   const router = useRouter();
@@ -49,9 +48,9 @@ export default function IncomingReviewPage() {
     setPendingAssignments(new Map());
     loadData();
     loadProjects();
-  }, [filters]);
+  }, [filters, loadData, loadProjects, user?.globalRole]);
 
-  const loadData = async () => {
+  const loadData = useCallback(async () => {
     try {
       setLoading(true);
       const data = await incomingReviewApi.getUnassignedEmails(filters);
@@ -63,14 +62,14 @@ export default function IncomingReviewPage() {
     }
   };
 
-  const loadProjects = async () => {
+  const loadProjects = useCallback(async () => {
     try {
       const data = await projectsApi.getDashboard();
       setProjects(data);
     } catch (error) {
       console.error('Failed to load projects:', error);
     }
-  };
+  }, []);
 
   const handleAssignToProject = (emailId: string, projectId: string) => {
     const newPendingAssignments = new Map(pendingAssignments);

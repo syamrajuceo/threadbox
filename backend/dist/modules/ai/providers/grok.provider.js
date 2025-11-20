@@ -198,7 +198,7 @@ Important: Use the EXACT Project ID from the list above. Do not invent IDs.`;
             }
             const parsed = JSON.parse(content);
             const isSpam = parsed.isSpam === true || parsed.isSpam === 'true';
-            const confidence = Math.max(0, Math.min(1, parseFloat(parsed.confidence) || 0));
+            const confidence = Math.max(0, Math.min(1, parseFloat(String(parsed.confidence || 0)) || 0));
             const reason = parsed.reason || 'No reason provided';
             this.logger.debug(`Spam classification: isSpam=${isSpam}, confidence=${confidence}, reason=${reason}`);
             return {
@@ -233,7 +233,7 @@ Important: Use the EXACT Project ID from the list above. Do not invent IDs.`;
             }
             const parsed = JSON.parse(content);
             const projectId = parsed.projectId || null;
-            const confidence = Math.max(0, Math.min(1, parseFloat(parsed.confidence) || 0));
+            const confidence = Math.max(0, Math.min(1, parseFloat(String(parsed.confidence || 0)) || 0));
             this.logger.debug(`Project classification: projectId=${projectId}, confidence=${confidence}, reason=${parsed.reason || 'No reason'}`);
             if (projectId && !projects.find((p) => p.id === projectId)) {
                 this.logger.warn(`Invalid project ID returned by AI: ${projectId}. Available projects: ${projects.map((p) => p.id).join(', ')}`);
