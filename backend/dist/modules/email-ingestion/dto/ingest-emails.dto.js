@@ -24,21 +24,22 @@ let CredentialsValidator = class CredentialsValidator {
         if (!credentials || typeof credentials !== 'object') {
             return false;
         }
+        const creds = credentials;
         switch (dto.provider) {
             case EmailProvider.GMAIL:
-                return (typeof credentials.clientId === 'string' &&
-                    typeof credentials.clientSecret === 'string' &&
-                    typeof credentials.redirectUri === 'string' &&
-                    typeof credentials.refreshToken === 'string');
+                return (typeof creds.clientId === 'string' &&
+                    typeof creds.clientSecret === 'string' &&
+                    typeof creds.redirectUri === 'string' &&
+                    typeof creds.refreshToken === 'string');
             case EmailProvider.OUTLOOK:
-                return (typeof credentials.clientId === 'string' &&
-                    typeof credentials.clientSecret === 'string' &&
-                    typeof credentials.redirectUri === 'string' &&
-                    typeof credentials.accessToken === 'string');
+                return (typeof creds.clientId === 'string' &&
+                    typeof creds.clientSecret === 'string' &&
+                    typeof creds.redirectUri === 'string' &&
+                    typeof creds.accessToken === 'string');
             case EmailProvider.IMAP:
-                return (typeof credentials.username === 'string' &&
-                    typeof credentials.password === 'string' &&
-                    typeof credentials.host === 'string');
+                return (typeof creds.username === 'string' &&
+                    typeof creds.password === 'string' &&
+                    typeof creds.host === 'string');
             default:
                 return false;
         }
@@ -86,7 +87,9 @@ __decorate([
     (0, class_transformer_1.Transform)(({ value }) => {
         if (!value)
             return undefined;
-        const date = typeof value === 'string' || typeof value === 'number' ? new Date(value) : value;
+        const date = typeof value === 'string' || typeof value === 'number'
+            ? new Date(value)
+            : value;
         return date instanceof Date ? date : undefined;
     }),
     __metadata("design:type", Date)

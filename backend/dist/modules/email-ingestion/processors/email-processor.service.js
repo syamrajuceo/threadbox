@@ -69,8 +69,7 @@ let EmailProcessorService = EmailProcessorService_1 = class EmailProcessorServic
                 const projectResult = combinedResult.projectClassification;
                 email.aiSuggestedProjectId = projectResult.projectId;
                 email.aiProjectConfidence = projectResult.confidence;
-                if (projectResult.projectId &&
-                    projectResult.confidence >= 0.5) {
+                if (projectResult.projectId && projectResult.confidence >= 0.5) {
                     email.spamStatus = email_entity_1.EmailSpamStatus.NOT_SPAM;
                     email.projectId = projectResult.projectId;
                     email.isUnassigned = false;

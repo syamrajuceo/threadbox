@@ -30,4 +30,3 @@ import { AuthModule } from '../auth/auth.module';
   exports: [EmailsService, UserEmailsService],
 })
 export class EmailsModule {}
-

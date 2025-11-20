@@ -11,4 +11,3 @@ import { Membership } from './entities/membership.entity';
   exports: [MembershipsService],
 })
 export class MembershipsModule {}
-

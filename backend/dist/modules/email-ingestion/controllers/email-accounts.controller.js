@@ -37,7 +37,9 @@ let EmailAccountsController = EmailAccountsController_1 = class EmailAccountsCon
         }
         catch (error) {
             this.logger.error('Error creating email account:', error);
-            const errorMessage = error instanceof Error ? error.message : 'Failed to create email account';
+            const errorMessage = error instanceof Error
+                ? error.message
+                : 'Failed to create email account';
             const errorStack = error instanceof Error ? error.stack : undefined;
             this.logger.error('Error message:', errorMessage);
             if (errorStack) {
@@ -65,7 +67,9 @@ let EmailAccountsController = EmailAccountsController_1 = class EmailAccountsCon
         }
         catch (error) {
             this.logger.error('Error updating email account:', error);
-            const errorMessage = error instanceof Error ? error.message : 'Failed to update email account';
+            const errorMessage = error instanceof Error
+                ? error.message
+                : 'Failed to update email account';
             const errorStack = error instanceof Error ? error.stack : undefined;
             this.logger.error('Error message:', errorMessage);
             if (errorStack) {
@@ -111,7 +115,9 @@ let EmailAccountsController = EmailAccountsController_1 = class EmailAccountsCon
             };
         }
         catch (error) {
-            const errorMessage = error instanceof Error ? error.message : 'Failed to ingest emails. Please check your credentials and try again.';
+            const errorMessage = error instanceof Error
+                ? error.message
+                : 'Failed to ingest emails. Please check your credentials and try again.';
             return {
                 success: false,
                 ingested: 0,

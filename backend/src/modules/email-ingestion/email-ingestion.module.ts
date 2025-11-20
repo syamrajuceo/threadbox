@@ -18,7 +18,13 @@ import { UsersModule } from '../users/users.module';
 
 @Module({
   imports: [
-    TypeOrmModule.forFeature([Email, Attachment, EmailThread, EmailAccount, Project]),
+    TypeOrmModule.forFeature([
+      Email,
+      Attachment,
+      EmailThread,
+      EmailAccount,
+      Project,
+    ]),
     EmailsModule,
     AIModule,
     UsersModule,
@@ -34,4 +40,3 @@ import { UsersModule } from '../users/users.module';
   exports: [EmailIngestionService, EmailProcessorService, EmailAccountsService],
 })
 export class EmailIngestionModule {}
-

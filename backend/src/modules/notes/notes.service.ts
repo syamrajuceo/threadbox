@@ -93,4 +93,3 @@ export class NotesService {
     return [...new Set(mentions)]; // Remove duplicates
   }
 }
-

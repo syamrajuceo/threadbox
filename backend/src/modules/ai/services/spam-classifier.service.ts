@@ -24,11 +24,11 @@ export class SpamClassifierService {
       }
 
       const result = await this.aiProvider.classifySpam(cleanContent);
-      
+
       this.logger.debug(
         `Spam classification result: isSpam=${result.isSpam}, confidence=${result.confidence}`,
       );
-      
+
       return result;
     } catch (error) {
       this.logger.error('Error in spam classification:', error);
@@ -50,11 +50,10 @@ export class SpamClassifierService {
     // Flag for review if it's spam but confidence is between possible spam threshold and spam threshold
     // OR if it's not clearly spam but has some suspicious indicators (lower confidence spam)
     return (
-      (result.isSpam && 
-       result.confidence >= this.possibleSpamThreshold && 
-       result.confidence < this.spamThreshold) ||
+      (result.isSpam &&
+        result.confidence >= this.possibleSpamThreshold &&
+        result.confidence < this.spamThreshold) ||
       (!result.isSpam && result.confidence > 0.3) // Suspicious but not spam
     );
   }
 }
-

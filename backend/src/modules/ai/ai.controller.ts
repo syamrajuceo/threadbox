@@ -20,7 +20,7 @@ export class AIController {
       // Make a minimal test call - just ask for a single word response
       // This is extremely low cost (minimal tokens)
       const testResult = await this.claudeProvider.testConnection();
-      
+
       return {
         success: true,
         connected: true,
@@ -29,9 +29,12 @@ export class AIController {
       };
     } catch (error: unknown) {
       this.logger.error('AI connection test failed:', error);
-      const errorMessage = error instanceof Error ? error.message : 'Failed to connect to AI service';
+      const errorMessage =
+        error instanceof Error
+          ? error.message
+          : 'Failed to connect to AI service';
       const errorStack = error instanceof Error ? error.stack : undefined;
-      
+
       return {
         success: false,
         connected: false,
@@ -41,4 +44,3 @@ export class AIController {
     }
   }
 }
-

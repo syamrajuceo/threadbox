@@ -31,8 +31,10 @@ export class EmailAccountsService {
   ): Promise<EmailAccount> {
     try {
       this.logger.debug(`Creating email account for user ${userId}`);
-      this.logger.debug(`Provider: ${createDto.provider}, Account: ${createDto.account}`);
-      
+      this.logger.debug(
+        `Provider: ${createDto.provider}, Account: ${createDto.account}`,
+      );
+
       // Validate credentials object
       if (!createDto.credentials || typeof createDto.credentials !== 'object') {
         throw new Error('Credentials must be an object');
@@ -59,12 +61,15 @@ export class EmailAccountsService {
 
       this.logger.debug('Saving email account to database...');
       const savedAccount = await this.emailAccountsRepository.save(account);
-      this.logger.log(`Email account created successfully with ID: ${savedAccount.id}`);
-      
+      this.logger.log(
+        `Email account created successfully with ID: ${savedAccount.id}`,
+      );
+
       return savedAccount;
     } catch (error: unknown) {
       this.logger.error('Error in create method:', error);
-      const errorMessage = error instanceof Error ? error.message : 'Unknown error';
+      const errorMessage =
+        error instanceof Error ? error.message : 'Unknown error';
       this.logger.error('Error message:', errorMessage);
       const errorStack = error instanceof Error ? error.stack : undefined;
       if (errorStack) {
@@ -112,7 +117,8 @@ export class EmailAccountsService {
     if (updateDto.name) account.name = updateDto.name;
     if (updateDto.provider) account.provider = updateDto.provider;
     if (updateDto.account) account.account = updateDto.account;
-    if (updateDto.redirectUri !== undefined) account.redirectUri = updateDto.redirectUri;
+    if (updateDto.redirectUri !== undefined)
+      account.redirectUri = updateDto.redirectUri;
     if (updateDto.isActive !== undefined) account.isActive = updateDto.isActive;
 
     return this.emailAccountsRepository.save(account);
@@ -123,12 +129,9 @@ export class EmailAccountsService {
     await this.emailAccountsRepository.remove(account);
   }
 
-  async getDecryptedCredentials(
-    id: string,
-    userId: string,
-  ): Promise<any> {
+  async getDecryptedCredentials(id: string, userId: string): Promise<any> {
     const account = await this.findOne(id, userId);
-    
+
     try {
       this.logger.debug(`Decrypting credentials for account ${id}`);
       const decrypted = EncryptionUtil.decrypt(
@@ -139,8 +142,12 @@ export class EmailAccountsService {
       this.logger.debug(`Successfully decrypted credentials for account ${id}`);
       return credentials;
     } catch (error: unknown) {
-      this.logger.error(`Error decrypting credentials for account ${id}:`, error);
-      const errorMessage = error instanceof Error ? error.message : 'Unknown error';
+      this.logger.error(
+        `Error decrypting credentials for account ${id}:`,
+        error,
+      );
+      const errorMessage =
+        error instanceof Error ? error.message : 'Unknown error';
       this.logger.error(`Error details: ${errorMessage}`);
       throw new Error(`Failed to decrypt credentials: ${error.message}`);
     }
@@ -152,17 +159,21 @@ export class EmailAccountsService {
     since?: Date,
   ): Promise<number> {
     const account = await this.findOne(accountId, userId);
-    
+
     if (!account.isActive) {
       throw new Error('Email account is not active');
     }
 
-    this.logger.log(`Starting ingestion for account ${accountId} (${account.provider}: ${account.account})`);
+    this.logger.log(
+      `Starting ingestion for account ${accountId} (${account.provider}: ${account.account})`,
+    );
 
     try {
       const credentials = await this.getDecryptedCredentials(accountId, userId);
-      
-      this.logger.debug(`Decrypted credentials for ${account.provider} account`);
+
+      this.logger.debug(
+        `Decrypted credentials for ${account.provider} account`,
+      );
 
       const config = {
         provider: account.provider,
@@ -170,14 +181,19 @@ export class EmailAccountsService {
         credentials,
       };
 
-      const count = await this.emailIngestionService.ingestEmails(config, since);
+      const count = await this.emailIngestionService.ingestEmails(
+        config,
+        since,
+      );
 
       // Update last ingested info
       account.lastIngestedAt = new Date();
       account.lastIngestedCount = count;
       await this.emailAccountsRepository.save(account);
 
-      this.logger.log(`Successfully ingested ${count} emails from account ${accountId}`);
+      this.logger.log(
+        `Successfully ingested ${count} emails from account ${accountId}`,
+      );
       return count;
     } catch (error: unknown) {
       this.logger.error(`Error ingesting from account ${accountId}:`, error);
@@ -189,4 +205,3 @@ export class EmailAccountsService {
     }
   }
 }
-

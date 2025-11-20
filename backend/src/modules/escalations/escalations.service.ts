@@ -87,4 +87,3 @@ export class EscalationsService {
     return this.escalationsRepository.save(escalation);
   }
 }
-

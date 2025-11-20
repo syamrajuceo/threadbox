@@ -27,11 +27,20 @@ export interface IAIProvider {
   classifySpam(emailContent: string): Promise<SpamClassificationResult>;
   classifyProject(
     emailContent: string,
-    projectDescriptions: Array<{ id: string; name: string; description: string; keywords: string[] }>,
+    projectDescriptions: Array<{
+      id: string;
+      name: string;
+      description: string;
+      keywords: string[];
+    }>,
   ): Promise<ProjectClassificationResult>;
   classifyCombined(
     emailContent: string,
-    projectDescriptions: Array<{ id: string; name: string; description: string; keywords: string[] }>,
+    projectDescriptions: Array<{
+      id: string;
+      name: string;
+      description: string;
+      keywords: string[];
+    }>,
   ): Promise<CombinedClassificationResult>;
 }
-

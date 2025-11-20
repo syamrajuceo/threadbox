@@ -20,7 +20,10 @@ export class NotesController {
   constructor(private readonly notesService: NotesService) {}
 
   @Post()
-  create(@Body() createNoteDto: CreateNoteDto, @Request() req: { user: { id: string } }) {
+  create(
+    @Body() createNoteDto: CreateNoteDto,
+    @Request() req: { user: { id: string } },
+  ) {
     return this.notesService.create(createNoteDto, req.user.id);
   }
 
@@ -44,4 +47,3 @@ export class NotesController {
     return this.notesService.remove(id);
   }
 }
-

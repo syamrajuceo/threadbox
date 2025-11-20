@@ -38,4 +38,3 @@ export class EmailThread {
   @JoinColumn({ name: 'projectId' })
   project: Project;
 }
-

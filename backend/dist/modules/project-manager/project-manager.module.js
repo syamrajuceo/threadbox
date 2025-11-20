@@ -21,12 +21,7 @@ exports.ProjectManagerModule = ProjectManagerModule;
 exports.ProjectManagerModule = ProjectManagerModule = __decorate([
     (0, common_1.Module)({
         imports: [
-            typeorm_1.TypeOrmModule.forFeature([
-                membership_entity_1.Membership,
-                email_entity_1.Email,
-                user_entity_1.User,
-                email_assignment_entity_1.EmailAssignment,
-            ]),
+            typeorm_1.TypeOrmModule.forFeature([membership_entity_1.Membership, email_entity_1.Email, user_entity_1.User, email_assignment_entity_1.EmailAssignment]),
         ],
         controllers: [project_manager_controller_1.ProjectManagerController],
         providers: [project_manager_service_1.ProjectManagerService],

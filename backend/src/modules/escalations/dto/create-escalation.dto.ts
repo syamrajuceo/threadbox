@@ -8,4 +8,3 @@ export class CreateEscalationDto {
   @MinLength(10)
   message: string;
 }
-

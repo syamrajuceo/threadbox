@@ -1,10 +1,4 @@
-import {
-  IsString,
-  IsEnum,
-  IsOptional,
-  IsArray,
-  IsUUID,
-} from 'class-validator';
+import { IsString, IsEnum, IsOptional, IsArray, IsUUID } from 'class-validator';
 import { ProjectRoleType } from '../entities/role.entity';
 import { PermissionType } from '../entities/permission.entity';
 
@@ -27,4 +21,3 @@ export class CreateRoleDto {
   @IsEnum(PermissionType, { each: true })
   permissions?: PermissionType[];
 }
-

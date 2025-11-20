@@ -24,7 +24,10 @@ export class EscalationsController {
   constructor(private readonly escalationsService: EscalationsService) {}
 
   @Post()
-  create(@Body() createEscalationDto: CreateEscalationDto, @Request() req: { user: { id: string } }) {
+  create(
+    @Body() createEscalationDto: CreateEscalationDto,
+    @Request() req: { user: { id: string } },
+  ) {
     return this.escalationsService.create(createEscalationDto, req.user.id);
   }
 
@@ -52,4 +55,3 @@ export class EscalationsController {
     return this.escalationsService.review(id, reviewDto, req.user.id);
   }
 }
-

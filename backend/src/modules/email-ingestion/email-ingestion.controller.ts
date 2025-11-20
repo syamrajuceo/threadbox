@@ -4,10 +4,7 @@ import {
   Body,
   UseGuards,
   Get,
-  Query,
   ValidationPipe,
-  HttpException,
-  HttpStatus,
   Logger,
 } from '@nestjs/common';
 import { EmailIngestionService } from './email-ingestion.service';
@@ -16,7 +13,6 @@ import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 import { RolesGuard } from '../auth/guards/roles.guard';
 import { Roles } from '../auth/decorators/roles.decorator';
 import { GlobalRole } from '../users/entities/user.entity';
-import { Public } from '../auth/decorators/public.decorator';
 
 @Controller('email-ingestion')
 @UseGuards(JwtAuthGuard, RolesGuard)
@@ -24,9 +20,7 @@ import { Public } from '../auth/decorators/public.decorator';
 export class EmailIngestionController {
   private readonly logger = new Logger(EmailIngestionController.name);
 
-  constructor(
-    private readonly emailIngestionService: EmailIngestionService,
-  ) {}
+  constructor(private readonly emailIngestionService: EmailIngestionService) {}
 
   @Post('ingest')
   async ingestEmails(
@@ -40,8 +34,10 @@ export class EmailIngestionController {
         credentials: ingestDto.credentials,
       };
 
-      this.logger.log(`Ingesting emails for ${config.provider} account: ${config.account}`);
-      
+      this.logger.log(
+        `Ingesting emails for ${config.provider} account: ${config.account}`,
+      );
+
       const count = await this.emailIngestionService.ingestEmails(
         config,
         ingestDto.since,
@@ -54,23 +50,25 @@ export class EmailIngestionController {
       };
     } catch (error: unknown) {
       this.logger.error('Email ingestion error:', error);
-      
+
       // Return error response instead of throwing exception
       // This allows frontend to handle the error gracefully
+      const errorMessage = error instanceof Error ? error.message : 'Unknown error';
       return {
         success: false,
         ingested: 0,
-        message: error.message || 'Failed to ingest emails. Please check your credentials and try again.',
+        message:
+          errorMessage ||
+          'Failed to ingest emails. Please check your credentials and try again.',
       };
     }
   }
 
   @Get('status')
-  async getStatus() {
+  getStatus() {
     return {
       status: 'ready',
       message: 'Email ingestion service is ready',
     };
   }
 }
-

@@ -19,4 +19,3 @@ export class AppLogger extends Logger {
     super.debug(message, context);
   }
 }
-

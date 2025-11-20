@@ -50,4 +50,3 @@ export class RolesController {
     return this.rolesService.remove(id);
   }
 }
-

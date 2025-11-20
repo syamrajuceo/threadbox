@@ -61,7 +61,12 @@ export class IncomingReviewService {
   async assignToProject(emailId: string, projectId: string) {
     // Update project assignment but keep email visible in review
     // If projectId is empty, null, or undefined, unassign the email
-    if (!projectId || projectId === '' || projectId === 'null' || projectId === 'undefined') {
+    if (
+      !projectId ||
+      projectId === '' ||
+      projectId === 'null' ||
+      projectId === 'undefined'
+    ) {
       this.logger.log(`Unassigning email ${emailId} from project`);
       // Unassigning from project - mark as possible spam for review
       const updated = await this.emailsService.update(emailId, {
@@ -69,7 +74,9 @@ export class IncomingReviewService {
         isUnassigned: true,
         spamStatus: EmailSpamStatus.POSSIBLE_SPAM, // Default to possible spam when unassigned
       });
-      this.logger.log(`Email ${emailId} unassigned. New projectId: ${updated.projectId}`);
+      this.logger.log(
+        `Email ${emailId} unassigned. New projectId: ${updated.projectId}`,
+      );
       return updated;
     }
     this.logger.log(`Assigning email ${emailId} to project ${projectId}`);
@@ -79,7 +86,9 @@ export class IncomingReviewService {
       isUnassigned: false,
       spamStatus: EmailSpamStatus.NOT_SPAM, // Admin assigned = project-related = not spam
     });
-    this.logger.log(`Email ${emailId} assigned to project ${updated.projectId}`);
+    this.logger.log(
+      `Email ${emailId} assigned to project ${updated.projectId}`,
+    );
     return updated;
   }
 
@@ -93,9 +102,9 @@ export class IncomingReviewService {
   async markSpamStatus(emailId: string, spamStatus: EmailSpamStatus) {
     // Get current email to check if project is assigned
     const email = await this.emailsService.findOne(emailId);
-    
+
     const updateData: any = { spamStatus };
-    
+
     if (spamStatus === EmailSpamStatus.SPAM) {
       // Admin marked as spam - clear project assignment
       updateData.projectId = null;
@@ -119,14 +128,14 @@ export class IncomingReviewService {
         updateData.projectId = null;
       }
     }
-    
+
     return this.emailsService.update(emailId, updateData);
   }
 
   async bulkAssignToProject(emailIds: string[], projectId: string) {
     // Admin bulk assigned to project - mark as NOT_SPAM since they're project-related
-    const updateData: Partial<Email> = { 
-      projectId, 
+    const updateData: Partial<Email> = {
+      projectId,
       isUnassigned: false,
       spamStatus: EmailSpamStatus.NOT_SPAM, // Admin assigned = project-related = not spam
     };
@@ -150,7 +159,9 @@ export class IncomingReviewService {
   /**
    * Process multiple emails with AI (batch processing)
    */
-  async processEmailsWithAI(emailIds: string[]): Promise<{ processed: number; failed: number }> {
+  async processEmailsWithAI(
+    emailIds: string[],
+  ): Promise<{ processed: number; failed: number }> {
     this.logger.log(`Processing ${emailIds.length} emails with AI`);
     let processed = 0;
     let failed = 0;
@@ -165,14 +176,19 @@ export class IncomingReviewService {
       }
     }
 
-    this.logger.log(`AI processing complete: ${processed} processed, ${failed} failed`);
+    this.logger.log(
+      `AI processing complete: ${processed} processed, ${failed} failed`,
+    );
     return { processed, failed };
   }
 
   /**
    * Process all unprocessed emails (emails that haven't been classified yet)
    */
-  async processAllUnprocessedEmails(): Promise<{ processed: number; failed: number }> {
+  async processAllUnprocessedEmails(): Promise<{
+    processed: number;
+    failed: number;
+  }> {
     // Find emails that haven't been processed (spamStatus is NOT_SPAM and no AI suggestions)
     const unprocessedEmails = await this.emailsRepository.find({
       where: {
@@ -192,4 +208,3 @@ export class IncomingReviewService {
     return this.processEmailsWithAI(emailIds);
   }
 }
-

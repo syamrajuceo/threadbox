@@ -60,7 +60,7 @@ export default function IncomingReviewPage() {
     } finally {
       setLoading(false);
     }
-  };
+  }, [filters]);
 
   const loadProjects = useCallback(async () => {
     try {

@@ -20,7 +20,11 @@ export class AssignmentsController {
   constructor(private readonly assignmentsService: AssignmentsService) {}
 
   @Patch('email/:id/assign')
-  assignEmail(@Param('id') id: string, @Body() dto: AssignEmailDto, @Request() req: { user: { firstName: string; lastName: string } }) {
+  assignEmail(
+    @Param('id') id: string,
+    @Body() dto: AssignEmailDto,
+    @Request() req: { user: { firstName: string; lastName: string } },
+  ) {
     const assignedBy = `${req.user.firstName} ${req.user.lastName}`;
     if (dto.userId) {
       return this.assignmentsService.assignToUser(id, dto.userId, assignedBy);
@@ -49,11 +53,7 @@ export class AssignmentsController {
   }
 
   @Patch('email/:id/status')
-  updateStatus(
-    @Param('id') id: string,
-    @Body() dto: UpdateEmailStatusDto,
-  ) {
+  updateStatus(@Param('id') id: string, @Body() dto: UpdateEmailStatusDto) {
     return this.assignmentsService.updateStatus(id, dto.status);
   }
 }
-

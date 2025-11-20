@@ -84,7 +84,13 @@ export class EmailsService {
   async findOne(id: string): Promise<Email> {
     const email = await this.emailsRepository.findOne({
       where: { id },
-      relations: ['project', 'assignedTo', 'attachments', 'thread', 'thread.emails'],
+      relations: [
+        'project',
+        'assignedTo',
+        'attachments',
+        'thread',
+        'thread.emails',
+      ],
     });
     if (!email) {
       throw new NotFoundException(`Email with ID ${id} not found`);
@@ -94,7 +100,7 @@ export class EmailsService {
 
   async update(id: string, updateData: Partial<Email>): Promise<Email> {
     const email = await this.findOne(id);
-    
+
     // Explicitly handle null values for projectId using query builder
     if ('projectId' in updateData && updateData.projectId === null) {
       await this.emailsRepository
@@ -103,7 +109,7 @@ export class EmailsService {
         .set({ projectId: null })
         .where('id = :id', { id })
         .execute();
-      
+
       // Reload the email to return updated version
       const updated = await this.findOne(id);
       // Apply other updates if any
@@ -115,14 +121,17 @@ export class EmailsService {
       }
       return updated;
     }
-    
+
     // Normal update for non-null values
     Object.assign(email, updateData);
     const saved = await this.emailsRepository.save(email);
     return saved;
   }
 
-  async findByProviderId(provider: string, providerEmailId: string): Promise<Email | null> {
+  async findByProviderId(
+    provider: string,
+    providerEmailId: string,
+  ): Promise<Email | null> {
     return this.emailsRepository.findOne({
       where: { provider, providerEmailId },
     });
@@ -177,4 +186,3 @@ export class EmailsService {
     return { deletedCount: emailCount };
   }
 }
-

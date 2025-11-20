@@ -3,13 +3,12 @@ import {
   IsEnum,
   IsOptional,
   IsObject,
-  ValidateNested,
   ValidatorConstraint,
   ValidatorConstraintInterface,
   ValidationArguments,
   Validate,
 } from 'class-validator';
-import { Type, Transform } from 'class-transformer';
+import { Transform } from 'class-transformer';
 
 export enum EmailProvider {
   GMAIL = 'gmail',
@@ -19,33 +18,35 @@ export enum EmailProvider {
 
 @ValidatorConstraint({ name: 'credentials', async: false })
 export class CredentialsValidator implements ValidatorConstraintInterface {
-  validate(credentials: any, args: ValidationArguments) {
+  validate(credentials: unknown, args: ValidationArguments) {
     const dto = args.object as IngestEmailsDto;
-    
+
     if (!credentials || typeof credentials !== 'object') {
       return false;
     }
 
+    const creds = credentials as Record<string, unknown>;
+
     switch (dto.provider) {
       case EmailProvider.GMAIL:
         return (
-          typeof credentials.clientId === 'string' &&
-          typeof credentials.clientSecret === 'string' &&
-          typeof credentials.redirectUri === 'string' &&
-          typeof credentials.refreshToken === 'string'
+          typeof creds.clientId === 'string' &&
+          typeof creds.clientSecret === 'string' &&
+          typeof creds.redirectUri === 'string' &&
+          typeof creds.refreshToken === 'string'
         );
       case EmailProvider.OUTLOOK:
         return (
-          typeof credentials.clientId === 'string' &&
-          typeof credentials.clientSecret === 'string' &&
-          typeof credentials.redirectUri === 'string' &&
-          typeof credentials.accessToken === 'string'
+          typeof creds.clientId === 'string' &&
+          typeof creds.clientSecret === 'string' &&
+          typeof creds.redirectUri === 'string' &&
+          typeof creds.accessToken === 'string'
         );
       case EmailProvider.IMAP:
         return (
-          typeof credentials.username === 'string' &&
-          typeof credentials.password === 'string' &&
-          typeof credentials.host === 'string'
+          typeof creds.username === 'string' &&
+          typeof creds.password === 'string' &&
+          typeof creds.host === 'string'
         );
       default:
         return false;
@@ -79,11 +80,13 @@ export class IngestEmailsDto {
   credentials: Record<string, unknown>;
 
   @IsOptional()
-  @Transform(({ value }) => {
+  @Transform(({ value }: { value: unknown }) => {
     if (!value) return undefined;
-    const date = typeof value === 'string' || typeof value === 'number' ? new Date(value) : value;
+    const date =
+      typeof value === 'string' || typeof value === 'number'
+        ? new Date(value)
+        : value;
     return date instanceof Date ? date : undefined;
   })
   since?: Date;
 }
-

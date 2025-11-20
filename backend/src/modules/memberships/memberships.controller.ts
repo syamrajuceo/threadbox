@@ -27,7 +27,10 @@ export class MembershipsController {
   }
 
   @Get()
-  findAll(@Query('projectId') projectId?: string, @Query('userId') userId?: string) {
+  findAll(
+    @Query('projectId') projectId?: string,
+    @Query('userId') userId?: string,
+  ) {
     return this.membershipsService.findAll(projectId, userId);
   }
 
@@ -42,4 +45,3 @@ export class MembershipsController {
     return this.membershipsService.remove(id);
   }
 }
-

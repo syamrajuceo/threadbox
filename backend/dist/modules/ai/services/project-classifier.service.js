@@ -62,8 +62,7 @@ let ProjectClassifierService = ProjectClassifierService_1 = class ProjectClassif
         }
     }
     shouldAutoAssign(result) {
-        return (result.projectId !== null &&
-            result.confidence >= this.confidenceThreshold);
+        return (result.projectId !== null && result.confidence >= this.confidenceThreshold);
     }
 };
 exports.ProjectClassifierService = ProjectClassifierService;

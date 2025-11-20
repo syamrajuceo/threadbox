@@ -90,4 +90,3 @@ export class ProjectManagerController {
     return { isProjectManager: isPM };
   }
 }
-

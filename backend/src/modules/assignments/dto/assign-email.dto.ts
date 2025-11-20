@@ -9,4 +9,3 @@ export class AssignEmailDto {
   @IsUUID()
   roleId?: string;
 }
-

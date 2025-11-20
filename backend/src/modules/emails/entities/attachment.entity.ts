@@ -35,4 +35,3 @@ export class Attachment {
   @JoinColumn({ name: 'emailId' })
   email: Email;
 }
-

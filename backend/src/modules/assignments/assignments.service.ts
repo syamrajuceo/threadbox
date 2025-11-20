@@ -3,7 +3,6 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { Email, EmailStatus } from '../emails/entities/email.entity';
 import { EmailAssignment } from './entities/email-assignment.entity';
-import { UpdateEmailStatusDto } from './dto/update-email-status.dto';
 import { NotificationsService } from '../notifications/notifications.service';
 
 @Injectable()
@@ -46,7 +45,9 @@ export class AssignmentsService {
   }
 
   async assignToRole(emailId: string, roleId: string): Promise<Email> {
-    const email = await this.emailsRepository.findOne({ where: { id: emailId } });
+    const email = await this.emailsRepository.findOne({
+      where: { id: emailId },
+    });
     if (!email) {
       throw new Error('Email not found');
     }
@@ -111,11 +112,10 @@ export class AssignmentsService {
     await this.emailAssignmentsRepository.delete(assignmentId);
   }
 
-  async updateStatus(
-    emailId: string,
-    status: EmailStatus,
-  ): Promise<Email> {
-    const email = await this.emailsRepository.findOne({ where: { id: emailId } });
+  async updateStatus(emailId: string, status: EmailStatus): Promise<Email> {
+    const email = await this.emailsRepository.findOne({
+      where: { id: emailId },
+    });
     if (!email) {
       throw new Error('Email not found');
     }
@@ -124,4 +124,3 @@ export class AssignmentsService {
     return this.emailsRepository.save(email);
   }
 }
-

@@ -5,4 +5,3 @@ export class ResetEmailsDto {
   @MinLength(1, { message: 'Password is required' })
   password: string;
 }
-

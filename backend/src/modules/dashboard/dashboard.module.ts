@@ -12,4 +12,3 @@ import { Membership } from '../memberships/entities/membership.entity';
   exports: [DashboardService],
 })
 export class DashboardModule {}
-

@@ -57,7 +57,10 @@ let IncomingReviewService = IncomingReviewService_1 = class IncomingReviewServic
         return query.getMany();
     }
     async assignToProject(emailId, projectId) {
-        if (!projectId || projectId === '' || projectId === 'null' || projectId === 'undefined') {
+        if (!projectId ||
+            projectId === '' ||
+            projectId === 'null' ||
+            projectId === 'undefined') {
             this.logger.log(`Unassigning email ${emailId} from project`);
             const updated = await this.emailsService.update(emailId, {
                 projectId: null,

@@ -7,10 +7,10 @@ export declare class EmailIngestionController {
     ingestEmails(ingestDto: IngestEmailsDto): Promise<{
         success: boolean;
         ingested: number;
-        message: any;
-    }>;
-    getStatus(): Promise<{
-        status: string;
         message: string;
     }>;
+    getStatus(): {
+        status: string;
+        message: string;
+    };
 }

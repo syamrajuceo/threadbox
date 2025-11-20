@@ -1,4 +1,10 @@
-import { IsString, IsEnum, IsOptional, IsBoolean, IsObject } from 'class-validator';
+import {
+  IsString,
+  IsEnum,
+  IsOptional,
+  IsBoolean,
+  IsObject,
+} from 'class-validator';
 import { EmailProvider } from '../entities/email-account.entity';
 
 export class CreateEmailAccountDto {
@@ -22,4 +28,3 @@ export class CreateEmailAccountDto {
   @IsBoolean()
   isActive?: boolean;
 }
-

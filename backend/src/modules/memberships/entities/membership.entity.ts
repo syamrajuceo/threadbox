@@ -39,4 +39,3 @@ export class Membership {
   @JoinColumn({ name: 'roleId' })
   role: Role;
 }
-

@@ -8,4 +8,3 @@ export class UpdateNoteDto extends PartialType(CreateNoteDto) {
   @MinLength(1)
   content?: string;
 }
-

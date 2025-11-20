@@ -1,4 +1,10 @@
-import { IsOptional, IsEnum, IsString, IsDateString, IsUUID } from 'class-validator';
+import {
+  IsOptional,
+  IsEnum,
+  IsString,
+  IsDateString,
+  IsUUID,
+} from 'class-validator';
 import { EmailStatus } from '../entities/email.entity';
 
 export class EmailFilterDto {
@@ -29,4 +35,3 @@ export class EmailFilterDto {
   @IsOptional()
   isUnassigned?: boolean | string;
 }
-

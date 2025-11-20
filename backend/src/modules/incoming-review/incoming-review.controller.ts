@@ -19,9 +19,7 @@ import { EmailSpamStatus } from '../emails/entities/email.entity';
 @UseGuards(JwtAuthGuard, RolesGuard)
 @Roles(GlobalRole.SUPER_USER)
 export class IncomingReviewController {
-  constructor(
-    private readonly incomingReviewService: IncomingReviewService,
-  ) {}
+  constructor(private readonly incomingReviewService: IncomingReviewService) {}
 
   @Get()
   getUnassignedEmails(
@@ -44,7 +42,10 @@ export class IncomingReviewController {
     @Body('projectId') projectId?: string | null,
   ) {
     // Handle empty string, null, or undefined as unassignment
-    const finalProjectId = projectId === '' || projectId === null || projectId === undefined ? '' : projectId;
+    const finalProjectId =
+      projectId === '' || projectId === null || projectId === undefined
+        ? ''
+        : projectId;
     return this.incomingReviewService.assignToProject(id, finalProjectId);
   }
 
@@ -84,4 +85,3 @@ export class IncomingReviewController {
     return this.incomingReviewService.processAllUnprocessedEmails();
   }
 }
-

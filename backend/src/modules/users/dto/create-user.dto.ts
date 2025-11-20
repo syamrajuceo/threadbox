@@ -29,4 +29,3 @@ export class CreateUserDto {
   @IsEnum(GlobalRole)
   globalRole?: GlobalRole;
 }
-

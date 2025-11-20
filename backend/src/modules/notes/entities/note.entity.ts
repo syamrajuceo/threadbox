@@ -38,4 +38,3 @@ export class Note {
   @JoinColumn({ name: 'authorId' })
   author: User;
 }
-

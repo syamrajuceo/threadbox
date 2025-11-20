@@ -63,9 +63,7 @@ export class ProjectClassifierService {
 
   shouldAutoAssign(result: ProjectClassificationResult): boolean {
     return (
-      result.projectId !== null &&
-      result.confidence >= this.confidenceThreshold
+      result.projectId !== null && result.confidence >= this.confidenceThreshold
     );
   }
 }
-

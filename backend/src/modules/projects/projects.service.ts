@@ -35,7 +35,10 @@ export class ProjectsService {
     return project;
   }
 
-  async update(id: string, updateProjectDto: UpdateProjectDto): Promise<Project> {
+  async update(
+    id: string,
+    updateProjectDto: UpdateProjectDto,
+  ): Promise<Project> {
     const project = await this.findOne(id);
     Object.assign(project, updateProjectDto);
     return this.projectsRepository.save(project);
@@ -47,4 +50,3 @@ export class ProjectsService {
     await this.projectsRepository.save(project);
   }
 }
-

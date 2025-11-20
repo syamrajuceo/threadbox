@@ -23,4 +23,3 @@ import { getJwtConfig } from '../../config/jwt.config';
   exports: [AuthService],
 })
 export class AuthModule {}
-

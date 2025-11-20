@@ -9,16 +9,10 @@ import { EmailAssignment } from '../assignments/entities/email-assignment.entity
 
 @Module({
   imports: [
-    TypeOrmModule.forFeature([
-      Membership,
-      Email,
-      User,
-      EmailAssignment,
-    ]),
+    TypeOrmModule.forFeature([Membership, Email, User, EmailAssignment]),
   ],
   controllers: [ProjectManagerController],
   providers: [ProjectManagerService],
   exports: [ProjectManagerService],
 })
 export class ProjectManagerModule {}
-

@@ -5,4 +5,3 @@ export class AssignEmailMultipleDto {
   @IsUUID(undefined, { each: true })
   userIds: string[];
 }
-

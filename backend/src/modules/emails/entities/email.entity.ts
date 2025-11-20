@@ -134,4 +134,3 @@ export class Email {
   @Column({ type: 'uuid', nullable: true })
   threadId: string | null;
 }
-

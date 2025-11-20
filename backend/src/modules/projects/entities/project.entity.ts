@@ -43,4 +43,3 @@ export class Project {
   @OneToMany(() => Membership, (membership) => membership.project)
   memberships: Membership[];
 }
-

@@ -18,4 +18,3 @@ export class BulkUpdateDto {
   @IsEnum(EmailStatus)
   status?: EmailStatus;
 }
-

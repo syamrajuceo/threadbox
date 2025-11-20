@@ -44,14 +44,16 @@ let EmailIngestionController = EmailIngestionController_1 = class EmailIngestion
         }
         catch (error) {
             this.logger.error('Email ingestion error:', error);
+            const errorMessage = error instanceof Error ? error.message : 'Unknown error';
             return {
                 success: false,
                 ingested: 0,
-                message: error.message || 'Failed to ingest emails. Please check your credentials and try again.',
+                message: errorMessage ||
+                    'Failed to ingest emails. Please check your credentials and try again.',
             };
         }
     }
-    async getStatus() {
+    getStatus() {
         return {
             status: 'ready',
             message: 'Email ingestion service is ready',
@@ -70,7 +72,7 @@ __decorate([
     (0, common_1.Get)('status'),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", []),
-    __metadata("design:returntype", Promise)
+    __metadata("design:returntype", void 0)
 ], EmailIngestionController.prototype, "getStatus", null);
 exports.EmailIngestionController = EmailIngestionController = EmailIngestionController_1 = __decorate([
     (0, common_1.Controller)('email-ingestion'),

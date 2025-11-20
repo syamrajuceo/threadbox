@@ -30,7 +30,13 @@ exports.EmailIngestionModule = EmailIngestionModule;
 exports.EmailIngestionModule = EmailIngestionModule = __decorate([
     (0, common_1.Module)({
         imports: [
-            typeorm_1.TypeOrmModule.forFeature([email_entity_1.Email, attachment_entity_1.Attachment, email_thread_entity_1.EmailThread, email_account_entity_1.EmailAccount, project_entity_1.Project]),
+            typeorm_1.TypeOrmModule.forFeature([
+                email_entity_1.Email,
+                attachment_entity_1.Attachment,
+                email_thread_entity_1.EmailThread,
+                email_account_entity_1.EmailAccount,
+                project_entity_1.Project,
+            ]),
             emails_module_1.EmailsModule,
             ai_module_1.AIModule,
             users_module_1.UsersModule,

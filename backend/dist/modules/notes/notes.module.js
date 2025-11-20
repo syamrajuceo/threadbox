@@ -19,11 +19,7 @@ let NotesModule = class NotesModule {
 exports.NotesModule = NotesModule;
 exports.NotesModule = NotesModule = __decorate([
     (0, common_1.Module)({
-        imports: [
-            typeorm_1.TypeOrmModule.forFeature([note_entity_1.Note]),
-            notifications_module_1.NotificationsModule,
-            users_module_1.UsersModule,
-        ],
+        imports: [typeorm_1.TypeOrmModule.forFeature([note_entity_1.Note]), notifications_module_1.NotificationsModule, users_module_1.UsersModule],
         controllers: [notes_controller_1.NotesController],
         providers: [notes_service_1.NotesService],
         exports: [notes_service_1.NotesService],

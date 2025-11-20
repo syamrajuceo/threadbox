@@ -178,4 +178,3 @@ export class UserEmailsService {
     return query.orderBy('email.receivedAt', 'DESC').getMany();
   }
 }
-

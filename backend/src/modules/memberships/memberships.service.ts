@@ -43,4 +43,3 @@ export class MembershipsService {
     await this.membershipsRepository.remove(membership);
   }
 }
-

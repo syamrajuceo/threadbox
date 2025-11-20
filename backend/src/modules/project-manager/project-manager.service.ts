@@ -71,15 +71,15 @@ export class ProjectManagerService {
           'You are not a project manager for this project',
         );
       }
-        // Only return emails assigned to this project (exclude null projectId)
-        return this.emailsRepository
-          .createQueryBuilder('email')
-          .where('email.projectId = :projectId', { projectId })
-          .andWhere('email.projectId IS NOT NULL')
-          .leftJoinAndSelect('email.project', 'project')
-          .leftJoinAndSelect('email.assignedTo', 'assignedTo')
-          .orderBy('email.receivedAt', 'DESC')
-          .getMany();
+      // Only return emails assigned to this project (exclude null projectId)
+      return this.emailsRepository
+        .createQueryBuilder('email')
+        .where('email.projectId = :projectId', { projectId })
+        .andWhere('email.projectId IS NOT NULL')
+        .leftJoinAndSelect('email.project', 'project')
+        .leftJoinAndSelect('email.assignedTo', 'assignedTo')
+        .orderBy('email.receivedAt', 'DESC')
+        .getMany();
     }
 
     // Return emails for all managed projects
@@ -240,4 +240,3 @@ export class ProjectManagerService {
     return assignments;
   }
 }
-

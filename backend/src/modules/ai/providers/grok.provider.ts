@@ -19,8 +19,10 @@ export class GrokProvider implements IAIProvider {
 
   constructor(private configService: ConfigService) {
     this.apiKey = this.configService.get<string>('GROK_API_KEY', '');
-    this.apiUrl =
-      this.configService.get<string>('GROK_API_URL', 'https://api.x.ai/v1');
+    this.apiUrl = this.configService.get<string>(
+      'GROK_API_URL',
+      'https://api.x.ai/v1',
+    );
 
     this.client = axios.create({
       baseURL: this.apiUrl,
@@ -53,11 +55,14 @@ export class GrokProvider implements IAIProvider {
         max_tokens: 200,
       });
 
-      const result = this.parseSpamResponse(response.data as { choices?: Array<{ message?: { content?: string } }> });
+      const result = this.parseSpamResponse(
+        response.data as {
+          choices?: Array<{ message?: { content?: string } }>;
+        },
+      );
       return result;
     } catch (error: unknown) {
       this.logger.error('Error classifying spam with Grok:', error);
-      const errorMessage = error instanceof Error ? error.message : 'Unknown error';
       // Fallback: mark as not spam if AI is unavailable
       return {
         isSpam: false,
@@ -78,7 +83,9 @@ export class GrokProvider implements IAIProvider {
   ): Promise<ProjectClassificationResult> {
     try {
       if (!this.apiKey) {
-        this.logger.warn('GROK_API_KEY is not configured. AI classification will not work.');
+        this.logger.warn(
+          'GROK_API_KEY is not configured. AI classification will not work.',
+        );
         return {
           projectId: null,
           confidence: 0,
@@ -122,7 +129,9 @@ export class GrokProvider implements IAIProvider {
       });
 
       const result = this.parseProjectResponse(
-        response.data as { choices?: Array<{ message?: { content?: string } }> },
+        response.data as {
+          choices?: Array<{ message?: { content?: string } }>;
+        },
         projectDescriptions,
       );
 
@@ -133,9 +142,15 @@ export class GrokProvider implements IAIProvider {
       return result;
     } catch (error: unknown) {
       this.logger.error('Error classifying project with Grok:', error);
-      const errorWithResponse = error as { response?: { data?: unknown }; message?: string };
+      const errorWithResponse = error as {
+        response?: { data?: unknown };
+        message?: string;
+      };
       const errorMessage = errorWithResponse.message || 'Unknown error';
-      this.logger.error('Error details:', errorWithResponse.response?.data || errorMessage);
+      this.logger.error(
+        'Error details:',
+        errorWithResponse.response?.data || errorMessage,
+      );
       // Fallback: return null project if AI is unavailable
       return {
         projectId: null,
@@ -147,7 +162,7 @@ export class GrokProvider implements IAIProvider {
 
   private buildSpamClassificationPrompt(emailContent: string): string {
     const truncatedContent = emailContent.substring(0, 3000);
-    
+
     return `You are an expert email spam detection system. Analyze the following email carefully and determine if it is spam, possible spam, or legitimate email.
 
 Consider these spam indicators:
@@ -225,10 +240,12 @@ Respond ONLY with valid JSON in this exact format (no markdown, no code blocks, 
 Important: Use the EXACT Project ID from the list above. Do not invent IDs.`;
   }
 
-  private parseSpamResponse(data: { choices?: Array<{ message?: { content?: string } }> }): SpamClassificationResult {
+  private parseSpamResponse(data: {
+    choices?: Array<{ message?: { content?: string } }>;
+  }): SpamClassificationResult {
     try {
       let content: string = data.choices?.[0]?.message?.content || '{}';
-      
+
       // Clean up the response - remove markdown code blocks if present
       content = String(content).trim();
       if (content.startsWith('```json')) {
@@ -236,13 +253,13 @@ Important: Use the EXACT Project ID from the list above. Do not invent IDs.`;
       } else if (content.startsWith('```')) {
         content = content.replace(/```\n?/g, '');
       }
-      
+
       // Try to extract JSON if it's embedded in text
       const jsonMatch: RegExpMatchArray | null = content.match(/\{[\s\S]*\}/);
       if (jsonMatch && jsonMatch[0]) {
         content = jsonMatch[0];
       }
-      
+
       const parsed = JSON.parse(content) as {
         isSpam?: boolean | string;
         confidence?: number | string;
@@ -250,10 +267,15 @@ Important: Use the EXACT Project ID from the list above. Do not invent IDs.`;
       };
 
       const isSpam = parsed.isSpam === true || parsed.isSpam === 'true';
-      const confidence = Math.max(0, Math.min(1, parseFloat(String(parsed.confidence || 0)) || 0));
+      const confidence = Math.max(
+        0,
+        Math.min(1, parseFloat(String(parsed.confidence || 0)) || 0),
+      );
       const reason = parsed.reason || 'No reason provided';
 
-      this.logger.debug(`Spam classification: isSpam=${isSpam}, confidence=${confidence}, reason=${String(reason)}`);
+      this.logger.debug(
+        `Spam classification: isSpam=${isSpam}, confidence=${confidence}, reason=${String(reason)}`,
+      );
 
       return {
         isSpam,
@@ -299,7 +321,10 @@ Important: Use the EXACT Project ID from the list above. Do not invent IDs.`;
       };
 
       const projectId: string | null = parsed.projectId || null;
-      const confidence = Math.max(0, Math.min(1, parseFloat(String(parsed.confidence || 0)) || 0));
+      const confidence = Math.max(
+        0,
+        Math.min(1, parseFloat(String(parsed.confidence || 0)) || 0),
+      );
 
       this.logger.debug(
         `Project classification: projectId=${String(projectId)}, confidence=${confidence}, reason=${String(parsed.reason || 'No reason')}`,
@@ -323,7 +348,10 @@ Important: Use the EXACT Project ID from the list above. Do not invent IDs.`;
         reason: parsed.reason || 'No reason provided',
       };
     } catch (error) {
-      this.logger.error('Error parsing project classification response:', error);
+      this.logger.error(
+        'Error parsing project classification response:',
+        error,
+      );
       this.logger.error('Raw response:', data.choices?.[0]?.message?.content);
       return {
         projectId: null,
@@ -346,7 +374,7 @@ Important: Use the EXACT Project ID from the list above. Do not invent IDs.`;
     // This is a fallback implementation since Grok is deprecated
     try {
       const spamResult = await this.classifySpam(emailContent);
-      
+
       // Determine spam category
       let spamCategory: 'spam' | 'possible_spam' | 'not_spam' = 'not_spam';
       if (spamResult.isSpam && spamResult.confidence >= 0.7) {
@@ -363,7 +391,10 @@ Important: Use the EXACT Project ID from the list above. Do not invent IDs.`;
       };
 
       if (spamCategory === 'not_spam') {
-        projectResult = await this.classifyProject(emailContent, projectDescriptions);
+        projectResult = await this.classifyProject(
+          emailContent,
+          projectDescriptions,
+        );
       }
 
       return {
@@ -380,7 +411,8 @@ Important: Use the EXACT Project ID from the list above. Do not invent IDs.`;
       };
     } catch (error: unknown) {
       this.logger.error('Error in combined classification with Grok:', error);
-      const errorMessage = error instanceof Error ? error.message : 'Unknown error';
+      const errorMessage =
+        error instanceof Error ? error.message : 'Unknown error';
       return {
         spamClassification: {
           category: 'not_spam',
@@ -396,4 +428,3 @@ Important: Use the EXACT Project ID from the list above. Do not invent IDs.`;
     }
   }
 }
-

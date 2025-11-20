@@ -50,4 +50,3 @@ export class Role {
   @OneToMany(() => Membership, (membership) => membership.role)
   memberships: Membership[];
 }
-

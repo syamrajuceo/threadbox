@@ -1,7 +1,11 @@
 import { Injectable, Logger } from '@nestjs/common';
 import Imap from 'imap';
 import { simpleParser } from 'mailparser';
-import { IEmailProvider, EmailMessage, EmailAttachment } from '../interfaces/email-provider.interface';
+import {
+  IEmailProvider,
+  EmailMessage,
+  EmailAttachment,
+} from '../interfaces/email-provider.interface';
 import type { EmailProviderConfig } from '../interfaces/email-provider.interface';
 
 @Injectable()
@@ -12,8 +16,8 @@ export class ImapProvider implements IEmailProvider {
 
   constructor(config: EmailProviderConfig) {
     this.config = config;
-    const port = this.config.credentials.port 
-      ? parseInt(String(this.config.credentials.port), 10) 
+    const port = this.config.credentials.port
+      ? parseInt(String(this.config.credentials.port), 10)
       : 993;
     this.imap = new Imap({
       user: this.config.credentials.username,
@@ -28,8 +32,15 @@ export class ImapProvider implements IEmailProvider {
     return new Promise((resolve, reject) => {
       this.imap.once('ready', () => resolve());
       this.imap.once('error', (err: Error) => {
-        if (err.message?.includes('Invalid credentials') || err.message?.includes('authentication failed')) {
-          reject(new Error('Invalid IMAP credentials. Please check your username and password.'));
+        if (
+          err.message?.includes('Invalid credentials') ||
+          err.message?.includes('authentication failed')
+        ) {
+          reject(
+            new Error(
+              'Invalid IMAP credentials. Please check your username and password.',
+            ),
+          );
         } else {
           reject(err);
         }
@@ -59,9 +70,7 @@ export class ImapProvider implements IEmailProvider {
           this.logger.log('No date filter provided - fetching ALL emails');
         }
 
-        const searchCriteria = since
-          ? [['SINCE', since]]
-          : [['ALL']];
+        const searchCriteria = since ? [['SINCE', since]] : [['ALL']];
 
         this.imap.search(searchCriteria, (err, results) => {
           if (err) {
@@ -97,12 +106,12 @@ export class ImapProvider implements IEmailProvider {
                 const extractAddresses = (addressObj: any): string[] => {
                   if (!addressObj) return [];
                   if (Array.isArray(addressObj)) {
-                    return addressObj.flatMap((addr: any) => 
-                      Array.isArray(addr.value) 
+                    return addressObj.flatMap((addr: any) =>
+                      Array.isArray(addr.value)
                         ? addr.value.map((a: any) => a.address)
-                        : addr.value 
+                        : addr.value
                           ? [addr.value.address]
-                          : []
+                          : [],
                     );
                   }
                   if (addressObj.value) {
@@ -119,7 +128,13 @@ export class ImapProvider implements IEmailProvider {
                   body: parsed.text || '',
                   bodyHtml: parsed.html || '',
                   fromAddress: (() => {
-                    const from = parsed.from as { value?: Array<{ address?: string }> | { address?: string } } | undefined;
+                    const from = parsed.from as
+                      | {
+                          value?:
+                            | Array<{ address?: string }>
+                            | { address?: string };
+                        }
+                      | undefined;
                     if (!from) return '';
                     if (Array.isArray(from.value)) {
                       return from.value[0]?.address || '';
@@ -127,7 +142,9 @@ export class ImapProvider implements IEmailProvider {
                     return (from.value as { address?: string })?.address || '';
                   })(),
                   fromName: (() => {
-                    const from = parsed.from as { value?: Array<{ name?: string }> | { name?: string } } | undefined;
+                    const from = parsed.from as
+                      | { value?: Array<{ name?: string }> | { name?: string } }
+                      | undefined;
                     if (!from) return '';
                     if (Array.isArray(from.value)) {
                       return from.value[0]?.name || '';
@@ -140,17 +157,20 @@ export class ImapProvider implements IEmailProvider {
                   receivedAt: parsed.date || new Date(),
                   messageId: parsed.messageId || '',
                   inReplyTo: parsed.inReplyTo || '',
-                  references: (Array.isArray(parsed.references) 
-                    ? parsed.references.join(' ')
-                    : typeof parsed.references === 'string'
-                      ? parsed.references
-                      : '') || '',
-                  attachments: parsed.attachments?.map((att) => ({
-                    filename: att.filename || 'attachment',
-                    contentType: att.contentType || 'application/octet-stream',
-                    size: att.size || 0,
-                    content: att.content as Buffer,
-                  })) || [],
+                  references:
+                    (Array.isArray(parsed.references)
+                      ? parsed.references.join(' ')
+                      : typeof parsed.references === 'string'
+                        ? parsed.references
+                        : '') || '',
+                  attachments:
+                    parsed.attachments?.map((att) => ({
+                      filename: att.filename || 'attachment',
+                      contentType:
+                        att.contentType || 'application/octet-stream',
+                      size: att.size || 0,
+                      content: att.content,
+                    })) || [],
                 };
                 emails.push(email);
               } catch (parseError) {
@@ -177,4 +197,3 @@ export class ImapProvider implements IEmailProvider {
     throw new Error('Attachment download not yet implemented for IMAP');
   }
 }
-

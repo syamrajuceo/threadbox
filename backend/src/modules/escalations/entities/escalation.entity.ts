@@ -61,4 +61,3 @@ export class Escalation {
   @JoinColumn({ name: 'reviewedById' })
   reviewedBy: User;
 }
-

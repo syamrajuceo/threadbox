@@ -66,13 +66,31 @@ let UsersService = class UsersService {
     }
     async findAll() {
         return this.usersRepository.find({
-            select: ['id', 'email', 'firstName', 'lastName', 'status', 'globalRole', 'createdAt', 'updatedAt'],
+            select: [
+                'id',
+                'email',
+                'firstName',
+                'lastName',
+                'status',
+                'globalRole',
+                'createdAt',
+                'updatedAt',
+            ],
         });
     }
     async findOne(id) {
         const user = await this.usersRepository.findOne({
             where: { id },
-            select: ['id', 'email', 'firstName', 'lastName', 'status', 'globalRole', 'createdAt', 'updatedAt'],
+            select: [
+                'id',
+                'email',
+                'firstName',
+                'lastName',
+                'status',
+                'globalRole',
+                'createdAt',
+                'updatedAt',
+            ],
         });
         if (!user) {
             throw new common_1.NotFoundException(`User with ID ${id} not found`);

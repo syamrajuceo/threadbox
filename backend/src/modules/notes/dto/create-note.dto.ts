@@ -8,4 +8,3 @@ export class CreateNoteDto {
   @IsUUID()
   emailId: string;
 }
-

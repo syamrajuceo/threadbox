@@ -4,10 +4,18 @@ import { Repository } from 'typeorm';
 import { ConfigService } from '@nestjs/config';
 import * as fs from 'fs';
 import * as path from 'path';
-import { Email, EmailStatus, EmailSpamStatus } from '../emails/entities/email.entity';
+import {
+  Email,
+  EmailStatus,
+  EmailSpamStatus,
+} from '../emails/entities/email.entity';
 import { Attachment } from '../emails/entities/attachment.entity';
 import { EmailThread } from '../emails/entities/email-thread.entity';
-import { IEmailProvider, EmailMessage, EmailProviderConfig } from './interfaces/email-provider.interface';
+import {
+  IEmailProvider,
+  EmailMessage,
+  EmailProviderConfig,
+} from './interfaces/email-provider.interface';
 import { GmailProvider } from './providers/gmail.provider';
 import { OutlookProvider } from './providers/outlook.provider';
 import { ImapProvider } from './providers/imap.provider';
@@ -45,23 +53,36 @@ export class EmailIngestionService {
     }
   }
 
-  async ingestEmails(config: EmailProviderConfig, since?: Date): Promise<number> {
-    this.logger.log(`Starting email ingestion for provider: ${config.provider}, account: ${config.account}`);
+  async ingestEmails(
+    config: EmailProviderConfig,
+    since?: Date,
+  ): Promise<number> {
+    this.logger.log(
+      `Starting email ingestion for provider: ${config.provider}, account: ${config.account}`,
+    );
     if (since) {
-      this.logger.log(`Date filter: Only fetching emails after ${since.toISOString()}`);
+      this.logger.log(
+        `Date filter: Only fetching emails after ${since.toISOString()}`,
+      );
     } else {
-      this.logger.warn('⚠️  No date filter provided - will fetch ALL emails (this may take a long time and use many API calls)');
+      this.logger.warn(
+        '⚠️  No date filter provided - will fetch ALL emails (this may take a long time and use many API calls)',
+      );
     }
-    
+
     const provider = this.createProvider(config);
     let ingestedCount = 0;
 
     try {
       this.logger.log('Connecting to email provider...');
       await provider.connect();
-      this.logger.log('Fetching emails with date filter applied at API level...');
+      this.logger.log(
+        'Fetching emails with date filter applied at API level...',
+      );
       const messages = await provider.fetchEmails(since);
-      this.logger.log(`Fetched ${messages.length} email(s) from provider (already filtered by date)`);
+      this.logger.log(
+        `Fetched ${messages.length} email(s) from provider (already filtered by date)`,
+      );
 
       for (const message of messages) {
         try {
@@ -156,4 +177,3 @@ export class EmailIngestionService {
     return filePath;
   }
 }
-

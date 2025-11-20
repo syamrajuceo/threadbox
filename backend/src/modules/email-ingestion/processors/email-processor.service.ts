@@ -1,7 +1,11 @@
 import { Injectable, Logger } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
-import { Email, EmailStatus, EmailSpamStatus } from '../../emails/entities/email.entity';
+import {
+  Email,
+  EmailStatus,
+  EmailSpamStatus,
+} from '../../emails/entities/email.entity';
 import { SpamClassifierService } from '../../ai/services/spam-classifier.service';
 import { ProjectClassifierService } from '../../ai/services/project-classifier.service';
 import { ClaudeProvider } from '../../ai/providers/claude.provider';
@@ -23,10 +27,13 @@ export class EmailProcessorService {
 
   async processEmail(email: Email): Promise<Email> {
     try {
-      const emailContent = `${email.subject || ''}\n\n${email.body || ''}`.trim();
-      
+      const emailContent =
+        `${email.subject || ''}\n\n${email.body || ''}`.trim();
+
       if (!emailContent || emailContent.length < 10) {
-        this.logger.warn(`Email ${email.id} has insufficient content for classification`);
+        this.logger.warn(
+          `Email ${email.id} has insufficient content for classification`,
+        );
         // Mark as possible spam for manual review if content is insufficient
         email.spamStatus = EmailSpamStatus.POSSIBLE_SPAM;
         email.spamConfidence = 0;
@@ -71,10 +78,7 @@ export class EmailProcessorService {
         email.aiProjectConfidence = projectResult.confidence;
 
         // Only mark as NOT_SPAM if project is found with confidence >= 0.5
-        if (
-          projectResult.projectId &&
-          projectResult.confidence >= 0.5
-        ) {
+        if (projectResult.projectId && projectResult.confidence >= 0.5) {
           email.spamStatus = EmailSpamStatus.NOT_SPAM;
           email.projectId = projectResult.projectId;
           email.isUnassigned = false; // Auto-assigned to project
@@ -127,10 +131,12 @@ export class EmailProcessorService {
         const processedEmail = await this.processEmail(email);
         processed.push(processedEmail);
       } catch (error) {
-        this.logger.error(`Error processing email ${email.id} in batch:`, error);
+        this.logger.error(
+          `Error processing email ${email.id} in batch:`,
+          error,
+        );
       }
     }
     return processed;
   }
 }
-

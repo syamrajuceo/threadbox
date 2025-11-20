@@ -13,4 +13,3 @@ import { Project } from '../projects/entities/project.entity';
   exports: [ClaudeProvider, SpamClassifierService, ProjectClassifierService],
 })
 export class AIModule {}
-

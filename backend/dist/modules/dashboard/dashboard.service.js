@@ -50,7 +50,8 @@ let DashboardService = class DashboardService {
             name: project.name,
             clientName: project.clientName,
             description: project.description || '',
-            role: membershipMap.get(project.id) || (isSuperUser ? 'Super User' : 'Member'),
+            role: membershipMap.get(project.id) ||
+                (isSuperUser ? 'Super User' : 'Member'),
             openEmailsCount: 0,
             lastUpdated: project.updatedAt,
         }));

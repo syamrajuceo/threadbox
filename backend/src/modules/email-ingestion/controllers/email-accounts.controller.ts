@@ -35,24 +35,33 @@ export class EmailAccountsController {
     @Request() req: { user: { id: string } },
   ) {
     try {
-      this.logger.log(`Creating email account: ${createDto.name} (${createDto.provider})`);
-      const account = await this.emailAccountsService.create(createDto, req.user.id);
+      this.logger.log(
+        `Creating email account: ${createDto.name} (${createDto.provider})`,
+      );
+      const account = await this.emailAccountsService.create(
+        createDto,
+        req.user.id,
+      );
       this.logger.log(`Email account created successfully: ${account.id}`);
       return account;
     } catch (error: unknown) {
       this.logger.error('Error creating email account:', error);
-      const errorMessage = error instanceof Error ? error.message : 'Failed to create email account';
+      const errorMessage =
+        error instanceof Error
+          ? error.message
+          : 'Failed to create email account';
       const errorStack = error instanceof Error ? error.stack : undefined;
       this.logger.error('Error message:', errorMessage);
       if (errorStack) {
         this.logger.error('Error stack:', errorStack);
       }
-      
+
       // Return error response instead of throwing
       return {
         error: true,
         message: errorMessage,
-        details: process.env.NODE_ENV === 'development' ? errorStack : undefined,
+        details:
+          process.env.NODE_ENV === 'development' ? errorStack : undefined,
       };
     }
   }
@@ -63,7 +72,10 @@ export class EmailAccountsController {
   }
 
   @Get(':id')
-  async findOne(@Param('id') id: string, @Request() req: { user: { id: string } }) {
+  async findOne(
+    @Param('id') id: string,
+    @Request() req: { user: { id: string } },
+  ) {
     return this.emailAccountsService.findOne(id, req.user.id);
   }
 
@@ -76,29 +88,40 @@ export class EmailAccountsController {
   ) {
     try {
       this.logger.log(`Updating email account: ${id}`);
-      const account = await this.emailAccountsService.update(id, updateDto, req.user.id);
+      const account = await this.emailAccountsService.update(
+        id,
+        updateDto,
+        req.user.id,
+      );
       this.logger.log(`Email account updated successfully: ${account.id}`);
       return account;
     } catch (error: unknown) {
       this.logger.error('Error updating email account:', error);
-      const errorMessage = error instanceof Error ? error.message : 'Failed to update email account';
+      const errorMessage =
+        error instanceof Error
+          ? error.message
+          : 'Failed to update email account';
       const errorStack = error instanceof Error ? error.stack : undefined;
       this.logger.error('Error message:', errorMessage);
       if (errorStack) {
         this.logger.error('Error stack:', errorStack);
       }
-      
+
       // Return error response instead of throwing
       return {
         error: true,
         message: errorMessage,
-        details: process.env.NODE_ENV === 'development' ? errorStack : undefined,
+        details:
+          process.env.NODE_ENV === 'development' ? errorStack : undefined,
       };
     }
   }
 
   @Delete(':id')
-  async remove(@Param('id') id: string, @Request() req: { user: { id: string } }) {
+  async remove(
+    @Param('id') id: string,
+    @Request() req: { user: { id: string } },
+  ) {
     await this.emailAccountsService.remove(id, req.user.id);
     return { success: true };
   }
@@ -113,24 +136,28 @@ export class EmailAccountsController {
       this.logger.log(`=== Email Ingestion Request ===`);
       this.logger.log(`Account ID: ${id}`);
       this.logger.log(`Since parameter received: ${since || 'NOT PROVIDED'}`);
-      
+
       // Parse the date string - handle both ISO strings and datetime-local format
       let sinceDate: Date | undefined = undefined;
       if (since) {
         // Handle datetime-local format (YYYY-MM-DDTHH:mm) and ISO format
         sinceDate = new Date(String(since));
         if (isNaN(sinceDate.getTime())) {
-          this.logger.error(`❌ Invalid date format provided: ${since}. Ignoring date filter.`);
+          this.logger.error(
+            `❌ Invalid date format provided: ${since}. Ignoring date filter.`,
+          );
           sinceDate = undefined;
         } else {
-          this.logger.log(`✅ Date filter parsed successfully: ${sinceDate.toISOString()}`);
+          this.logger.log(
+            `✅ Date filter parsed successfully: ${sinceDate.toISOString()}`,
+          );
           this.logger.log(`   Local time: ${sinceDate.toLocaleString()}`);
           this.logger.log(`   UTC time: ${sinceDate.toUTCString()}`);
         }
       } else {
         this.logger.warn('⚠️  No date filter provided - will fetch ALL emails');
       }
-      
+
       const count = await this.emailAccountsService.ingestFromAccount(
         id,
         req.user.id,
@@ -143,7 +170,10 @@ export class EmailAccountsController {
         message: `Successfully ingested ${count} email(s)`,
       };
     } catch (error: unknown) {
-      const errorMessage = error instanceof Error ? error.message : 'Failed to ingest emails. Please check your credentials and try again.';
+      const errorMessage =
+        error instanceof Error
+          ? error.message
+          : 'Failed to ingest emails. Please check your credentials and try again.';
       return {
         success: false,
         ingested: 0,
@@ -152,4 +182,3 @@ export class EmailAccountsController {
     }
   }
 }
-

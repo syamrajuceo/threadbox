@@ -44,7 +44,9 @@ let AssignmentsService = class AssignmentsService {
         return savedEmail;
     }
     async assignToRole(emailId, roleId) {
-        const email = await this.emailsRepository.findOne({ where: { id: emailId } });
+        const email = await this.emailsRepository.findOne({
+            where: { id: emailId },
+        });
         if (!email) {
             throw new Error('Email not found');
         }
@@ -87,7 +89,9 @@ let AssignmentsService = class AssignmentsService {
         await this.emailAssignmentsRepository.delete(assignmentId);
     }
     async updateStatus(emailId, status) {
-        const email = await this.emailsRepository.findOne({ where: { id: emailId } });
+        const email = await this.emailsRepository.findOne({
+            where: { id: emailId },
+        });
         if (!email) {
             throw new Error('Email not found');
         }

@@ -60,4 +60,3 @@ export class EmailAccount {
   @UpdateDateColumn()
   updatedAt: Date;
 }
-

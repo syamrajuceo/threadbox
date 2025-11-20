@@ -70,4 +70,3 @@ export class EmailIngestionScheduler {
     return new Date(Date.now() - hoursAgo * 60 * 60 * 1000);
   }
 }
-

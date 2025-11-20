@@ -27,8 +27,7 @@ let ClaudeProvider = ClaudeProvider_1 = class ClaudeProvider {
     constructor(configService) {
         this.configService = configService;
         this.apiKey = this.configService.get('CLAUDE_API_KEY', '');
-        this.apiUrl =
-            this.configService.get('CLAUDE_API_URL', 'https://api.anthropic.com/v1');
+        this.apiUrl = this.configService.get('CLAUDE_API_URL', 'https://api.anthropic.com/v1');
         this.model = this.configService.get('CLAUDE_MODEL', 'claude-3-5-sonnet-20241022');
         this.client = axios_1.default.create({
             baseURL: this.apiUrl,
@@ -68,7 +67,8 @@ let ClaudeProvider = ClaudeProvider_1 = class ClaudeProvider {
         catch (error) {
             this.logger.error('Error classifying spam with Claude:', error);
             const errorMessage = error instanceof Error ? error.message : 'Unknown error';
-            const errorResponse = error?.response?.data;
+            const errorResponse = error
+                ?.response?.data;
             this.logger.error('Error details:', errorResponse || errorMessage);
             return {
                 isSpam: false,
@@ -421,12 +421,12 @@ Rules:
                 spamClassification: {
                     category: spamCategory,
                     confidence: spamConfidence,
-                    reason: parsed.spamReason || 'No reason provided',
+                    reason: String(parsed.spamReason || 'No reason provided'),
                 },
                 projectClassification: {
                     projectId,
                     confidence: projectConfidence,
-                    reason: parsed.projectReason || 'No reason provided',
+                    reason: String(parsed.projectReason || 'No reason provided'),
                 },
             };
         }
@@ -473,7 +473,8 @@ Rules:
                     .map((block) => block.text || '')
                     .join('');
             }
-            else if (responseData.content && typeof responseData.content === 'string') {
+            else if (responseData.content &&
+                typeof responseData.content === 'string') {
                 responseText = responseData.content;
             }
             this.logger.log(`AI connection test successful. Response: ${responseText}, Time: ${responseTime}ms`);
@@ -491,7 +492,8 @@ Rules:
             else if (errorWithResponse.response?.status === 429) {
                 throw new Error('Rate limit exceeded. Please try again later.');
             }
-            else if (errorWithResponse.code === 'ECONNREFUSED' || errorWithResponse.code === 'ENOTFOUND') {
+            else if (errorWithResponse.code === 'ECONNREFUSED' ||
+                errorWithResponse.code === 'ENOTFOUND') {
                 throw new Error('Cannot connect to Claude API. Please check your network connection.');
             }
             else {

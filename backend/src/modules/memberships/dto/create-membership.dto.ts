@@ -10,4 +10,3 @@ export class CreateMembershipDto {
   @IsUUID()
   roleId: string;
 }
-

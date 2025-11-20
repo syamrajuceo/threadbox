@@ -5,7 +5,7 @@ export declare enum EmailProvider {
     IMAP = "imap"
 }
 export declare class CredentialsValidator implements ValidatorConstraintInterface {
-    validate(credentials: any, args: ValidationArguments): boolean;
+    validate(credentials: unknown, args: ValidationArguments): boolean;
     defaultMessage(args: ValidationArguments): "Gmail credentials must include clientId, clientSecret, redirectUri, and refreshToken" | "Outlook credentials must include clientId, clientSecret, redirectUri, and accessToken" | "IMAP credentials must include username, password, and host" | "Invalid credentials format";
 }
 export declare class IngestEmailsDto {

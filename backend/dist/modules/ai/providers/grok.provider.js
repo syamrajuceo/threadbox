@@ -28,8 +28,7 @@ let GrokProvider = GrokProvider_1 = class GrokProvider {
     constructor(configService) {
         this.configService = configService;
         this.apiKey = this.configService.get('GROK_API_KEY', '');
-        this.apiUrl =
-            this.configService.get('GROK_API_URL', 'https://api.x.ai/v1');
+        this.apiUrl = this.configService.get('GROK_API_URL', 'https://api.x.ai/v1');
         this.client = axios_1.default.create({
             baseURL: this.apiUrl,
             headers: {
@@ -62,7 +61,6 @@ let GrokProvider = GrokProvider_1 = class GrokProvider {
         }
         catch (error) {
             this.logger.error('Error classifying spam with Grok:', error);
-            const errorMessage = error instanceof Error ? error.message : 'Unknown error';
             return {
                 isSpam: false,
                 confidence: 0,

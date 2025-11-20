@@ -6,7 +6,13 @@ const KEY_LENGTH = 32;
 
 export class EncryptionUtil {
   private static getKey(secret: string): Buffer {
-    return crypto.pbkdf2Sync(secret, 'email-credentials-salt', 100000, KEY_LENGTH, 'sha512');
+    return crypto.pbkdf2Sync(
+      secret,
+      'email-credentials-salt',
+      100000,
+      KEY_LENGTH,
+      'sha512',
+    );
   }
 
   static encrypt(text: string, secret: string): string {
@@ -26,7 +32,7 @@ export class EncryptionUtil {
   static decrypt(encryptedData: string, secret: string): string {
     const key = this.getKey(secret);
     const parts = encryptedData.split(':');
-    
+
     if (parts.length !== 3) {
       throw new Error('Invalid encrypted data format');
     }
@@ -44,4 +50,3 @@ export class EncryptionUtil {
     return decrypted;
   }
 }
-

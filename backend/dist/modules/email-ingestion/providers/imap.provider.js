@@ -38,7 +38,8 @@ let ImapProvider = ImapProvider_1 = class ImapProvider {
         return new Promise((resolve, reject) => {
             this.imap.once('ready', () => resolve());
             this.imap.once('error', (err) => {
-                if (err.message?.includes('Invalid credentials') || err.message?.includes('authentication failed')) {
+                if (err.message?.includes('Invalid credentials') ||
+                    err.message?.includes('authentication failed')) {
                     reject(new Error('Invalid IMAP credentials. Please check your username and password.'));
                 }
                 else {
@@ -67,9 +68,7 @@ let ImapProvider = ImapProvider_1 = class ImapProvider {
                 else {
                     this.logger.log('No date filter provided - fetching ALL emails');
                 }
-                const searchCriteria = since
-                    ? [['SINCE', since]]
-                    : [['ALL']];
+                const searchCriteria = since ? [['SINCE', since]] : [['ALL']];
                 this.imap.search(searchCriteria, (err, results) => {
                     if (err) {
                         reject(err);

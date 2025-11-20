@@ -38,4 +38,3 @@ export class EmailAssignment {
   @JoinColumn({ name: 'assignedById' })
   assignedBy: User;
 }
-

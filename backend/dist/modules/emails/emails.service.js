@@ -81,7 +81,13 @@ let EmailsService = class EmailsService {
     async findOne(id) {
         const email = await this.emailsRepository.findOne({
             where: { id },
-            relations: ['project', 'assignedTo', 'attachments', 'thread', 'thread.emails'],
+            relations: [
+                'project',
+                'assignedTo',
+                'attachments',
+                'thread',
+                'thread.emails',
+            ],
         });
         if (!email) {
             throw new common_1.NotFoundException(`Email with ID ${id} not found`);

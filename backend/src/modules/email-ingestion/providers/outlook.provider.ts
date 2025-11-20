@@ -1,6 +1,10 @@
 import { Injectable, Logger } from '@nestjs/common';
 import { Client } from '@microsoft/microsoft-graph-client';
-import { IEmailProvider, EmailMessage, EmailAttachment } from '../interfaces/email-provider.interface';
+import {
+  IEmailProvider,
+  EmailMessage,
+  EmailAttachment,
+} from '../interfaces/email-provider.interface';
 import type { EmailProviderConfig } from '../interfaces/email-provider.interface';
 
 @Injectable()
@@ -42,7 +46,7 @@ export class OutlookProvider implements IEmailProvider {
 
     do {
       let request;
-      
+
       if (nextLink) {
         // Use the nextLink directly for pagination
         // Extract the path from the full URL
@@ -54,7 +58,7 @@ export class OutlookProvider implements IEmailProvider {
           .api('/me/messages')
           .top(pageSize)
           .orderby('receivedDateTime desc');
-        
+
         if (filter) {
           request = request.filter(filter);
         }
@@ -62,12 +66,18 @@ export class OutlookProvider implements IEmailProvider {
 
       const response = await request.get();
       const messages = response.value || [];
-      allMessages.push(...messages.map((msg: Record<string, unknown>) => this.parseOutlookMessage(msg)));
+      allMessages.push(
+        ...messages.map((msg: Record<string, unknown>) =>
+          this.parseOutlookMessage(msg),
+        ),
+      );
 
       nextLink = response['@odata.nextLink'];
-      
+
       if (nextLink) {
-        console.log(`Fetched ${allMessages.length} emails so far, continuing...`);
+        console.log(
+          `Fetched ${allMessages.length} emails so far, continuing...`,
+        );
       }
     } while (nextLink);
 
@@ -79,7 +89,8 @@ export class OutlookProvider implements IEmailProvider {
       id: message.id,
       subject: message.subject || '',
       body: message.body?.content || '',
-      bodyHtml: message.body?.contentType === 'html' ? message.body.content : '',
+      bodyHtml:
+        message.body?.contentType === 'html' ? message.body.content : '',
       fromAddress: message.from?.emailAddress?.address || '',
       fromName: message.from?.emailAddress?.name || '',
       toAddresses:
@@ -118,4 +129,3 @@ export class OutlookProvider implements IEmailProvider {
     return Buffer.from(String(attachment.contentBytes), 'base64');
   }
 }
-

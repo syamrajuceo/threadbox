@@ -34,4 +34,3 @@ export interface IEmailProvider {
   fetchEmails(since?: Date): Promise<EmailMessage[]>;
   downloadAttachment(messageId: string, attachmentId: string): Promise<Buffer>;
 }
-

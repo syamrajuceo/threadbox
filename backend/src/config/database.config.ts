@@ -6,7 +6,7 @@ export const getDatabaseConfig = (
   configService: ConfigService,
 ): TypeOrmModuleOptions => {
   const isDevelopment = configService.get<string>('NODE_ENV') === 'development';
-  
+
   return {
     type: 'postgres',
     host: configService.get<string>('DATABASE_HOST', 'localhost'),
@@ -32,4 +32,3 @@ export const getDatabaseConfig = (
     autoLoadEntities: false, // We're specifying entities manually
   };
 };
-

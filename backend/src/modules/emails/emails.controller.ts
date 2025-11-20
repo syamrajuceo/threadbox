@@ -35,7 +35,10 @@ export class EmailsController {
   ) {}
 
   @Get()
-  findAll(@Query() filters: EmailFilterDto, @Request() req: { user: { id: string; globalRole: GlobalRole } }) {
+  findAll(
+    @Query() filters: EmailFilterDto,
+    @Request() req: { user: { id: string; globalRole: GlobalRole } },
+  ) {
     // Use UserEmailsService to respect visibility rules
     return this.userEmailsService.getVisibleEmails(
       req.user.id,
@@ -108,4 +111,3 @@ export class EmailsController {
     }
   }
 }
-

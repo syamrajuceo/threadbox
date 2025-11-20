@@ -3,7 +3,6 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { Project } from '../projects/entities/project.entity';
 import { Membership } from '../memberships/entities/membership.entity';
-import { User } from '../users/entities/user.entity';
 
 export interface DashboardProject {
   id: string;
@@ -24,7 +23,10 @@ export class DashboardService {
     private projectsRepository: Repository<Project>,
   ) {}
 
-  async getUserProjects(userId: string, isSuperUser: boolean): Promise<DashboardProject[]> {
+  async getUserProjects(
+    userId: string,
+    isSuperUser: boolean,
+  ): Promise<DashboardProject[]> {
     let projects: Project[];
 
     if (isSuperUser) {
@@ -56,10 +58,11 @@ export class DashboardService {
       name: project.name,
       clientName: project.clientName,
       description: project.description || '',
-      role: membershipMap.get(project.id) || (isSuperUser ? 'Super User' : 'Member'),
+      role:
+        membershipMap.get(project.id) ||
+        (isSuperUser ? 'Super User' : 'Member'),
       openEmailsCount: 0, // TODO: Calculate when emails are implemented
       lastUpdated: project.updatedAt,
     }));
   }
 }
-

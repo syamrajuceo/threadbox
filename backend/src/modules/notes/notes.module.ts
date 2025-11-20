@@ -7,14 +7,9 @@ import { NotificationsModule } from '../notifications/notifications.module';
 import { UsersModule } from '../users/users.module';
 
 @Module({
-  imports: [
-    TypeOrmModule.forFeature([Note]),
-    NotificationsModule,
-    UsersModule,
-  ],
+  imports: [TypeOrmModule.forFeature([Note]), NotificationsModule, UsersModule],
   controllers: [NotesController],
   providers: [NotesService],
   exports: [NotesService],
 })
 export class NotesModule {}
-

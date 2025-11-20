@@ -34,7 +34,9 @@ let IncomingReviewController = class IncomingReviewController {
         });
     }
     assignToProject(id, projectId) {
-        const finalProjectId = projectId === '' || projectId === null || projectId === undefined ? '' : projectId;
+        const finalProjectId = projectId === '' || projectId === null || projectId === undefined
+            ? ''
+            : projectId;
         return this.incomingReviewService.assignToProject(id, finalProjectId);
     }
     assignToUser(id, userId) {

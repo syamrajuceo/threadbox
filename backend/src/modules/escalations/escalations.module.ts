@@ -17,4 +17,3 @@ import { UsersModule } from '../users/users.module';
   exports: [EscalationsService],
 })
 export class EscalationsModule {}
-

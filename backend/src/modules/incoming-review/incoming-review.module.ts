@@ -17,4 +17,3 @@ import { EmailIngestionModule } from '../email-ingestion/email-ingestion.module'
   exports: [IncomingReviewService],
 })
 export class IncomingReviewModule {}
-
