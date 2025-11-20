@@ -64,6 +64,33 @@ export default function MembershipsManagementPage() {
     }
   }, [selectedProject]);
 
+  useEffect(() => {
+    if (!isAuthenticated) {
+      router.push('/login');
+      return;
+    }
+    if (user?.globalRole !== 'super_user') {
+      router.push('/dashboard');
+      return;
+    }
+    loadData();
+  }, [isAuthenticated, user, router, loadData]);
+
+  useEffect(() => {
+    if (selectedProject) {
+      loadMemberships(selectedProject);
+      loadRoles(selectedProject);
+    } else {
+      loadMemberships();
+    }
+  }, [selectedProject]);
+
+  useEffect(() => {
+    if (formData.projectId) {
+      loadRoles(formData.projectId);
+    }
+  }, [formData.projectId]);
+
   const loadMemberships = async (projectId?: string) => {
     try {
       const data = await membershipsApi.getAll(projectId);
