@@ -643,7 +643,6 @@ Rules:
         responseTime,
       };
     } catch (error: unknown) {
-      const responseTime = Date.now() - startTime;
       this.logger.error('AI connection test failed:', error);
       
       const errorWithResponse = error as { response?: { status?: number; data?: { error?: { message?: string } } }; code?: string; message?: string };
