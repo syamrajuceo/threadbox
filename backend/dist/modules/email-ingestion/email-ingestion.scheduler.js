@@ -29,7 +29,7 @@ let EmailIngestionScheduler = EmailIngestionScheduler_1 = class EmailIngestionSc
             const emailAccounts = this.getEmailAccountsFromConfig();
             for (const account of emailAccounts) {
                 try {
-                    const count = await this.emailIngestionService.ingestEmails(account, this.getLastIngestionDate(account.account));
+                    const count = await this.emailIngestionService.ingestEmails(account, this.getLastIngestionDate());
                     this.logger.log(`Ingested ${count} emails from ${account.account} (${account.provider})`);
                 }
                 catch (error) {

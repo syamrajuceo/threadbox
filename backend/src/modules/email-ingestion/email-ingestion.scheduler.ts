@@ -26,7 +26,7 @@ export class EmailIngestionScheduler {
         try {
           const count = await this.emailIngestionService.ingestEmails(
             account,
-            this.getLastIngestionDate(account.account),
+            this.getLastIngestionDate(),
           );
           this.logger.log(
             `Ingested ${count} emails from ${account.account} (${account.provider})`,

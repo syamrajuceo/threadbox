@@ -79,7 +79,7 @@ let GmailProvider = GmailProvider_1 = class GmailProvider {
         let pageToken = undefined;
         const batchSize = 100;
         do {
-            const responseData = await this.retryWithBackoff(() => {
+            const responseData = (await this.retryWithBackoff(() => {
                 const requestParams = {
                     userId: 'me',
                     q: query,
@@ -88,7 +88,7 @@ let GmailProvider = GmailProvider_1 = class GmailProvider {
                 };
                 this.logger.debug(`Gmail API request: q="${query}", maxResults=${batchSize}, pageToken=${pageToken ? 'present' : 'none'}`);
                 return this.gmail.users.messages.list(requestParams);
-            }, 'list messages');
+            }, 'list messages'));
             const messages = responseData.data.messages || [];
             pageToken = responseData.data.nextPageToken;
             if (messages.length > 0) {
