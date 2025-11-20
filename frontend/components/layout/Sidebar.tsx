@@ -129,7 +129,7 @@ export default function Sidebar({ isExpanded: controlledExpanded, onToggle }: Si
                       key={child.href}
                       href={child.href}
                       isActive={isChildActive}
-                      onClick={(e) => {
+                      onClick={(e: React.MouseEvent) => {
                         e.preventDefault();
                         handleNavigation(child.href);
                       }}
