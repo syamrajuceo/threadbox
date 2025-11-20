@@ -39,8 +39,6 @@ interface ProjectDetails {
 
 export default function ProjectViewPage() {
   const params = useParams();
-  const router = useRouter();
-  const { user } = useAuthStore();
   const projectId = params.projectId as string;
   const [project, setProject] = useState<ProjectDetails | null>(null);
   const [emails, setEmails] = useState<Email[]>([]);
@@ -69,9 +67,10 @@ export default function ProjectViewPage() {
           `/projects/${projectId}`,
         );
         setProject(response.data);
-      } catch (error: any) {
+      } catch (error: unknown) {
         console.error('Failed to load project:', error);
-        setError(error.response?.data?.message || 'Failed to load project');
+        const errorWithResponse = error as { response?: { data?: { message?: string } } };
+        setError(errorWithResponse.response?.data?.message || 'Failed to load project');
       } finally {
         setLoading(false);
       }
@@ -137,9 +136,10 @@ export default function ProjectViewPage() {
           // Load project roles for assignment dropdown
           await loadProjectRoles(projectId);
         }
-      } catch (error: any) {
+      } catch (error: unknown) {
         console.error('Failed to load emails:', error);
-        setError(error.response?.data?.message || 'Failed to load emails');
+        const errorWithResponse = error as { response?: { data?: { message?: string } } };
+        setError(errorWithResponse.response?.data?.message || 'Failed to load emails');
       } finally {
         setLoadingEmails(false);
       }
@@ -225,10 +225,11 @@ export default function ProjectViewPage() {
         }
         setEmailAssignments(assignmentsMap);
       }
-    } catch (error: any) {
+    } catch (error: unknown) {
       console.error('Failed to assign email to role:', error);
+      const errorWithResponse = error as { response?: { data?: { message?: string } } };
       alert(
-        error.response?.data?.message ||
+        errorWithResponse.response?.data?.message ||
           'Failed to assign email. Please try again.',
       );
     } finally {
@@ -255,16 +256,6 @@ export default function ProjectViewPage() {
     }
   };
 
-  const getSpamTagType = (spamStatus: string) => {
-    switch (spamStatus) {
-      case 'spam':
-        return 'red';
-      case 'possible_spam':
-        return 'orange';
-      default:
-        return undefined;
-    }
-  };
 
   if (loading || loadingPMCheck) {
     return (
@@ -444,7 +435,7 @@ export default function ProjectViewPage() {
                               )}
                             </div>
                             <Stack gap={2} style={{ marginLeft: '1rem' }}>
-                              <Tag type={getStatusTagType(email.status) as any} size="sm">
+                              <Tag type={getStatusTagType(email.status) as 'blue' | 'yellow' | 'gray' | 'purple'} size="sm">
                                 {email.status}
                               </Tag>
                               {email.spamStatus === 'spam' && (

@@ -144,10 +144,11 @@ export default function ProjectManagerDashboard() {
       if (selectedProject) {
         loadEmails(selectedProject);
       }
-    } catch (error: any) {
+    } catch (error: unknown) {
       console.error('Failed to assign email:', error);
+      const errorWithResponse = error as { response?: { data?: { message?: string } } };
       alert(
-        error.response?.data?.message || 'Failed to assign email. Please try again.',
+        errorWithResponse.response?.data?.message || 'Failed to assign email. Please try again.',
       );
     } finally {
       setAssigning(false);

@@ -85,7 +85,7 @@ export default function UsersManagementPage() {
     e.preventDefault();
     if (!editingUser) return;
     try {
-      const updateData: any = { ...formData };
+      const updateData: Partial<CreateUserDto> = { ...formData };
       if (!updateData.password) delete updateData.password;
       await usersApi.update(editingUser.id, updateData);
       setEditingUser(null);

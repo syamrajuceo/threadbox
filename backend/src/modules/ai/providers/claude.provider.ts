@@ -66,7 +66,7 @@ export class ClaudeProvider implements IAIProvider {
         ],
       });
 
-      const result = this.parseSpamResponse(response.data);
+      const result = this.parseSpamResponse(response.data as { content?: string | Array<{ text?: string }> });
       return result;
     } catch (error: unknown) {
       this.logger.error('Error classifying spam with Claude:', error);
@@ -134,7 +134,7 @@ export class ClaudeProvider implements IAIProvider {
       });
 
       const result = this.parseProjectResponse(
-        response.data,
+        response.data as { content?: string | Array<{ text?: string }> },
         projectDescriptions,
       );
 
@@ -434,18 +434,20 @@ Important: Use the EXACT Project ID from the list above. Do not invent IDs.`;
       });
 
       const result = this.parseCombinedResponse(
-        response.data,
+        response.data as { content?: string | Array<{ text?: string }> },
         projectDescriptions,
       );
       return result;
-    } catch (error: any) {
+    } catch (error: unknown) {
       this.logger.error('Error in combined classification with Claude:', error);
-      this.logger.error('Error details:', error.response?.data || error.message);
+      const errorWithResponse = error as { response?: { data?: unknown }; message?: string };
+      const errorMessage = errorWithResponse.message || 'Unknown error';
+      this.logger.error('Error details:', errorWithResponse.response?.data || errorMessage);
       return {
         spamClassification: {
           category: 'not_spam',
           confidence: 0,
-          reason: `AI service error: ${error.message || 'Unknown error'}`,
+          reason: `AI service error: ${errorMessage}`,
         },
         projectClassification: {
           projectId: null,
@@ -576,7 +578,7 @@ Rules:
           reason: parsed.projectReason || 'No reason provided',
         },
       };
-    } catch (error) {
+    } catch (error: unknown) {
       this.logger.error('Error parsing combined classification response:', error);
       this.logger.error('Raw response:', JSON.stringify(data, null, 2));
       return {

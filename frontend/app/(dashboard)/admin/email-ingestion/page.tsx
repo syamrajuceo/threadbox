@@ -266,7 +266,7 @@ export default function EmailIngestionPage() {
     setResult(null);
 
     try {
-      let credentials: any = undefined;
+      let credentials: GmailCredentials | OutlookCredentials | ImapCredentials | undefined = undefined;
       
       const hasGmailCreds = provider === 'gmail' && gmailCredentials.clientId && gmailCredentials.clientSecret;
       const hasOutlookCreds = provider === 'outlook' && outlookCredentials.clientId && outlookCredentials.clientSecret;

@@ -11,6 +11,6 @@ export declare class CredentialsValidator implements ValidatorConstraintInterfac
 export declare class IngestEmailsDto {
     provider: EmailProvider;
     account: string;
-    credentials: any;
+    credentials: Record<string, unknown>;
     since?: Date;
 }

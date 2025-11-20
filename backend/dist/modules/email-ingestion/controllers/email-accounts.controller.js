@@ -65,12 +65,16 @@ let EmailAccountsController = EmailAccountsController_1 = class EmailAccountsCon
         }
         catch (error) {
             this.logger.error('Error updating email account:', error);
-            this.logger.error('Error message:', error.message);
-            this.logger.error('Error stack:', error.stack);
+            const errorMessage = error instanceof Error ? error.message : 'Failed to update email account';
+            const errorStack = error instanceof Error ? error.stack : undefined;
+            this.logger.error('Error message:', errorMessage);
+            if (errorStack) {
+                this.logger.error('Error stack:', errorStack);
+            }
             return {
                 error: true,
-                message: error.message || 'Failed to update email account',
-                details: process.env.NODE_ENV === 'development' ? error.stack : undefined,
+                message: errorMessage,
+                details: process.env.NODE_ENV === 'development' ? errorStack : undefined,
             };
         }
     }
@@ -85,7 +89,7 @@ let EmailAccountsController = EmailAccountsController_1 = class EmailAccountsCon
             this.logger.log(`Since parameter received: ${since || 'NOT PROVIDED'}`);
             let sinceDate = undefined;
             if (since) {
-                sinceDate = new Date(since);
+                sinceDate = new Date(String(since));
                 if (isNaN(sinceDate.getTime())) {
                     this.logger.error(`❌ Invalid date format provided: ${since}. Ignoring date filter.`);
                     sinceDate = undefined;

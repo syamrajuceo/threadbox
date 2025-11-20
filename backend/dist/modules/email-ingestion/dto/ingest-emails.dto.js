@@ -83,7 +83,12 @@ __decorate([
 ], IngestEmailsDto.prototype, "credentials", void 0);
 __decorate([
     (0, class_validator_1.IsOptional)(),
-    (0, class_transformer_1.Transform)(({ value }) => (value ? new Date(value) : undefined)),
+    (0, class_transformer_1.Transform)(({ value }) => {
+        if (!value)
+            return undefined;
+        const date = typeof value === 'string' || typeof value === 'number' ? new Date(value) : value;
+        return date instanceof Date ? date : undefined;
+    }),
     __metadata("design:type", Date)
 ], IngestEmailsDto.prototype, "since", void 0);
 //# sourceMappingURL=ingest-emails.dto.js.map

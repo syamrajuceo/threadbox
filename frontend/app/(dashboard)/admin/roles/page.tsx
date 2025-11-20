@@ -42,7 +42,7 @@ export default function RolesManagementPage() {
   const router = useRouter();
   const { user, isAuthenticated } = useAuthStore();
   const [roles, setRoles] = useState<Role[]>([]);
-  const [projects, setProjects] = useState<any[]>([]);
+  const [projects, setProjects] = useState<{ id: string; name: string }[]>([]);
   const [selectedProject, setSelectedProject] = useState<string>('');
   const [loading, setLoading] = useState(true);
   const [showCreateModal, setShowCreateModal] = useState(false);
@@ -383,7 +383,7 @@ export default function RolesManagementPage() {
                   onChange={(e) =>
                     setFormData({
                       ...formData,
-                      type: e.target.value as any,
+                      type: e.target.value as 'user' | 'project_manager',
                     })
                   }
                 >

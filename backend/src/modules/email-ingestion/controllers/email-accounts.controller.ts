@@ -79,16 +79,20 @@ export class EmailAccountsController {
       const account = await this.emailAccountsService.update(id, updateDto, req.user.id);
       this.logger.log(`Email account updated successfully: ${account.id}`);
       return account;
-    } catch (error: any) {
+    } catch (error: unknown) {
       this.logger.error('Error updating email account:', error);
-      this.logger.error('Error message:', error.message);
-      this.logger.error('Error stack:', error.stack);
+      const errorMessage = error instanceof Error ? error.message : 'Failed to update email account';
+      const errorStack = error instanceof Error ? error.stack : undefined;
+      this.logger.error('Error message:', errorMessage);
+      if (errorStack) {
+        this.logger.error('Error stack:', errorStack);
+      }
       
       // Return error response instead of throwing
       return {
         error: true,
-        message: error.message || 'Failed to update email account',
-        details: process.env.NODE_ENV === 'development' ? error.stack : undefined,
+        message: errorMessage,
+        details: process.env.NODE_ENV === 'development' ? errorStack : undefined,
       };
     }
   }
@@ -114,7 +118,7 @@ export class EmailAccountsController {
       let sinceDate: Date | undefined = undefined;
       if (since) {
         // Handle datetime-local format (YYYY-MM-DDTHH:mm) and ISO format
-        sinceDate = new Date(since);
+        sinceDate = new Date(String(since));
         if (isNaN(sinceDate.getTime())) {
           this.logger.error(`❌ Invalid date format provided: ${since}. Ignoring date filter.`);
           sinceDate = undefined;

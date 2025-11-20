@@ -22,8 +22,8 @@ export declare class EmailAccountsController {
     }): Promise<import("../entities/email-account.entity").EmailAccount>;
     update(id: string, updateDto: UpdateEmailAccountDto, req: any): Promise<import("../entities/email-account.entity").EmailAccount | {
         error: boolean;
-        message: any;
-        details: any;
+        message: string;
+        details: string | undefined;
     }>;
     remove(id: string, req: any): Promise<{
         success: boolean;

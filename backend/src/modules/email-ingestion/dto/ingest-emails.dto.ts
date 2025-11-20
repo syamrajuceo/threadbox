@@ -76,10 +76,14 @@ export class IngestEmailsDto {
 
   @IsObject()
   @Validate(CredentialsValidator)
-  credentials: any;
+  credentials: Record<string, unknown>;
 
   @IsOptional()
-  @Transform(({ value }) => (value ? new Date(value) : undefined))
+  @Transform(({ value }) => {
+    if (!value) return undefined;
+    const date = typeof value === 'string' || typeof value === 'number' ? new Date(value) : value;
+    return date instanceof Date ? date : undefined;
+  })
   since?: Date;
 }
 

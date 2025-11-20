@@ -19,7 +19,7 @@ import { useState } from 'react';
 
 export default function Header({ onMenuClick }: { onMenuClick?: () => void }) {
   const router = useRouter();
-  const { user, logout } = useAuthStore();
+  const { logout } = useAuthStore();
   const [showUserMenu, setShowUserMenu] = useState(false);
 
   const handleLogout = () => {

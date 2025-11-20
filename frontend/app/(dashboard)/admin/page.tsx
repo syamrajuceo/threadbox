@@ -170,10 +170,10 @@ function AIConnectionTest() {
         responseTime: testResult.details?.responseTime,
       });
     } catch (error: unknown) {
-      const errorMessage = error instanceof Error ? error.message : 'Failed to test AI connection';
+      const errorWithResponse = error as { response?: { data?: { message?: string } }; message?: string };
       setResult({
         success: false,
-        message: error.response?.data?.message || error.message || 'Failed to test AI connection',
+        message: errorWithResponse.response?.data?.message || errorWithResponse.message || 'Failed to test AI connection',
       });
     } finally {
       setTesting(false);
