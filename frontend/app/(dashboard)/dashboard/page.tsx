@@ -115,7 +115,7 @@ export default function DashboardPage() {
                       }}
                     >
                       <span>{project.openEmailsCount} open emails</span>
-                      <span>Updated {formatDate(project.lastUpdated)}</span>
+                      <span>Updated {project.lastUpdated ? formatDate(project.lastUpdated) : 'Never'}</span>
                     </div>
                   </Stack>
                 </Tile>
