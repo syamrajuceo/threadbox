@@ -34,7 +34,7 @@ export class AssignmentsController {
   assignEmailToMultiple(
     @Param('id') id: string,
     @Body() dto: AssignEmailMultipleDto,
-    @Request() req: any,
+    @Request() req: { user: { id: string } },
   ) {
     return this.assignmentsService.assignToMultipleUsers(
       id,
