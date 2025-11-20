@@ -6,6 +6,7 @@ import { CreateEscalationDto } from './dto/create-escalation.dto';
 import { ReviewEscalationDto } from './dto/review-escalation.dto';
 import { NotificationsService } from '../notifications/notifications.service';
 import { UsersService } from '../users/users.service';
+import { GlobalRole } from '../users/entities/user.entity';
 
 @Injectable()
 export class EscalationsService {

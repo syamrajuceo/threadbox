@@ -19,6 +19,7 @@ const typeorm_2 = require("typeorm");
 const escalation_entity_1 = require("./entities/escalation.entity");
 const notifications_service_1 = require("../notifications/notifications.service");
 const users_service_1 = require("../users/users.service");
+const user_entity_1 = require("../users/entities/user.entity");
 let EscalationsService = class EscalationsService {
     escalationsRepository;
     notificationsService;
@@ -41,7 +42,7 @@ let EscalationsService = class EscalationsService {
             .getRepository('emails')
             .findOne({ where: { id: createEscalationDto.emailId } });
         for (const superUser of superUsers) {
-            if (superUser.globalRole === GlobalRole.SUPER_USER) {
+            if (superUser.globalRole === user_entity_1.GlobalRole.SUPER_USER) {
                 await this.notificationsService.notifyEscalation(superUser.id, createEscalationDto.emailId, String(email?.projectId || ''), requesterName);
             }
         }
