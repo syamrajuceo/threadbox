@@ -1,0 +1,202 @@
+/* Import Tailwind (keep for backward compatibility during migration) */
+@import "tailwindcss";
+
+/* Note: IBM Plex Sans is included by Carbon Design System via @carbon/react/index.scss */
+/* We'll use Carbon's font variables and ensure proper font-family declarations */
+
+/* Carbon Design System Color Tokens - Matching Reference */
+:root {
+  /* Background Colors */
+  --cds-background: #ffffff;
+  --cds-layer-01: #f4f4f4;
+  --cds-layer-02: #ffffff;
+  --cds-layer-03: #ffffff;
+  
+  /* Text Colors */
+  --cds-text-primary: #161616;
+  --cds-text-secondary: #525252;
+  --cds-text-tertiary: #a8a8a8;
+  --cds-text-on-color: #ffffff;
+  
+  /* Interactive Colors */
+  --cds-link-primary: #0f62fe;
+  --cds-link-primary-hover: #0043ce;
+  --cds-link-secondary: #0043ce;
+  
+  /* Border Colors */
+  --cds-border-subtle-01: #e0e0e0;
+  --cds-border-subtle-02: #e0e0e0;
+  --cds-border-strong-01: #8d8d8d;
+  
+  /* Support Colors */
+  --cds-support-error: #da1e28;
+  --cds-support-success: #24a148;
+  --cds-support-warning: #f1c21b;
+  --cds-support-info: #0043ce;
+  
+  /* Header Colors */
+  --cds-header-background: #161616;
+  --cds-header-text: #ffffff;
+  
+  /* Legacy variables for backward compatibility */
+  --background: var(--cds-background);
+  --foreground: var(--cds-text-primary);
+}
+
+@theme inline {
+  --color-background: var(--cds-background);
+  --color-foreground: var(--cds-text-primary);
+  --font-sans: 'IBM Plex Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', sans-serif;
+  --font-mono: 'IBM Plex Mono', 'Courier New', monospace;
+}
+
+/* Typography - IBM Plex Sans */
+body {
+  background: var(--cds-background);
+  color: var(--cds-text-primary);
+  font-family: 'IBM Plex Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', sans-serif;
+  font-size: 0.875rem;
+  line-height: 1.5;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* Typography Scale */
+h1, .heading-01 {
+  font-size: 2.625rem;
+  font-weight: 400;
+  line-height: 1.19;
+  letter-spacing: 0;
+}
+
+h2, .heading-02 {
+  font-size: 2rem;
+  font-weight: 400;
+  line-height: 1.25;
+  letter-spacing: 0;
+}
+
+h3, .heading-03 {
+  font-size: 1.75rem;
+  font-weight: 400;
+  line-height: 1.29;
+  letter-spacing: 0;
+}
+
+h4, .heading-04 {
+  font-size: 1.25rem;
+  font-weight: 400;
+  line-height: 1.4;
+  letter-spacing: 0.16px;
+}
+
+h5, .heading-05 {
+  font-size: 1rem;
+  font-weight: 600;
+  line-height: 1.5;
+  letter-spacing: 0.16px;
+}
+
+h6, .heading-06 {
+  font-size: 0.875rem;
+  font-weight: 600;
+  line-height: 1.43;
+  letter-spacing: 0.16px;
+}
+
+/* Body Text */
+.body-01 {
+  font-size: 1rem;
+  font-weight: 400;
+  line-height: 1.5;
+  letter-spacing: 0.16px;
+}
+
+.body-02 {
+  font-size: 0.875rem;
+  font-weight: 400;
+  line-height: 1.43;
+  letter-spacing: 0.16px;
+}
+
+/* Label Text */
+.label-01 {
+  font-size: 0.875rem;
+  font-weight: 400;
+  line-height: 1.29;
+  letter-spacing: 0.16px;
+}
+
+.label-02 {
+  font-size: 0.75rem;
+  font-weight: 400;
+  line-height: 1.33;
+  letter-spacing: 0.32px;
+}
+
+/* Code Text */
+.code-01 {
+  font-family: 'IBM Plex Mono', 'Courier New', monospace;
+  font-size: 0.875rem;
+  font-weight: 400;
+  line-height: 1.43;
+  letter-spacing: 0.32px;
+}
+
+.code-02 {
+  font-family: 'IBM Plex Mono', 'Courier New', monospace;
+  font-size: 0.75rem;
+  font-weight: 400;
+  line-height: 1.33;
+  letter-spacing: 0.32px;
+}
+
+/* Custom utility classes */
+.carbon-container {
+  max-width: 1280px;
+  margin: 0 auto;
+  padding: 0 1rem;
+}
+
+/* Ensure Carbon components use correct background */
+.cds--content {
+  background-color: var(--cds-layer-01);
+}
+
+/* Carbon Design System Card/Tile Styling */
+/* Add subtle shadows and borders to distinguish cards from background */
+/* Using Carbon's elevation system for consistent shadows */
+.cds--tile,
+[class*="cds--tile"] {
+  background-color: var(--cds-layer-02) !important;
+  border: 1px solid var(--cds-border-subtle-01);
+  /* Carbon elevation-01: subtle shadow for cards */
+  box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.1);
+  transition: box-shadow 0.2s ease-in-out, border-color 0.2s ease-in-out;
+}
+
+/* Hover state for interactive tiles */
+.cds--tile:hover,
+[class*="cds--tile"]:hover {
+  /* Carbon elevation-02: slightly more prominent on hover */
+  box-shadow: 0 2px 4px 0 rgba(0, 0, 0, 0.14);
+  border-color: var(--cds-border-strong-01);
+}
+
+/* Ensure clickable tiles have cursor pointer */
+a .cds--tile,
+[href] .cds--tile,
+.cds--tile[style*="cursor: pointer"] {
+  cursor: pointer;
+}
+
+/* Add spacing between cards in grids */
+.cds--grid .cds--col {
+  margin-bottom: 1rem;
+}
+
+/* Ensure proper spacing for card content */
+.cds--tile > * {
+  position: relative;
+  z-index: 1;
+}

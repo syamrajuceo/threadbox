@@ -1,0 +1,4 @@
+export declare class CreateNoteDto {
+    content: string;
+    emailId: string;
+}

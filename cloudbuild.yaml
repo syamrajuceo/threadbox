@@ -1,0 +1,115 @@
+# Google Cloud Build configuration for CI/CD
+# This file is used by Google Cloud Build for automated deployments
+
+steps:
+  # Build Backend Docker Image
+  - name: 'gcr.io/cloud-builders/docker'
+    args:
+      - 'build'
+      - '-f'
+      - 'docker/Dockerfile.backend'
+      - '-t'
+      - 'gcr.io/${PROJECT_ID}/threadbox-backend:${SHORT_SHA}'
+      - '-t'
+      - 'gcr.io/${PROJECT_ID}/threadbox-backend:latest'
+      - './backend'
+    id: 'build-backend'
+
+  # Build Frontend Docker Image
+  - name: 'gcr.io/cloud-builders/docker'
+    args:
+      - 'build'
+      - '-f'
+      - 'docker/Dockerfile.frontend'
+      - '-t'
+      - 'gcr.io/${PROJECT_ID}/threadbox-frontend:${SHORT_SHA}'
+      - '-t'
+      - 'gcr.io/${PROJECT_ID}/threadbox-frontend:latest'
+      - './frontend'
+    id: 'build-frontend'
+
+  # Push Backend Image
+  - name: 'gcr.io/cloud-builders/docker'
+    args:
+      - 'push'
+      - 'gcr.io/${PROJECT_ID}/threadbox-backend:${SHORT_SHA}'
+    id: 'push-backend'
+
+  # Push Frontend Image
+  - name: 'gcr.io/cloud-builders/docker'
+    args:
+      - 'push'
+      - 'gcr.io/${PROJECT_ID}/threadbox-frontend:${SHORT_SHA}'
+    id: 'push-frontend'
+
+  # Deploy Backend to Cloud Run
+  - name: 'gcr.io/google.com/cloudsdktool/cloud-sdk'
+    entrypoint: gcloud
+    args:
+      - 'run'
+      - 'deploy'
+      - 'threadbox-backend'
+      - '--image'
+      - 'gcr.io/${PROJECT_ID}/threadbox-backend:${SHORT_SHA}'
+      - '--platform'
+      - 'managed'
+      - '--region'
+      - '${_REGION}'
+      - '--allow-unauthenticated'
+      - '--set-env-vars'
+      - 'DATABASE_HOST=${_DATABASE_HOST},DATABASE_PORT=${_DATABASE_PORT},DATABASE_USER=${_DATABASE_USER},DATABASE_PASSWORD=${_DATABASE_PASSWORD},DATABASE_NAME=${_DATABASE_NAME},JWT_SECRET=${_JWT_SECRET},JWT_EXPIRES_IN=${_JWT_EXPIRES_IN},CLAUDE_API_KEY=${_CLAUDE_API_KEY},NODE_ENV=production'
+      - '--memory'
+      - '1Gi'
+      - '--cpu'
+      - '1'
+      - '--timeout'
+      - '300'
+      - '--max-instances'
+      - '10'
+      - '--min-instances'
+      - '0'
+    id: 'deploy-backend'
+    waitFor: ['push-backend']
+
+  # Get Backend URL and Deploy Frontend
+  - name: 'gcr.io/google.com/cloudsdktool/cloud-sdk'
+    entrypoint: bash
+    args:
+      - '-c'
+      - |
+        BACKEND_URL=$(gcloud run services describe threadbox-backend --region ${_REGION} --format 'value(status.url)')
+        gcloud run deploy threadbox-frontend \
+          --image gcr.io/${PROJECT_ID}/threadbox-frontend:${SHORT_SHA} \
+          --platform managed \
+          --region ${_REGION} \
+          --allow-unauthenticated \
+          --set-env-vars="NEXT_PUBLIC_API_URL=$$BACKEND_URL,NEXT_PUBLIC_APP_NAME=Threadbox" \
+          --memory 512Mi \
+          --cpu 1 \
+          --timeout 300 \
+          --max-instances 10 \
+          --min-instances 0
+    id: 'deploy-frontend'
+    waitFor: ['push-frontend', 'deploy-backend']
+
+images:
+  - 'gcr.io/${PROJECT_ID}/threadbox-backend:${SHORT_SHA}'
+  - 'gcr.io/${PROJECT_ID}/threadbox-backend:latest'
+  - 'gcr.io/${PROJECT_ID}/threadbox-frontend:${SHORT_SHA}'
+  - 'gcr.io/${PROJECT_ID}/threadbox-frontend:latest'
+
+options:
+  logging: CLOUD_LOGGING_ONLY
+  machineType: 'E2_HIGHCPU_8'
+
+substitutions:
+  _REGION: 'us-central1'
+  _DATABASE_HOST: 'your-cloud-sql-instance-ip'
+  _DATABASE_PORT: '5432'
+  _DATABASE_USER: 'threadbox'
+  _DATABASE_PASSWORD: 'your-secure-password'
+  _DATABASE_NAME: 'threadbox'
+  _JWT_SECRET: 'your-jwt-secret'
+  _JWT_EXPIRES_IN: '24h'
+  _CLAUDE_API_KEY: 'your-claude-api-key'
+
