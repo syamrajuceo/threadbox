@@ -432,7 +432,7 @@ export default function ProjectViewPage() {
                               )}
                             </div>
                             <Stack gap={2} style={{ marginLeft: '1rem' }}>
-                              <Tag type={getStatusTagType(email.status) as 'blue' | 'yellow' | 'gray' | 'purple'} size="sm">
+                              <Tag type={getStatusTagType(email.status)} size="sm">
                                 {email.status}
                               </Tag>
                               {email.spamStatus === 'spam' && (
