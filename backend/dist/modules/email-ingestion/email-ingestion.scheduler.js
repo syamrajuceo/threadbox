@@ -49,13 +49,13 @@ let EmailIngestionScheduler = EmailIngestionScheduler_1 = class EmailIngestionSc
                 const parsed = JSON.parse(gmailAccounts);
                 accounts.push(...parsed);
             }
-            catch (e) {
+            catch {
                 this.logger.warn('Failed to parse GMAIL_ACCOUNTS from config');
             }
         }
         return accounts;
     }
-    getLastIngestionDate(account) {
+    getLastIngestionDate() {
         const hoursAgo = 24;
         return new Date(Date.now() - hoursAgo * 60 * 60 * 1000);
     }

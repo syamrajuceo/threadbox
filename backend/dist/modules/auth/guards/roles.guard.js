@@ -28,7 +28,8 @@ let RolesGuard = class RolesGuard {
         if (!user || !user.globalRole) {
             return false;
         }
-        return requiredRoles.some((role) => user.globalRole === role);
+        const userRole = user.globalRole;
+        return requiredRoles.some((role) => userRole === role);
     }
 };
 exports.RolesGuard = RolesGuard;

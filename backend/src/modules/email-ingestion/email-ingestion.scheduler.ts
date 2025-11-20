@@ -1,5 +1,5 @@
 import { Injectable, Logger } from '@nestjs/common';
-import { Cron, CronExpression } from '@nestjs/schedule';
+import { Cron } from '@nestjs/schedule';
 import { ConfigService } from '@nestjs/config';
 import { EmailIngestionService } from './email-ingestion.service';
 import { EmailProviderConfig } from './interfaces/email-provider.interface';
@@ -55,7 +55,7 @@ export class EmailIngestionScheduler {
       try {
         const parsed = JSON.parse(gmailAccounts) as EmailProviderConfig[];
         accounts.push(...parsed);
-      } catch (e) {
+      } catch {
         this.logger.warn('Failed to parse GMAIL_ACCOUNTS from config');
       }
     }
@@ -63,7 +63,7 @@ export class EmailIngestionScheduler {
     return accounts;
   }
 
-  private getLastIngestionDate(account: string): Date | undefined {
+  private getLastIngestionDate(): Date | undefined {
     // In a production system, you'd store the last ingestion date per account
     // For now, return undefined to fetch all emails (or last 24 hours)
     const hoursAgo = 24;

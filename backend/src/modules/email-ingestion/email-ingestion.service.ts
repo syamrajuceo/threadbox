@@ -13,7 +13,6 @@ import { Attachment } from '../emails/entities/attachment.entity';
 import { EmailThread } from '../emails/entities/email-thread.entity';
 import {
   IEmailProvider,
-  EmailMessage,
   EmailProviderConfig,
 } from './interfaces/email-provider.interface';
 import { GmailProvider } from './providers/gmail.provider';
@@ -161,7 +160,7 @@ export class EmailIngestionService {
     return ingestedCount;
   }
 
-  private async saveAttachment(
+  private saveAttachment(
     emailId: string,
     filename: string,
     content: Buffer,

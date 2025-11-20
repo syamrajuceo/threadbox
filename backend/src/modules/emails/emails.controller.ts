@@ -17,7 +17,7 @@ import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 import { RolesGuard } from '../auth/guards/roles.guard';
 import { Roles } from '../auth/decorators/roles.decorator';
 import { GlobalRole } from '../users/entities/user.entity';
-import { Email, EmailStatus } from './entities/email.entity';
+import { Email } from './entities/email.entity';
 import { EmailFilterDto } from './dto/email-filter.dto';
 import { BulkUpdateDto } from './dto/bulk-update.dto';
 import { ResetEmailsDto } from './dto/reset-emails.dto';

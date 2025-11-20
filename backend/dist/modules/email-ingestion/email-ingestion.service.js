@@ -164,7 +164,7 @@ let EmailIngestionService = EmailIngestionService_1 = class EmailIngestionServic
         }
         return ingestedCount;
     }
-    async saveAttachment(emailId, filename, content) {
+    saveAttachment(emailId, filename, content) {
         const emailDir = path.join(this.attachmentsDir, emailId);
         if (!fs.existsSync(emailDir)) {
             fs.mkdirSync(emailDir, { recursive: true });

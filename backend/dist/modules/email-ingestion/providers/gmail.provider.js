@@ -44,12 +44,13 @@ let GmailProvider = GmailProvider_1 = class GmailProvider {
                     '2. The redirect URI used to obtain the refresh token matches the one you entered\n' +
                     '3. The client ID and client secret are correct\n' +
                     '4. The Gmail API is enabled in your Google Cloud project\n' +
-                    `Current redirect URI: ${this.config.credentials.redirectUri}`);
+                    `Current redirect URI: ${String(this.config.credentials.redirectUri)}`);
             }
-            if (error.message?.includes('Quota exceeded') ||
-                error.message?.includes('quota') ||
-                error.code === 429 ||
-                error.response?.status === 429) {
+            const errorWithDetails = error;
+            if (errorWithDetails.message?.includes('Quota exceeded') ||
+                errorWithDetails.message?.includes('quota') ||
+                errorWithDetails.code === 429 ||
+                errorWithDetails.response?.status === 429) {
                 throw new Error('Gmail API quota exceeded. Please wait a few minutes before trying again.\n' +
                     'The system will automatically retry with delays, but you may need to:\n' +
                     '1. Wait 1-2 minutes before retrying\n' +
@@ -78,7 +79,7 @@ let GmailProvider = GmailProvider_1 = class GmailProvider {
         let pageToken = undefined;
         const batchSize = 100;
         do {
-            const response = await this.retryWithBackoff(() => {
+            const responseData = await this.retryWithBackoff(() => {
                 const requestParams = {
                     userId: 'me',
                     q: query,
@@ -88,8 +89,8 @@ let GmailProvider = GmailProvider_1 = class GmailProvider {
                 this.logger.debug(`Gmail API request: q="${query}", maxResults=${batchSize}, pageToken=${pageToken ? 'present' : 'none'}`);
                 return this.gmail.users.messages.list(requestParams);
             }, 'list messages');
-            const messages = response.data.messages || [];
-            pageToken = response.data.nextPageToken;
+            const messages = responseData.data.messages || [];
+            pageToken = responseData.data.nextPageToken;
             if (messages.length > 0) {
                 this.logger.log(`Fetched ${messages.length} messages (total so far: ${emailMessages.length + messages.length})`);
             }
@@ -104,11 +105,11 @@ let GmailProvider = GmailProvider_1 = class GmailProvider {
                         await this.delay(this.DELAY_BETWEEN_REQUESTS_MS);
                     }
                     return this.retryWithBackoff(async () => {
-                        const fullMessage = await this.gmail.users.messages.get({
+                        const fullMessage = (await this.gmail.users.messages.get({
                             userId: 'me',
                             id: message.id,
                             format: 'full',
-                        });
+                        }));
                         return this.parseGmailMessage(fullMessage.data);
                     }, `fetch message ${message.id}`);
                 });
@@ -136,10 +137,11 @@ let GmailProvider = GmailProvider_1 = class GmailProvider {
             }
             catch (error) {
                 lastError = error;
-                const isQuotaError = error.message?.includes('Quota exceeded') ||
-                    error.message?.includes('quota') ||
-                    error.code === 429 ||
-                    error.response?.status === 429;
+                const errorWithDetails = error;
+                const isQuotaError = errorWithDetails.message?.includes('Quota exceeded') ||
+                    errorWithDetails.message?.includes('quota') ||
+                    errorWithDetails.code === 429 ||
+                    errorWithDetails.response?.status === 429;
                 if (isQuotaError && attempt < retries) {
                     const delay = this.INITIAL_RETRY_DELAY_MS * Math.pow(2, attempt);
                     this.logger.warn(`Quota error for ${operation}, retrying in ${delay}ms (attempt ${attempt + 1}/${retries + 1})`);
@@ -158,9 +160,12 @@ let GmailProvider = GmailProvider_1 = class GmailProvider {
     }
     parseGmailMessage(message) {
         try {
-            const headers = message.payload.headers;
-            const getHeader = (name) => headers.find((h) => h.name.toLowerCase() === name.toLowerCase())
-                ?.value || '';
+            const payload = message.payload;
+            const headers = payload.headers || [];
+            const getHeader = (name) => {
+                const header = headers.find((h) => h.name?.toLowerCase() === name.toLowerCase());
+                return header?.value || '';
+            };
             const subject = getHeader('subject');
             const from = getHeader('from');
             const to = getHeader('to');
@@ -170,16 +175,16 @@ let GmailProvider = GmailProvider_1 = class GmailProvider {
             const inReplyTo = getHeader('in-reply-to');
             const references = getHeader('references');
             const bodyData = { body: '', bodyHtml: '' };
-            this.extractBody(message.payload, bodyData);
+            this.extractBody(payload, bodyData);
             const fromMatch = from.match(/^(.+?)\s*<(.+?)>$|^(.+?)$/);
             const fromName = fromMatch ? fromMatch[1] || fromMatch[3] || '' : '';
             const fromAddress = fromMatch
                 ? fromMatch[2] || fromMatch[3] || from
                 : from;
             const attachments = [];
-            this.extractAttachments(message.payload, attachments);
+            this.extractAttachments(payload, attachments);
             return {
-                id: message.id,
+                id: String(message.id || ''),
                 subject,
                 body: bodyData.body || bodyData.bodyHtml.replace(/<[^>]*>/g, ''),
                 bodyHtml: bodyData.bodyHtml || bodyData.body,
@@ -188,7 +193,8 @@ let GmailProvider = GmailProvider_1 = class GmailProvider {
                 toAddresses: to.split(',').map((e) => e.trim()),
                 ccAddresses: cc ? cc.split(',').map((e) => e.trim()) : [],
                 bccAddresses: [],
-                receivedAt: new Date(date || String(message.internalDate || Date.now())),
+                receivedAt: new Date(date ||
+                    String(message.internalDate || Date.now())),
                 messageId,
                 inReplyTo,
                 references,
@@ -210,7 +216,7 @@ let GmailProvider = GmailProvider_1 = class GmailProvider {
                 bodyData.body = content;
             }
         }
-        if (part.parts) {
+        if (part.parts && Array.isArray(part.parts)) {
             for (const subPart of part.parts) {
                 this.extractBody(subPart, bodyData);
             }
@@ -220,24 +226,24 @@ let GmailProvider = GmailProvider_1 = class GmailProvider {
         if (part.filename && part.body?.attachmentId) {
             attachments.push({
                 filename: part.filename,
-                contentType: part.mimeType,
+                contentType: part.mimeType || 'application/octet-stream',
                 size: part.body.size || 0,
                 content: Buffer.alloc(0),
             });
         }
-        if (part.parts) {
+        if (part.parts && Array.isArray(part.parts)) {
             for (const subPart of part.parts) {
                 this.extractAttachments(subPart, attachments);
             }
         }
     }
     async downloadAttachment(messageId, attachmentId) {
-        const response = await this.gmail.users.messages.attachments.get({
+        const response = (await this.gmail.users.messages.attachments.get({
             userId: 'me',
             messageId,
             id: attachmentId,
-        });
-        return Buffer.from(String(response.data.data), 'base64');
+        }));
+        return Buffer.from(String(response.data.data || ''), 'base64');
     }
 };
 exports.GmailProvider = GmailProvider;

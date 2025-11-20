@@ -53,7 +53,8 @@ export class EmailIngestionController {
 
       // Return error response instead of throwing exception
       // This allows frontend to handle the error gracefully
-      const errorMessage = error instanceof Error ? error.message : 'Unknown error';
+      const errorMessage =
+        error instanceof Error ? error.message : 'Unknown error';
       return {
         success: false,
         ingested: 0,

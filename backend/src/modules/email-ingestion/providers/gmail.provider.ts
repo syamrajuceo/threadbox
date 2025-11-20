@@ -55,16 +55,21 @@ export class GmailProvider implements IEmailProvider {
             '2. The redirect URI used to obtain the refresh token matches the one you entered\n' +
             '3. The client ID and client secret are correct\n' +
             '4. The Gmail API is enabled in your Google Cloud project\n' +
-            `Current redirect URI: ${this.config.credentials.redirectUri}`,
+            `Current redirect URI: ${String(this.config.credentials.redirectUri)}`,
         );
       }
 
       // Handle quota errors with helpful message
+      const errorWithDetails = error as {
+        message?: string;
+        code?: number;
+        response?: { status?: number };
+      };
       if (
-        error.message?.includes('Quota exceeded') ||
-        error.message?.includes('quota') ||
-        error.code === 429 ||
-        error.response?.status === 429
+        errorWithDetails.message?.includes('Quota exceeded') ||
+        errorWithDetails.message?.includes('quota') ||
+        errorWithDetails.code === 429 ||
+        errorWithDetails.response?.status === 429
       ) {
         throw new Error(
           'Gmail API quota exceeded. Please wait a few minutes before trying again.\n' +
@@ -109,7 +114,7 @@ export class GmailProvider implements IEmailProvider {
 
     do {
       // Fetch message list with retry logic
-      const response = await this.retryWithBackoff(() => {
+      const responseData = await this.retryWithBackoff(() => {
         const requestParams = {
           userId: 'me',
           q: query,
@@ -122,8 +127,8 @@ export class GmailProvider implements IEmailProvider {
         return this.gmail.users.messages.list(requestParams);
       }, 'list messages');
 
-      const messages = response.data.messages || [];
-      pageToken = response.data.nextPageToken;
+      const messages = responseData.data.messages || [];
+      pageToken = responseData.data.nextPageToken;
 
       if (messages.length > 0) {
         this.logger.log(
@@ -142,22 +147,24 @@ export class GmailProvider implements IEmailProvider {
         const batch = messages.slice(i, i + sequentialBatchSize);
 
         // Process batch with controlled parallel execution and rate limiting
-        const batchPromises = batch.map(async (message: any, index: number) => {
-          // Add small delay between requests to respect rate limits
-          // This gives us ~28 requests/second (1000ms / 35ms = ~28)
-          if (index > 0) {
-            await this.delay(this.DELAY_BETWEEN_REQUESTS_MS);
-          }
+        const batchPromises = batch.map(
+          async (message: { id: string }, index: number) => {
+            // Add small delay between requests to respect rate limits
+            // This gives us ~28 requests/second (1000ms / 35ms = ~28)
+            if (index > 0) {
+              await this.delay(this.DELAY_BETWEEN_REQUESTS_MS);
+            }
 
-          return this.retryWithBackoff(async () => {
-            const fullMessage = await this.gmail.users.messages.get({
-              userId: 'me',
-              id: message.id,
-              format: 'full',
-            });
-            return this.parseGmailMessage(fullMessage.data);
-          }, `fetch message ${message.id}`);
-        });
+            return this.retryWithBackoff(async () => {
+              const fullMessage = (await this.gmail.users.messages.get({
+                userId: 'me',
+                id: message.id,
+                format: 'full',
+              })) as { data: unknown };
+              return this.parseGmailMessage(fullMessage.data);
+            }, `fetch message ${message.id}`);
+          },
+        );
 
         const batchResults = await Promise.all(batchPromises);
         const validEmails = batchResults.filter((email) => email !== null);
@@ -204,11 +211,16 @@ export class GmailProvider implements IEmailProvider {
         lastError = error;
 
         // Check if it's a quota error
+        const errorWithDetails = error as {
+          message?: string;
+          code?: number;
+          response?: { status?: number };
+        };
         const isQuotaError =
-          error.message?.includes('Quota exceeded') ||
-          error.message?.includes('quota') ||
-          error.code === 429 ||
-          error.response?.status === 429;
+          errorWithDetails.message?.includes('Quota exceeded') ||
+          errorWithDetails.message?.includes('quota') ||
+          errorWithDetails.code === 429 ||
+          errorWithDetails.response?.status === 429;
 
         if (isQuotaError && attempt < retries) {
           const delay = this.INITIAL_RETRY_DELAY_MS * Math.pow(2, attempt);
@@ -236,12 +248,22 @@ export class GmailProvider implements IEmailProvider {
     return new Promise((resolve) => setTimeout(resolve, ms));
   }
 
-  private parseGmailMessage(message: any): EmailMessage | null {
+  private parseGmailMessage(
+    message: Record<string, unknown>,
+  ): EmailMessage | null {
     try {
-      const headers = message.payload.headers;
-      const getHeader = (name: string) =>
-        headers.find((h: any) => h.name.toLowerCase() === name.toLowerCase())
-          ?.value || '';
+      const payload = message.payload as {
+        headers?: Array<{ name?: string; value?: string }>;
+        parts?: unknown[];
+        body?: { data?: string };
+      };
+      const headers = payload.headers || [];
+      const getHeader = (name: string) => {
+        const header = headers.find(
+          (h) => h.name?.toLowerCase() === name.toLowerCase(),
+        );
+        return header?.value || '';
+      };
 
       const subject = getHeader('subject');
       const from = getHeader('from');
@@ -254,7 +276,7 @@ export class GmailProvider implements IEmailProvider {
 
       // Parse body
       const bodyData = { body: '', bodyHtml: '' };
-      this.extractBody(message.payload, bodyData);
+      this.extractBody(payload, bodyData);
 
       // Parse from address
       const fromMatch = from.match(/^(.+?)\s*<(.+?)>$|^(.+?)$/);
@@ -265,10 +287,10 @@ export class GmailProvider implements IEmailProvider {
 
       // Parse attachments
       const attachments: EmailAttachment[] = [];
-      this.extractAttachments(message.payload, attachments);
+      this.extractAttachments(payload, attachments);
 
       return {
-        id: message.id,
+        id: String(message.id || ''),
         subject,
         body: bodyData.body || bodyData.bodyHtml.replace(/<[^>]*>/g, ''),
         bodyHtml: bodyData.bodyHtml || bodyData.body,
@@ -278,7 +300,8 @@ export class GmailProvider implements IEmailProvider {
         ccAddresses: cc ? cc.split(',').map((e: string) => e.trim()) : [],
         bccAddresses: [],
         receivedAt: new Date(
-          date || String(message.internalDate || Date.now()),
+          date ||
+            String((message.internalDate as number | undefined) || Date.now()),
         ),
         messageId,
         inReplyTo,
@@ -292,7 +315,7 @@ export class GmailProvider implements IEmailProvider {
   }
 
   private extractBody(
-    part: any,
+    part: { body?: { data?: string }; mimeType?: string; parts?: unknown[] },
     bodyData: { body: string; bodyHtml: string },
   ): void {
     if (part.body?.data) {
@@ -304,26 +327,49 @@ export class GmailProvider implements IEmailProvider {
       }
     }
 
-    if (part.parts) {
+    if (part.parts && Array.isArray(part.parts)) {
       for (const subPart of part.parts) {
-        this.extractBody(subPart, bodyData);
+        this.extractBody(
+          subPart as {
+            body?: { data?: string };
+            mimeType?: string;
+            parts?: unknown[];
+          },
+          bodyData,
+        );
       }
     }
   }
 
-  private extractAttachments(part: any, attachments: EmailAttachment[]): void {
+  private extractAttachments(
+    part: {
+      filename?: string;
+      body?: { attachmentId?: string; size?: number };
+      mimeType?: string;
+      parts?: unknown[];
+    },
+    attachments: EmailAttachment[],
+  ): void {
     if (part.filename && part.body?.attachmentId) {
       attachments.push({
         filename: part.filename,
-        contentType: part.mimeType,
+        contentType: part.mimeType || 'application/octet-stream',
         size: part.body.size || 0,
         content: Buffer.alloc(0), // Will be downloaded separately
       });
     }
 
-    if (part.parts) {
+    if (part.parts && Array.isArray(part.parts)) {
       for (const subPart of part.parts) {
-        this.extractAttachments(subPart, attachments);
+        this.extractAttachments(
+          subPart as {
+            filename?: string;
+            body?: { attachmentId?: string; size?: number };
+            mimeType?: string;
+            parts?: unknown[];
+          },
+          attachments,
+        );
       }
     }
   }
@@ -332,12 +378,12 @@ export class GmailProvider implements IEmailProvider {
     messageId: string,
     attachmentId: string,
   ): Promise<Buffer> {
-    const response = await this.gmail.users.messages.attachments.get({
+    const response = (await this.gmail.users.messages.attachments.get({
       userId: 'me',
       messageId,
       id: attachmentId,
-    });
+    })) as { data: { data?: string } };
 
-    return Buffer.from(String(response.data.data), 'base64');
+    return Buffer.from(String(response.data.data || ''), 'base64');
   }
 }

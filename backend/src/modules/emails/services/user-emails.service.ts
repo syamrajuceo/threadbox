@@ -5,7 +5,7 @@ import { Email } from '../entities/email.entity';
 import { EmailAssignment } from '../../assignments/entities/email-assignment.entity';
 import { Membership } from '../../memberships/entities/membership.entity';
 import { ProjectRoleType } from '../../roles/entities/role.entity';
-import { User, GlobalRole } from '../../users/entities/user.entity';
+import { GlobalRole } from '../../users/entities/user.entity';
 
 @Injectable()
 export class UserEmailsService {
