@@ -33,21 +33,6 @@ export default function ProjectManagerDashboard() {
     'unassigned',
   );
 
-  useEffect(() => {
-    if (!isAuthenticated) {
-      router.push('/login');
-      return;
-    }
-    loadProjects();
-  }, [isAuthenticated, router, loadProjects]);
-
-  useEffect(() => {
-    if (selectedProject) {
-      loadEmails(selectedProject);
-      loadProjectUsers(selectedProject);
-    }
-  }, [selectedProject]);
-
   const loadProjects = useCallback(async () => {
     try {
       setLoading(true);
@@ -60,6 +45,21 @@ export default function ProjectManagerDashboard() {
       console.error('Failed to load projects:', error);
     } finally {
       setLoading(false);
+    }
+  }, [selectedProject]);
+
+  useEffect(() => {
+    if (!isAuthenticated) {
+      router.push('/login');
+      return;
+    }
+    loadProjects();
+  }, [isAuthenticated, router, loadProjects]);
+
+  useEffect(() => {
+    if (selectedProject) {
+      loadEmails(selectedProject);
+      loadProjectUsers(selectedProject);
     }
   }, [selectedProject]);
 
