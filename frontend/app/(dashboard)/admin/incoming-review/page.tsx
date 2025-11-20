@@ -48,7 +48,7 @@ export default function IncomingReviewPage() {
     setPendingAssignments(new Map());
     loadData();
     loadProjects();
-  }, [filters, loadData, loadProjects, user?.globalRole]);
+  }, [filters, loadData, loadProjects, user?.globalRole, router]);
 
   const loadData = useCallback(async () => {
     try {
@@ -255,7 +255,7 @@ export default function IncomingReviewPage() {
                 {pendingAssignments.size} pending change{pendingAssignments.size !== 1 ? 's' : ''}
               </Heading>
               <p style={{ fontSize: '0.875rem', color: 'var(--cds-text-secondary)' }}>
-                Click 'Apply Changes' to save all updates
+                Click &apos;Apply Changes&apos; to save all updates
               </p>
             </div>
             <div style={{ display: 'flex', gap: '0.5rem', justifyContent: 'flex-end' }}>
