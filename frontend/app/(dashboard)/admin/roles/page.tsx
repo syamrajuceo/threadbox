@@ -383,7 +383,7 @@ export default function RolesManagementPage() {
                   onChange={(e) =>
                     setFormData({
                       ...formData,
-                      type: e.target.value as 'user' | 'project_manager',
+                      type: e.target.value as 'project_manager' | 'developer' | 'tester' | 'custom',
                     })
                   }
                 >
