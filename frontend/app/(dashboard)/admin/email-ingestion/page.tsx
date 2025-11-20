@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { useAuthStore } from '@/lib/store/authStore';
@@ -77,6 +77,18 @@ export default function EmailIngestionPage() {
 
   const [sinceDate, setSinceDate] = useState('');
 
+  const loadSavedAccounts = useCallback(async () => {
+    try {
+      setLoadingAccounts(true);
+      const accounts = await emailAccountsApi.getAll();
+      setSavedAccounts(accounts);
+    } catch (error) {
+      console.error('Error loading saved accounts:', error);
+    } finally {
+      setLoadingAccounts(false);
+    }
+  }, []);
+
   useEffect(() => {
     if (!isAuthenticated) {
       router.push('/login');
@@ -87,19 +99,7 @@ export default function EmailIngestionPage() {
       return;
     }
     loadSavedAccounts();
-  }, [isAuthenticated, user, router]);
-
-  const loadSavedAccounts = async () => {
-    try {
-      setLoadingAccounts(true);
-      const accounts = await emailAccountsApi.getAll();
-      setSavedAccounts(accounts);
-    } catch (error) {
-      console.error('Error loading saved accounts:', error);
-    } finally {
-      setLoadingAccounts(false);
-    }
-  };
+  }, [isAuthenticated, user, router, loadSavedAccounts]);
 
   const handleIngestFromSaved = async (accountId: string) => {
     setIngestingAccountId(accountId);
@@ -115,21 +115,21 @@ export default function EmailIngestionPage() {
       await loadSavedAccounts();
     } catch (error: unknown) {
       console.error('Email ingestion error:', error);
-      const errorMessage = error instanceof Error ? error.message : 'Failed to ingest emails';
+      const errorWithDetails = error as { code?: string; message?: string; response?: { data?: { message?: string; error?: string }; status?: number; statusText?: string }; request?: unknown };
       
       let errorMessage = 'Failed to ingest emails';
-      if (error.code === 'ECONNABORTED') {
+      if (errorWithDetails.code === 'ECONNABORTED') {
         errorMessage = 'Request timeout. Email ingestion is taking longer than expected. The process may still be running on the server. Please check the backend logs or try again in a few minutes.';
-      } else if (error.code === 'ECONNREFUSED' || error.message === 'Network Error' || !error.response) {
+      } else if (errorWithDetails.code === 'ECONNREFUSED' || errorWithDetails.message === 'Network Error' || !errorWithDetails.response) {
         errorMessage = 'Network error. Please check if the backend server is running and accessible on port 3001.';
-      } else if (error.response) {
-        errorMessage = error.response.data?.message || 
-                      error.response.data?.error || 
-                      `Server error: ${error.response.status} ${error.response.statusText}`;
-      } else if (error.request) {
+      } else if (errorWithDetails.response) {
+        errorMessage = errorWithDetails.response.data?.message || 
+                      errorWithDetails.response.data?.error || 
+                      `Server error: ${errorWithDetails.response.status} ${errorWithDetails.response.statusText}`;
+      } else if (errorWithDetails.request) {
         errorMessage = 'No response from server. Please check if the backend is running.';
       } else {
-        errorMessage = error.message || 'An unexpected error occurred';
+        errorMessage = errorWithDetails.message || 'An unexpected error occurred';
       }
       
       setResult({
@@ -165,7 +165,7 @@ export default function EmailIngestionPage() {
         name: accountName || account,
         provider,
         account,
-        credentials,
+        credentials: credentials as unknown as Record<string, unknown>,
         redirectUri: provider === 'gmail' || provider === 'outlook' 
           ? (provider === 'gmail' ? gmailCredentials.redirectUri : outlookCredentials.redirectUri)
           : undefined,
@@ -175,7 +175,8 @@ export default function EmailIngestionPage() {
       const savedAccount = await emailAccountsApi.create(createDto);
       
       if ('error' in savedAccount && savedAccount.error) {
-        throw new Error(('message' in savedAccount && savedAccount.message) || 'Failed to create email account');
+        const errorMessage = ('message' in savedAccount && typeof savedAccount.message === 'string' ? savedAccount.message : null) || 'Failed to create email account';
+        throw new Error(errorMessage);
       }
       
       const response = await emailAccountsApi.ingest(savedAccount.id, sinceDate || undefined);
@@ -197,10 +198,11 @@ export default function EmailIngestionPage() {
       await loadSavedAccounts();
     } catch (error: unknown) {
       console.error('Error saving account or ingesting:', error);
+      const errorWithDetails = error as { response?: { data?: { message?: string } }; message?: string };
       let errorMessage = 'Failed to save account or ingest emails';
       
-      if (error.response) {
-        errorMessage = error.response.data?.message || error.message || errorMessage;
+      if (errorWithDetails.response) {
+        errorMessage = errorWithDetails.response.data?.message || errorWithDetails.message || errorMessage;
       }
       
       setResult({
@@ -286,7 +288,7 @@ export default function EmailIngestionPage() {
         }
       }
 
-      const updateDto: Partial<CreateEmailAccountDto> & { credentials?: GmailCredentials | OutlookCredentials | ImapCredentials } = {
+      const updateDto: Partial<CreateEmailAccountDto> = {
         name: accountName || account,
         provider,
         account,
@@ -296,7 +298,7 @@ export default function EmailIngestionPage() {
       };
 
       if (credentials) {
-        updateDto.credentials = credentials;
+        (updateDto as { credentials?: Record<string, unknown> }).credentials = credentials as unknown as Record<string, unknown>;
       }
 
       await emailAccountsApi.update(editingAccount.id, updateDto);
@@ -310,10 +312,11 @@ export default function EmailIngestionPage() {
       await loadSavedAccounts();
     } catch (error: unknown) {
       console.error('Error updating account:', error);
-      const errorMessage = error instanceof Error ? error.message : 'Failed to update account';
+      const errorWithDetails = error as { response?: { data?: { message?: string } }; message?: string };
+      let errorMessage = errorWithDetails.message || 'Failed to update account';
       
-      if (error.response) {
-        errorMessage = error.response.data?.message || error.message || errorMessage;
+      if (errorWithDetails.response) {
+        errorMessage = errorWithDetails.response.data?.message || errorMessage;
       }
       
       setResult({
@@ -571,16 +574,7 @@ export default function EmailIngestionPage() {
                     <InlineNotification
                       kind="warning"
                       title="⚠️ CRITICAL: Redirect URI Must Match Exactly"
-                      subtitle={
-                        <div style={{ marginTop: '0.5rem' }}>
-                          <ul style={{ marginLeft: '1.5rem', marginTop: '0.5rem' }}>
-                            <li>If you used <strong>OAuth 2.0 Playground</strong> to get your refresh token, you MUST use: <code style={{ backgroundColor: 'var(--cds-layer-02)', padding: '0.125rem 0.25rem', borderRadius: '2px' }}>https://developers.google.com/oauthplayground</code></li>
-                            <li>This redirect URI must match EXACTLY what you used in OAuth Playground</li>
-                            <li>It must also be added to your Google Cloud Console OAuth client&apos;s authorized redirect URIs</li>
-                            <li><strong>Common error:</strong> Using a different redirect URI will cause &quot;unauthorized_client&quot; error</li>
-                          </ul>
-                        </div>
-                      }
+                      subtitle="If you used OAuth 2.0 Playground to get your refresh token, you MUST use: https://developers.google.com/oauthplayground. This redirect URI must match EXACTLY what you used in OAuth Playground and must be added to your Google Cloud Console OAuth client's authorized redirect URIs."
                     />
                     
                     <TextInput
@@ -887,8 +881,8 @@ function GlobalResetSection() {
       setResult({
         success: false,
         message:
-          error.response?.data?.message ||
-          error.message ||
+          (error as { response?: { data?: { message?: string } }; message?: string }).response?.data?.message ||
+          (error as { message?: string }).message ||
           'Failed to reset emails. Please check your password and try again.',
       });
     } finally {

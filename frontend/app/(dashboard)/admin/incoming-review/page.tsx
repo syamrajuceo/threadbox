@@ -22,7 +22,7 @@ import {
   Stack,
   Heading,
 } from '@carbon/react';
-import { ArrowLeft, Sparkles, Checkmark, Watson } from '@carbon/icons-react';
+import { ArrowLeft, Watson, CheckmarkFilled } from '@carbon/icons-react';
 
 export default function IncomingReviewPage() {
   const router = useRouter();
@@ -39,16 +39,6 @@ export default function IncomingReviewPage() {
     spamStatus: '',
     search: '',
   });
-
-  useEffect(() => {
-    if (user?.globalRole !== 'super_user') {
-      router.push('/dashboard');
-      return;
-    }
-    setPendingAssignments(new Map());
-    loadData();
-    loadProjects();
-  }, [filters, loadData, loadProjects, user?.globalRole, router]);
 
   const loadData = useCallback(async () => {
     try {
@@ -70,6 +60,16 @@ export default function IncomingReviewPage() {
       console.error('Failed to load projects:', error);
     }
   }, []);
+
+  useEffect(() => {
+    if (user?.globalRole !== 'super_user') {
+      router.push('/dashboard');
+      return;
+    }
+    setPendingAssignments(new Map());
+    loadData();
+    loadProjects();
+  }, [filters, loadData, loadProjects, user?.globalRole, router]);
 
   const handleAssignToProject = (emailId: string, projectId: string) => {
     const newPendingAssignments = new Map(pendingAssignments);
@@ -112,9 +112,10 @@ export default function IncomingReviewPage() {
       await loadData();
     } catch (error: unknown) {
       console.error('Failed to apply changes:', error);
+      const errorWithDetails = error as { response?: { data?: { message?: string } }; message?: string };
       alert(
         `Failed to apply changes: ${
-          error.response?.data?.message || error.message || 'Unknown error'
+          errorWithDetails.response?.data?.message || errorWithDetails.message || 'Unknown error'
         }`,
       );
     } finally {
@@ -181,12 +182,12 @@ export default function IncomingReviewPage() {
     }
   };
 
-  const getSpamTagType = (spamStatus: string) => {
+  const getSpamTagType = (spamStatus: string): 'red' | 'green' | 'gray' | 'blue' | 'cyan' | 'magenta' | 'purple' | 'teal' | 'cool-gray' | 'warm-gray' | 'high-contrast' | 'outline' | undefined => {
     switch (spamStatus) {
       case 'spam':
         return 'red';
       case 'possible_spam':
-        return 'yellow';
+        return 'blue'; // Changed from 'yellow' as it's not a valid Carbon Tag type
       case 'not_spam':
         return 'green';
       default:
@@ -217,7 +218,7 @@ export default function IncomingReviewPage() {
         </div>
         <Button
           kind="primary"
-          renderIcon={Sparkles}
+          renderIcon={Watson}
           onClick={handleProcessAllWithAI}
           disabled={processingAI}
         >
@@ -268,7 +269,7 @@ export default function IncomingReviewPage() {
               </Button>
               <Button
                 kind="primary"
-                renderIcon={Checkmark}
+                renderIcon={CheckmarkFilled}
                 onClick={handleApplyChanges}
                 disabled={applyingChanges}
               >
@@ -343,7 +344,7 @@ export default function IncomingReviewPage() {
                           {email.subject}
                         </h3>
                         {pendingAssignments.has(email.id) && (
-                          <Tag type="yellow" size="sm">Pending...</Tag>
+                          <Tag type="blue" size="sm">Pending...</Tag>
                         )}
                         {currentProjectId && currentProject ? (
                           <Tag type="blue" size="sm">
@@ -366,7 +367,7 @@ export default function IncomingReviewPage() {
                         </p>
                       )}
                     </div>
-                    <Tag type={getSpamTagType(email.spamStatus) as 'red' | 'yellow' | 'green' | 'gray'} size="sm">
+                    <Tag type={getSpamTagType(email.spamStatus)} size="sm">
                       {email.spamStatus.replace('_', ' ')}
                     </Tag>
                   </div>
@@ -375,7 +376,7 @@ export default function IncomingReviewPage() {
                     <Button
                       kind="tertiary"
                       size="sm"
-                      renderIcon={Sparkles}
+                      renderIcon={Watson}
                       onClick={(e) => {
                         e.stopPropagation();
                         handleProcessEmailWithAI(email.id);
@@ -432,7 +433,7 @@ export default function IncomingReviewPage() {
                       <Button
                         kind="primary"
                         size="sm"
-                        renderIcon={Checkmark}
+                        renderIcon={CheckmarkFilled}
                         onClick={(e) => {
                           e.stopPropagation();
                           handleMarkSpam(email.id, 'not_spam');

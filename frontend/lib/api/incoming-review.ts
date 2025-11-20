@@ -70,8 +70,9 @@ export const incomingReviewApi = {
       emailIds,
     });
   },
-  processAllUnprocessedEmails: async () => {
-    return apiClient.post('/incoming-review/process-all-unprocessed');
+  processAllUnprocessedEmails: async (): Promise<{ processed: number; failed: number }> => {
+    const response = await apiClient.post<{ processed: number; failed: number }>('/incoming-review/process-all-unprocessed');
+    return response.data;
   },
 };
 
