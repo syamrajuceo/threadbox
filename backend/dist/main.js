@@ -7,7 +7,6 @@ async function bootstrap() {
     try {
         const app = await core_1.NestFactory.create(app_module_1.AppModule, {
             logger: ['error', 'warn', 'log', 'debug', 'verbose'],
-            abortOnError: false,
         });
         app.enableCors({
             origin: process.env.FRONTEND_URL || 'http://localhost:3000',

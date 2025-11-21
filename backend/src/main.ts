@@ -6,7 +6,6 @@ async function bootstrap() {
   try {
     const app = await NestFactory.create(AppModule, {
       logger: ['error', 'warn', 'log', 'debug', 'verbose'],
-      abortOnError: false, // Don't abort on errors, let the app start
     });
 
     // Enable CORS

@@ -9,11 +9,36 @@ export const getDatabaseConfig = (
   const databaseHost = configService.get<string>('DATABASE_HOST', 'localhost');
   const isCloudSqlSocket = databaseHost.startsWith('/cloudsql/');
 
+  // For Cloud SQL Unix sockets, use connection string format
+  if (isCloudSqlSocket) {
+    const username = configService.get<string>('DATABASE_USER', 'threadbox');
+    const password = configService.get<string>('DATABASE_PASSWORD', 'password');
+    const database = configService.get<string>('DATABASE_NAME', 'threadbox');
+    
+    return {
+      type: 'postgres',
+      url: `postgresql://${username}:${password}@/${database}?host=${encodeURIComponent(databaseHost)}`,
+      entities: [join(__dirname, '..', '**', '*.entity.js')],
+      synchronize: isDevelopment,
+      logging: isDevelopment ? ['error', 'warn', 'schema'] : false,
+      migrations: [join(__dirname, '..', 'database', 'migrations', '*.js')],
+      migrationsRun: false,
+      extra: {
+        max: 10,
+        connectionTimeoutMillis: 60000, // 60 seconds for Cloud SQL
+        idleTimeoutMillis: 30000,
+      },
+      retryAttempts: 5,
+      retryDelay: 3000,
+      autoLoadEntities: false,
+    };
+  }
+
+  // Standard TCP connection
   return {
     type: 'postgres',
     host: databaseHost,
-    // For Cloud SQL Unix sockets, port should be undefined
-    port: isCloudSqlSocket ? undefined : configService.get<number>('DATABASE_PORT', 5432),
+    port: configService.get<number>('DATABASE_PORT', 5432),
     username: configService.get<string>('DATABASE_USER', 'threadbox'),
     password: configService.get<string>('DATABASE_PASSWORD', 'password'),
     database: configService.get<string>('DATABASE_NAME', 'threadbox'),
@@ -22,16 +47,13 @@ export const getDatabaseConfig = (
     logging: isDevelopment ? ['error', 'warn', 'schema'] : false,
     migrations: [join(__dirname, '..', 'database', 'migrations', '*.js')],
     migrationsRun: false,
-    // Connection pool settings
     extra: {
-      max: 10, // Maximum number of connections in the pool
-      connectionTimeoutMillis: 60000, // 60 seconds (increased for Cloud SQL)
-      idleTimeoutMillis: 30000, // 30 seconds
+      max: 10,
+      connectionTimeoutMillis: 20000,
+      idleTimeoutMillis: 30000,
     },
-    // Retry connection on failure
     retryAttempts: 5,
-    retryDelay: 3000, // 3 seconds
-    // Auto reconnect
-    autoLoadEntities: false, // We're specifying entities manually
+    retryDelay: 3000,
+    autoLoadEntities: false,
   };
 };
