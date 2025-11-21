@@ -168,18 +168,21 @@ let ImapProvider = ImapProvider_1 = class ImapProvider {
                                 catch (parseError) {
                                     console.error('Error parsing email:', parseError);
                                 }
+                            })().catch((error) => {
+                                this.logger.error('Error in async email parsing:', error);
                             });
                         });
-                        fetch.once('error', reject);
-                        fetch.once('end', () => {
-                            resolve(emails);
-                        });
+                    });
+                    fetch.once('error', reject);
+                    fetch.once('end', () => {
+                        resolve(emails);
                     });
                 });
             });
-        }, downloadAttachment(_messageId, string, _attachmentId, string), Promise < Buffer > {
-            return: Promise.reject(new Error('Attachment download not yet implemented for IMAP'))
         });
+    }
+    downloadAttachment(_messageId, _attachmentId) {
+        return Promise.reject(new Error('Attachment download not yet implemented for IMAP'));
     }
 };
 exports.ImapProvider = ImapProvider;

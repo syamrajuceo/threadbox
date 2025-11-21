@@ -8,4 +8,5 @@ export declare class ImapProvider implements IEmailProvider {
     connect(): Promise<void>;
     disconnect(): Promise<void>;
     fetchEmails(since?: Date): Promise<EmailMessage[]>;
+    downloadAttachment(_messageId: string, _attachmentId: string): Promise<Buffer>;
 }

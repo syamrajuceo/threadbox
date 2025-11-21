@@ -202,6 +202,9 @@ export class ImapProvider implements IEmailProvider {
               } catch (parseError) {
                 console.error('Error parsing email:', parseError);
               }
+              })().catch((error) => {
+                this.logger.error('Error in async email parsing:', error);
+              });
             });
           });
 
