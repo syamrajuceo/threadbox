@@ -23,7 +23,9 @@ let RolesGuard = class RolesGuard {
         if (!requiredRoles) {
             return true;
         }
-        const request = context.switchToHttp().getRequest();
+        const request = context
+            .switchToHttp()
+            .getRequest();
         const user = request.user;
         if (!user || !user.globalRole) {
             return false;

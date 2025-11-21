@@ -45,7 +45,8 @@ export class GmailProvider implements IEmailProvider {
       });
 
       // Try to refresh the token to validate credentials
-      const { credentials: refreshedCredentials } = await oauth2Client.refreshAccessToken();
+      const { credentials: refreshedCredentials } =
+        await oauth2Client.refreshAccessToken();
       oauth2Client.setCredentials(refreshedCredentials);
 
       this.gmail = google.gmail({ version: 'v1', auth: oauth2Client });
@@ -120,7 +121,7 @@ export class GmailProvider implements IEmailProvider {
 
     do {
       // Fetch message list with retry logic
-      const responseData = (await this.retryWithBackoff(() => {
+      const responseData = await this.retryWithBackoff(() => {
         const requestParams = {
           userId: 'me',
           q: query,
@@ -131,7 +132,7 @@ export class GmailProvider implements IEmailProvider {
           `Gmail API request: q="${query}", maxResults=${batchSize}, pageToken=${pageToken ? 'present' : 'none'}`,
         );
         return this.gmail.users.messages.list(requestParams);
-      }, 'list messages')) as { data: { messages?: Array<{ id: string; threadId: string }>; nextPageToken?: string } };
+      }, 'list messages');
 
       const messages = responseData.data.messages || [];
       pageToken = responseData.data.nextPageToken;
@@ -167,7 +168,9 @@ export class GmailProvider implements IEmailProvider {
                 id: message.id,
                 format: 'full',
               })) as { data: unknown };
-              return this.parseGmailMessage(fullMessage.data as Record<string, unknown>);
+              return this.parseGmailMessage(
+                fullMessage.data as Record<string, unknown>,
+              );
             }, `fetch message ${message.id}`);
           },
         );
@@ -239,7 +242,7 @@ export class GmailProvider implements IEmailProvider {
 
         // For non-quota errors or final attempt, throw immediately
         if (!isQuotaError || attempt === retries) {
-          throw error;
+          throw error as Error;
         }
       }
     }

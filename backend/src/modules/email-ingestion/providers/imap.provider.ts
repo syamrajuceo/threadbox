@@ -105,9 +105,10 @@ export class ImapProvider implements IEmailProvider {
               });
             });
 
-            msg.once('end', async () => {
-              try {
-                const parsed = await simpleParser(emailData);
+            msg.once('end', () => {
+              (async () => {
+                try {
+                  const parsed = await simpleParser(emailData);
                 // Helper function to extract addresses
                 const extractAddresses = (addressObj: unknown): string[] => {
                   if (!addressObj) return [];
@@ -213,12 +214,12 @@ export class ImapProvider implements IEmailProvider {
     });
   }
 
-  async downloadAttachment(
+  downloadAttachment(
     _messageId: string,
     _attachmentId: string,
   ): Promise<Buffer> {
     // IMAP attachments are included in the message body
     // This would need to be implemented based on specific attachment handling
-    throw new Error('Attachment download not yet implemented for IMAP');
+    return Promise.reject(new Error('Attachment download not yet implemented for IMAP'));
   }
 }
