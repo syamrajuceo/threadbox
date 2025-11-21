@@ -117,7 +117,8 @@ let ImapProvider = ImapProvider_1 = class ImapProvider {
                                                     .map((a) => a.address || '')
                                                     .filter((addr) => Boolean(addr))
                                                 : [
-                                                    addrObj.value.address || '',
+                                                    addrObj.value.address ||
+                                                        '',
                                                 ].filter((addr) => Boolean(addr));
                                         }
                                         return [];
@@ -134,7 +135,7 @@ let ImapProvider = ImapProvider_1 = class ImapProvider {
                                             if (Array.isArray(from.value)) {
                                                 return from.value[0]?.address || '';
                                             }
-                                            return from.value?.address || '';
+                                            return (from.value?.address || '');
                                         })(),
                                         fromName: (() => {
                                             const from = parsed.from;

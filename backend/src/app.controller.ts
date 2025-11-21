@@ -16,14 +16,18 @@ export class AppController {
   }
 
   @Get('health')
-  async getHealth(): Promise<{ status: string; database: string; timestamp: string }> {
+  async getHealth(): Promise<{
+    status: string;
+    database: string;
+    timestamp: string;
+  }> {
     let dbStatus = 'disconnected';
     try {
       if (this.dataSource.isInitialized) {
         await this.dataSource.query('SELECT 1');
         dbStatus = 'connected';
       }
-    } catch (error) {
+    } catch {
       dbStatus = 'error';
     }
 

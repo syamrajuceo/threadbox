@@ -109,99 +109,108 @@ export class ImapProvider implements IEmailProvider {
               (async () => {
                 try {
                   const parsed = await simpleParser(emailData);
-                // Helper function to extract addresses
-                const extractAddresses = (addressObj: unknown): string[] => {
-                  if (!addressObj) return [];
-                  if (Array.isArray(addressObj)) {
-                    return addressObj
-                      .flatMap(
-                        (addr: {
-                          value?:
-                            | Array<{ address?: string }>
-                            | { address?: string };
-                        }) =>
-                          Array.isArray(addr.value)
-                            ? addr.value.map(
-                                (a: { address?: string }) => a.address || '',
-                              )
-                            : addr.value
-                              ? [
-                                  (addr.value as { address?: string })
-                                    .address || '',
-                                ]
-                              : [],
-                      )
-                      .filter((addr): addr is string => Boolean(addr));
-                  }
-                  const addrObj = addressObj as {
-                    value?: Array<{ address?: string }> | { address?: string };
+                  // Helper function to extract addresses
+                  const extractAddresses = (addressObj: unknown): string[] => {
+                    if (!addressObj) return [];
+                    if (Array.isArray(addressObj)) {
+                      return addressObj
+                        .flatMap(
+                          (addr: {
+                            value?:
+                              | Array<{ address?: string }>
+                              | { address?: string };
+                          }) =>
+                            Array.isArray(addr.value)
+                              ? addr.value.map(
+                                  (a: { address?: string }) => a.address || '',
+                                )
+                              : addr.value
+                                ? [
+                                    (addr.value as { address?: string })
+                                      .address || '',
+                                  ]
+                                : [],
+                        )
+                        .filter((addr): addr is string => Boolean(addr));
+                    }
+                    const addrObj = addressObj as {
+                      value?:
+                        | Array<{ address?: string }>
+                        | { address?: string };
+                    };
+                    if (addrObj.value) {
+                      return Array.isArray(addrObj.value)
+                        ? addrObj.value
+                            .map((a: { address?: string }) => a.address || '')
+                            .filter((addr): addr is string => Boolean(addr))
+                        : [
+                            (addrObj.value as { address?: string }).address ||
+                              '',
+                          ].filter((addr): addr is string => Boolean(addr));
+                    }
+                    return [];
                   };
-                  if (addrObj.value) {
-                    return Array.isArray(addrObj.value)
-                      ? addrObj.value
-                          .map((a: { address?: string }) => a.address || '')
-                          .filter((addr): addr is string => Boolean(addr))
-                      : [
-                          (addrObj.value as { address?: string }).address || '',
-                        ].filter((addr): addr is string => Boolean(addr));
-                  }
-                  return [];
-                };
 
-                const email: EmailMessage = {
-                  id: String(seqno),
-                  subject: parsed.subject || '',
-                  body: parsed.text || '',
-                  bodyHtml: parsed.html || '',
-                  fromAddress: (() => {
-                    const from = parsed.from as
-                      | {
-                          value?:
-                            | Array<{ address?: string }>
-                            | { address?: string };
-                        }
-                      | undefined;
-                    if (!from) return '';
-                    if (Array.isArray(from.value)) {
-                      return from.value[0]?.address || '';
-                    }
-                    return (from.value as { address?: string })?.address || '';
-                  })(),
-                  fromName: (() => {
-                    const from = parsed.from as
-                      | { value?: Array<{ name?: string }> | { name?: string } }
-                      | undefined;
-                    if (!from) return '';
-                    if (Array.isArray(from.value)) {
-                      return from.value[0]?.name || '';
-                    }
-                    return (from.value as { name?: string })?.name || '';
-                  })(),
-                  toAddresses: extractAddresses(parsed.to),
-                  ccAddresses: extractAddresses(parsed.cc),
-                  bccAddresses: extractAddresses(parsed.bcc),
-                  receivedAt: parsed.date || new Date(),
-                  messageId: parsed.messageId || '',
-                  inReplyTo: parsed.inReplyTo || '',
-                  references:
-                    (Array.isArray(parsed.references)
-                      ? parsed.references.join(' ')
-                      : typeof parsed.references === 'string'
-                        ? parsed.references
-                        : '') || '',
-                  attachments:
-                    parsed.attachments?.map((att) => ({
-                      filename: att.filename || 'attachment',
-                      contentType:
-                        att.contentType || 'application/octet-stream',
-                      size: att.size || 0,
-                      content: att.content,
-                    })) || [],
-                };
-                emails.push(email);
-              } catch (parseError) {
-                console.error('Error parsing email:', parseError);
-              }
+                  const email: EmailMessage = {
+                    id: String(seqno),
+                    subject: parsed.subject || '',
+                    body: parsed.text || '',
+                    bodyHtml: parsed.html || '',
+                    fromAddress: (() => {
+                      const from = parsed.from as
+                        | {
+                            value?:
+                              | Array<{ address?: string }>
+                              | { address?: string };
+                          }
+                        | undefined;
+                      if (!from) return '';
+                      if (Array.isArray(from.value)) {
+                        return from.value[0]?.address || '';
+                      }
+                      return (
+                        (from.value as { address?: string })?.address || ''
+                      );
+                    })(),
+                    fromName: (() => {
+                      const from = parsed.from as
+                        | {
+                            value?:
+                              | Array<{ name?: string }>
+                              | { name?: string };
+                          }
+                        | undefined;
+                      if (!from) return '';
+                      if (Array.isArray(from.value)) {
+                        return from.value[0]?.name || '';
+                      }
+                      return (from.value as { name?: string })?.name || '';
+                    })(),
+                    toAddresses: extractAddresses(parsed.to),
+                    ccAddresses: extractAddresses(parsed.cc),
+                    bccAddresses: extractAddresses(parsed.bcc),
+                    receivedAt: parsed.date || new Date(),
+                    messageId: parsed.messageId || '',
+                    inReplyTo: parsed.inReplyTo || '',
+                    references:
+                      (Array.isArray(parsed.references)
+                        ? parsed.references.join(' ')
+                        : typeof parsed.references === 'string'
+                          ? parsed.references
+                          : '') || '',
+                    attachments:
+                      parsed.attachments?.map((att) => ({
+                        filename: att.filename || 'attachment',
+                        contentType:
+                          att.contentType || 'application/octet-stream',
+                        size: att.size || 0,
+                        content: att.content,
+                      })) || [],
+                  };
+                  emails.push(email);
+                } catch (parseError) {
+                  console.error('Error parsing email:', parseError);
+                }
               })().catch((error) => {
                 this.logger.error('Error in async email parsing:', error);
               });
@@ -223,6 +232,8 @@ export class ImapProvider implements IEmailProvider {
   ): Promise<Buffer> {
     // IMAP attachments are included in the message body
     // This would need to be implemented based on specific attachment handling
-    return Promise.reject(new Error('Attachment download not yet implemented for IMAP'));
+    return Promise.reject(
+      new Error('Attachment download not yet implemented for IMAP'),
+    );
   }
 }

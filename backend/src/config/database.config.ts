@@ -12,12 +12,14 @@ export const getDatabaseConfig = (
   // For Cloud SQL Unix sockets, use connection string format
   if (isCloudSqlSocket) {
     const username = configService.get<string>('DATABASE_USER', 'threadbox');
-    const password = encodeURIComponent(configService.get<string>('DATABASE_PASSWORD', 'password'));
+    const password = encodeURIComponent(
+      configService.get<string>('DATABASE_PASSWORD', 'password'),
+    );
     const database = configService.get<string>('DATABASE_NAME', 'threadbox');
-    
+
     // Correct format for Cloud SQL Unix socket: postgresql://user:pass@/dbname?host=/cloudsql/...
     const connectionUrl = `postgresql://${username}:${password}@/${database}?host=${encodeURIComponent(databaseHost)}`;
-    
+
     return {
       type: 'postgres',
       url: connectionUrl,

@@ -23,19 +23,22 @@ async function bootstrap() {
         const port = process.env.PORT || 3001;
         await app.listen(port, '0.0.0.0');
         console.log(`Application is running on: http://0.0.0.0:${port}`);
-        setTimeout(async () => {
-            try {
-                const dataSource = app.get('DataSource');
-                if (dataSource?.isInitialized) {
-                    console.log('✅ Database connection established');
+        setTimeout(() => {
+            void (async () => {
+                try {
+                    const { DataSource } = await import('typeorm');
+                    const dataSource = app.get(DataSource);
+                    if (dataSource?.isInitialized) {
+                        console.log('✅ Database connection established');
+                    }
+                    else {
+                        console.warn('⚠️ Database connection pending...');
+                    }
                 }
-                else {
-                    console.warn('⚠️ Database connection pending...');
+                catch (err) {
+                    console.warn('⚠️ Database connection check failed:', err);
                 }
-            }
-            catch (err) {
-                console.warn('⚠️ Database connection check failed:', err);
-            }
+            })();
         }, 2000);
     }
     catch (error) {

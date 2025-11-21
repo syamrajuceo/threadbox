@@ -16,6 +16,6 @@ export declare class EmailAccountsService {
     findOne(id: string, userId: string): Promise<EmailAccount>;
     update(id: string, updateDto: UpdateEmailAccountDto, userId: string): Promise<EmailAccount>;
     remove(id: string, userId: string): Promise<void>;
-    getDecryptedCredentials(id: string, userId: string): Promise<any>;
+    getDecryptedCredentials(id: string, userId: string): Promise<Record<string, unknown>>;
     ingestFromAccount(accountId: string, userId: string, since?: Date): Promise<number>;
 }

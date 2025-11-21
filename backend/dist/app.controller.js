@@ -35,7 +35,7 @@ let AppController = class AppController {
                 dbStatus = 'connected';
             }
         }
-        catch (error) {
+        catch {
             dbStatus = 'error';
         }
         return {

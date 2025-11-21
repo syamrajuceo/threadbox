@@ -2,7 +2,7 @@ import { Injectable, NotFoundException, Logger } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { ConfigService } from '@nestjs/config';
-import { EmailAccount } from '../entities/email-account.entity';
+import { EmailAccount, EmailProvider } from '../entities/email-account.entity';
 import { CreateEmailAccountDto } from '../dto/create-email-account.dto';
 import { UpdateEmailAccountDto } from '../dto/update-email-account.dto';
 import { EncryptionUtil } from '../../../common/utils/encryption.util';
@@ -129,7 +129,10 @@ export class EmailAccountsService {
     await this.emailAccountsRepository.remove(account);
   }
 
-  async getDecryptedCredentials(id: string, userId: string): Promise<any> {
+  async getDecryptedCredentials(
+    id: string,
+    userId: string,
+  ): Promise<Record<string, unknown>> {
     const account = await this.findOne(id, userId);
 
     try {
@@ -138,7 +141,7 @@ export class EmailAccountsService {
         account.credentials,
         this.encryptionSecret,
       );
-      const credentials = JSON.parse(decrypted);
+      const credentials = JSON.parse(decrypted) as Record<string, unknown>;
       this.logger.debug(`Successfully decrypted credentials for account ${id}`);
       return credentials;
     } catch (error: unknown) {
@@ -175,7 +178,11 @@ export class EmailAccountsService {
         `Decrypted credentials for ${account.provider} account`,
       );
 
-      const config = {
+      const config: {
+        provider: EmailProvider;
+        account: string;
+        credentials: Record<string, unknown>;
+      } = {
         provider: account.provider,
         account: account.account,
         credentials,
