@@ -90,8 +90,9 @@ let GmailProvider = GmailProvider_1 = class GmailProvider {
                 this.logger.debug(`Gmail API request: q="${query}", maxResults=${batchSize}, pageToken=${pageToken ? 'present' : 'none'}`);
                 return this.gmail.users.messages.list(requestParams);
             }, 'list messages');
-            const messages = responseData.data.messages || [];
-            pageToken = responseData.data.nextPageToken;
+            const response = responseData;
+            const messages = response.data.messages || [];
+            pageToken = response.data.nextPageToken;
             if (messages.length > 0) {
                 this.logger.log(`Fetched ${messages.length} messages (total so far: ${emailMessages.length + messages.length})`);
             }

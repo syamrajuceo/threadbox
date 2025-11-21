@@ -134,8 +134,12 @@ export class GmailProvider implements IEmailProvider {
         return this.gmail.users.messages.list(requestParams);
       }, 'list messages');
 
-      const messages = responseData.data.messages || [];
-      pageToken = responseData.data.nextPageToken;
+      const response = responseData as {
+        data: { messages?: Array<{ id: string; threadId: string }>; nextPageToken?: string };
+      };
+
+      const messages = response.data.messages || [];
+      pageToken = response.data.nextPageToken;
 
       if (messages.length > 0) {
         this.logger.log(
