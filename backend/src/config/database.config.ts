@@ -12,12 +12,15 @@ export const getDatabaseConfig = (
   // For Cloud SQL Unix sockets, use connection string format
   if (isCloudSqlSocket) {
     const username = configService.get<string>('DATABASE_USER', 'threadbox');
-    const password = configService.get<string>('DATABASE_PASSWORD', 'password');
+    const password = encodeURIComponent(configService.get<string>('DATABASE_PASSWORD', 'password'));
     const database = configService.get<string>('DATABASE_NAME', 'threadbox');
+    
+    // Correct format for Cloud SQL Unix socket: postgresql://user:pass@/dbname?host=/cloudsql/...
+    const connectionUrl = `postgresql://${username}:${password}@/${database}?host=${encodeURIComponent(databaseHost)}`;
     
     return {
       type: 'postgres',
-      url: `postgresql://${username}:${password}@/${database}?host=${encodeURIComponent(databaseHost)}`,
+      url: connectionUrl,
       entities: [join(__dirname, '..', '**', '*.entity.js')],
       synchronize: isDevelopment,
       logging: isDevelopment ? ['error', 'warn', 'schema'] : false,
@@ -25,16 +28,15 @@ export const getDatabaseConfig = (
       migrationsRun: false,
       extra: {
         max: 10,
-        connectionTimeoutMillis: 60000, // 60 seconds for Cloud SQL
+        connectionTimeoutMillis: 90000, // 90 seconds for Cloud SQL
         idleTimeoutMillis: 30000,
-        // Don't fail on connection errors during startup
         statement_timeout: 30000,
+        keepAlive: true,
+        keepAliveInitialDelayMillis: 10000,
       },
       retryAttempts: 10, // Increased retry attempts
       retryDelay: 5000, // 5 seconds between retries
       autoLoadEntities: false,
-      // Don't fail app startup if DB connection fails
-      // The connection will be retried automatically
     };
   }
 

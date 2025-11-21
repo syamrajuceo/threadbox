@@ -8,11 +8,12 @@ const getDatabaseConfig = (configService) => {
     const isCloudSqlSocket = databaseHost.startsWith('/cloudsql/');
     if (isCloudSqlSocket) {
         const username = configService.get('DATABASE_USER', 'threadbox');
-        const password = configService.get('DATABASE_PASSWORD', 'password');
+        const password = encodeURIComponent(configService.get('DATABASE_PASSWORD', 'password'));
         const database = configService.get('DATABASE_NAME', 'threadbox');
+        const connectionUrl = `postgresql://${username}:${password}@/${database}?host=${encodeURIComponent(databaseHost)}`;
         return {
             type: 'postgres',
-            url: `postgresql://${username}:${password}@/${database}?host=${encodeURIComponent(databaseHost)}`,
+            url: connectionUrl,
             entities: [(0, path_1.join)(__dirname, '..', '**', '*.entity.js')],
             synchronize: isDevelopment,
             logging: isDevelopment ? ['error', 'warn', 'schema'] : false,
@@ -20,9 +21,11 @@ const getDatabaseConfig = (configService) => {
             migrationsRun: false,
             extra: {
                 max: 10,
-                connectionTimeoutMillis: 60000,
+                connectionTimeoutMillis: 90000,
                 idleTimeoutMillis: 30000,
                 statement_timeout: 30000,
+                keepAlive: true,
+                keepAliveInitialDelayMillis: 10000,
             },
             retryAttempts: 10,
             retryDelay: 5000,
