@@ -6,11 +6,14 @@ export const getDatabaseConfig = (
   configService: ConfigService,
 ): TypeOrmModuleOptions => {
   const isDevelopment = configService.get<string>('NODE_ENV') === 'development';
+  const databaseHost = configService.get<string>('DATABASE_HOST', 'localhost');
+  const isCloudSqlSocket = databaseHost.startsWith('/cloudsql/');
 
   return {
     type: 'postgres',
-    host: configService.get<string>('DATABASE_HOST', 'localhost'),
-    port: configService.get<number>('DATABASE_PORT', 5432),
+    host: databaseHost,
+    // For Cloud SQL Unix sockets, port should be undefined
+    port: isCloudSqlSocket ? undefined : configService.get<number>('DATABASE_PORT', 5432),
     username: configService.get<string>('DATABASE_USER', 'threadbox'),
     password: configService.get<string>('DATABASE_PASSWORD', 'password'),
     database: configService.get<string>('DATABASE_NAME', 'threadbox'),
@@ -22,7 +25,7 @@ export const getDatabaseConfig = (
     // Connection pool settings
     extra: {
       max: 10, // Maximum number of connections in the pool
-      connectionTimeoutMillis: 20000, // 20 seconds
+      connectionTimeoutMillis: 60000, // 60 seconds (increased for Cloud SQL)
       idleTimeoutMillis: 30000, // 30 seconds
     },
     // Retry connection on failure

@@ -30,6 +30,8 @@ import { ProjectManagerModule } from './modules/project-manager/project-manager.
       imports: [ConfigModule],
       useFactory: getDatabaseConfig,
       inject: [ConfigService],
+      // Don't fail app startup if database connection fails initially
+      // The connection will be retried automatically
     }),
     AuthModule,
     UsersModule,
