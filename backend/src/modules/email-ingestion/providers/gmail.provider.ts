@@ -121,7 +121,7 @@ export class GmailProvider implements IEmailProvider {
 
     do {
       // Fetch message list with retry logic
-      const responseData = await this.retryWithBackoff(() => {
+      const responseData = (await this.retryWithBackoff(() => {
         const requestParams = {
           userId: 'me',
           q: query,
@@ -132,7 +132,7 @@ export class GmailProvider implements IEmailProvider {
           `Gmail API request: q="${query}", maxResults=${batchSize}, pageToken=${pageToken ? 'present' : 'none'}`,
         );
         return this.gmail.users.messages.list(requestParams);
-      }, 'list messages');
+      }, 'list messages')) as unknown as { data: { messages?: Array<{ id: string; threadId: string }>; nextPageToken?: string } };
 
       const messages = responseData.data.messages || [];
       pageToken = responseData.data.nextPageToken;
