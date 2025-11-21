@@ -28,7 +28,9 @@ async function bootstrap() {
                 try {
                     const { DataSource } = await import('typeorm');
                     const dataSource = app.get(DataSource);
-                    if (dataSource?.isInitialized) {
+                    if (dataSource &&
+                        'isInitialized' in dataSource &&
+                        dataSource.isInitialized) {
                         console.log('✅ Database connection established');
                     }
                     else {
@@ -36,7 +38,8 @@ async function bootstrap() {
                     }
                 }
                 catch (err) {
-                    console.warn('⚠️ Database connection check failed:', err);
+                    const errorMessage = err instanceof Error ? err.message : String(err);
+                    console.warn('⚠️ Database connection check failed:', errorMessage);
                 }
             })();
         }, 2000);
