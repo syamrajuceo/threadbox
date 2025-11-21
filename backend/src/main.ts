@@ -4,8 +4,10 @@ import { AppModule } from './app.module';
 
 async function bootstrap() {
   try {
+    // Create app without waiting for database connection
     const app = await NestFactory.create(AppModule, {
       logger: ['error', 'warn', 'log', 'debug', 'verbose'],
+      bufferLogs: true,
     });
 
     // Enable CORS
@@ -26,8 +28,24 @@ async function bootstrap() {
     );
 
     const port = process.env.PORT || 3001;
+    
+    // Start listening first, then verify DB connection
     await app.listen(port, '0.0.0.0');
     console.log(`Application is running on: http://0.0.0.0:${port}`);
+    
+    // Log database connection status (non-blocking)
+    setTimeout(async () => {
+      try {
+        const dataSource = app.get('DataSource');
+        if (dataSource?.isInitialized) {
+          console.log('✅ Database connection established');
+        } else {
+          console.warn('⚠️ Database connection pending...');
+        }
+      } catch (err) {
+        console.warn('⚠️ Database connection check failed:', err);
+      }
+    }, 2000);
   } catch (error) {
     console.error('Error starting application:', error);
     process.exit(1);

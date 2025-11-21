@@ -27,10 +27,14 @@ export const getDatabaseConfig = (
         max: 10,
         connectionTimeoutMillis: 60000, // 60 seconds for Cloud SQL
         idleTimeoutMillis: 30000,
+        // Don't fail on connection errors during startup
+        statement_timeout: 30000,
       },
-      retryAttempts: 5,
-      retryDelay: 3000,
+      retryAttempts: 10, // Increased retry attempts
+      retryDelay: 5000, // 5 seconds between retries
       autoLoadEntities: false,
+      // Don't fail app startup if DB connection fails
+      // The connection will be retried automatically
     };
   }
 

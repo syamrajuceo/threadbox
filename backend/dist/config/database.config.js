@@ -22,9 +22,10 @@ const getDatabaseConfig = (configService) => {
                 max: 10,
                 connectionTimeoutMillis: 60000,
                 idleTimeoutMillis: 30000,
+                statement_timeout: 30000,
             },
-            retryAttempts: 5,
-            retryDelay: 3000,
+            retryAttempts: 10,
+            retryDelay: 5000,
             autoLoadEntities: false,
         };
     }

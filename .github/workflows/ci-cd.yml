@@ -154,7 +154,9 @@ jobs:
             --cpu 1 \
             --timeout 300 \
             --max-instances 10 \
-            --min-instances 0
+            --min-instances 0 \
+            --startup-cpu-boost \
+            --cpu-throttling
 
   deploy-frontend:
     name: Deploy Frontend to Cloud Run
